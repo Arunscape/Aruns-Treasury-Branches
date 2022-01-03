@@ -1,12 +1,11 @@
-use postgrest::Postgrest;
 use worker::*;
 
-
-fn maperr(e: impl std::error::Error) -> worker::Error{
-    worker::Error::from(e.to_string())
-}
+use postgres::{Client, NoTls, Error};
 
 pub async fn get_balance(apikey: String) -> Result<Response>{
+
+    let url = "postgresql://postgres:[YOUR-PASSWORD]@db.bkiuhzngtkoliiqqqunp.supabase.co:5432/postgres";
+    let mut client = Client::connect()
     let endpoint = "https://bkiuhzngtkoliiqqqunp.supabase.co/rest/v1/";
     let client = Postgrest::new(endpoint)
         .insert_header("apikey", &apikey);
