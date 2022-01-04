@@ -12,12 +12,7 @@ const Home: NextPage = () => {
 
       <main className="flex flex-col items-center justify-center w-full flex-1 px-20 text-center">
         <h1 className="text-6xl font-bold">
-          Welcome to{' '}
-          <Link href="/account">
-          <a className="text-blue-600">
-            Next.js!
-          </a>
-          </Link>
+          Welcome to{' '} m
         </h1>
       </main>
 
