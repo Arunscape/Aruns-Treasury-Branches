@@ -1,8 +1,8 @@
 import { useRouter } from 'next/router';
-import React from 'react'
+import type { NextPage } from 'next'
 import Layout from '../components/layout'
 
-const ATB404: React.FC = () => {
+const ATB404: NextPage = () => {
     const router = useRouter();
 
     return <Layout>

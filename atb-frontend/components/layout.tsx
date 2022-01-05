@@ -1,9 +1,9 @@
-import React from 'react'
+import type { NextPage } from 'next'
 import Head from 'next/head'
 import Header from './Header'
 
-const Layout: React.FunctionComponent = props => <>
-<Header/>
+const Layout: NextPage = props => <>
+
   {/* <div id="layout" className="flex flex-col items-center justify-center min-h-screen py-2"> */}
     {/*language=PostCSS*/}
     {/* <style jsx global>{`
@@ -16,7 +16,7 @@ const Layout: React.FunctionComponent = props => <>
       <title>Arun's Treasury Branches</title>
       <link rel="icon" href="/favicon.ico" />
     </Head>
-    
+    <Header/>
     {props.children}
 
   {/* </div> */}
