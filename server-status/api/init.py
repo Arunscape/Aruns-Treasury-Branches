@@ -1,13 +1,19 @@
 from http.server import BaseHTTPRequestHandler
 from mcstatus import MinecraftServer
 import json
-
+import urllib.request
 
 def get_stats():
     server = MinecraftServer.lookup("minecraft.woosaree.xyz")
     status = server.status()
+
+    external_ip = urllib.request.urlopen('https://ifconfig.me').read().decode('utf8')
+
     return {
-        "ping": status.latency,
+        "ping": {
+            "from": external_ip,
+            "time": status.latency,
+        },
         # "players": status.players,
         "max_players": status.players.max,
         "players_sample": list(map(lambda x: {'name': x.name, 'id': x.id}, status.players.sample)),
