@@ -8,6 +8,10 @@ def get_stats():
     status = server.status()
 
     external_ip = urllib.request.urlopen('https://ifconfig.me').read().decode('utf8')
+    
+    players = []
+    if status.players.sample is not None:
+        players = list(map(lambda x: {'name': x.name, 'id': x.id}, status.players.sample))
 
     return {
         "ping": {
@@ -16,7 +20,7 @@ def get_stats():
         },
         # "players": status.players,
         "max_players": status.players.max,
-        "players_sample": list(map(lambda x: {'name': x.name, 'id': x.id}, status.players.sample)),
+        "players_sample": players,
         "favicon": status.favicon,
         "version": status.version.name,
         "protocol": status.version.protocol,
