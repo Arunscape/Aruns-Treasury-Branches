@@ -23,7 +23,7 @@
 		<div>
 			<div>Players preview</div>
 			{#each d.players_sample as p}
-				<div>p.name</div>
+				<div>{p.name}</div>
 			{/each}
 		</div>
 
