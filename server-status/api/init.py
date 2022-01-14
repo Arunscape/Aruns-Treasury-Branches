@@ -27,7 +27,7 @@ class handler(BaseHTTPRequestHandler):
         self.send_header("Content-type", "application/json")
         self.end_headers()
         response = get_stats()
-        self.wfile.write(json.dumps(response))
+        self.wfile.write(json.dumps(response).encode())
         return
 
 if __name__ == "__main__":
