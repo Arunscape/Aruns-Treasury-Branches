@@ -32,7 +32,7 @@
 		<div>
 			<div>Additional info</div>
 			<div>
-				<div>Ping from {d.ping.from} to minecraft.woosaree.xyz is {d.ping.time}</div>
+				<div>Ping from {d.ping.from} to minecraft.woosaree.xyz is {d.ping.time}ms</div>
 			</div>
 		</div>
 	</div>
