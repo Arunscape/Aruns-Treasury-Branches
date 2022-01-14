@@ -1,0 +1,53 @@
+{
+    "_meta": {
+        "hash": {
+            "sha256": "5f3eed844cfd3fe5a21a217d6b0c3e6372eec8fb9a865fe597efb5a26cdaf001"
+        },
+        "pipfile-spec": 6,
+        "requires": {
+            "python_version": "3.10"
+        },
+        "sources": [
+            {
+                "name": "pypi",
+                "url": "https://pypi.org/simple",
+                "verify_ssl": true
+            }
+        ]
+    },
+    "default": {
+        "asyncio-dgram": {
+            "hashes": [
+                "sha256:c5464927f3ebc9a32aa6bbb3676fc1d645ae8bc9b4597feac8ab527b6fc33f38",
+                "sha256:d969f2c033542dbddab2fd8c0add51b62c3e01b686a21f84b8d3011cdfd4ce89"
+            ],
+            "markers": "python_version >= '3.5'",
+            "version": "==1.2.0"
+        },
+        "click": {
+            "hashes": [
+                "sha256:d2b5255c7c6349bc1bd1e59e08cd12acbbd63ce649f2588755783aa94dfb6b1a",
+                "sha256:dacca89f4bfadd5de3d7489b7c8a566eee0d3676333fbb50030263894c38c0dc"
+            ],
+            "markers": "python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3, 3.4'",
+            "version": "==7.1.2"
+        },
+        "dnspython": {
+            "hashes": [
+                "sha256:95d12f6ef0317118d2a1a6fc49aac65ffec7eb8087474158f42f26a639135216",
+                "sha256:e4a87f0b573201a0f3727fa18a516b055fd1107e0e5477cded4a2de497df1dd4"
+            ],
+            "markers": "python_version >= '3.6'",
+            "version": "==2.1.0"
+        },
+        "mcstatus": {
+            "hashes": [
+                "sha256:45922f964fc1c97b5fffed20ae51a05a719de7aec40fdfabb3a3472ba1ef407d",
+                "sha256:7ef12611fc015dff8c10664d204e7c15e41a46f4d1f2d192be83aa14d579115b"
+            ],
+            "index": "pypi",
+            "version": "==8.0.0"
+        }
+    },
+    "develop": {}
+}

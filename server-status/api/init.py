@@ -3,17 +3,34 @@ from mcstatus import MinecraftServer
 import json
 
 
+def get_stats():
+    server = MinecraftServer.lookup("minecraft.woosaree.xyz")
+    status = server.status()
+    return {
+        "ping": status.latency,
+        # "players": status.players,
+        "max_players": status.players.max,
+        "players_sample": list(map(lambda x: {'name': x.name, 'id': x.id}, status.players.sample)),
+        "favicon": status.favicon,
+        "version": status.version.name,
+        "protocol": status.version.protocol,
+        "description": status.description,
+        "num_online": status.players.online,
+        # "query": server.query(),
+    }
+
+
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
-
-        server = MinecraftServer.lookup("minecraft.woosaree.xyz")
 
         self.send_response(200)
         self.send_header("Content-type", "application/json")
         self.end_headers()
-        response = {
-            'status': server.status(),
-            'ping': server.ping(),
-        }
+        response = get_stats()
         self.wfile.write(json.dumps(response))
         return
+
+if __name__ == "__main__":
+    import pprint
+    pp = pprint.PrettyPrinter(indent=4)
+    pp.pprint(get_stats())
