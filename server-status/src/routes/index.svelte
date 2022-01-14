@@ -28,6 +28,8 @@
 		</div>
 
 		<div>Version: {d.version}</div>
+        <div>Description</div>
+        <div>{d.description}</div>
 
 		<div>
 			<div>Additional info</div>
