@@ -1,6 +1,0 @@
-main: xyz.woosaree.minecraft.ArunsTreasuryBranches
-author: Arun Woosaree
-version: ${project.version}
-api-version: 1.18
-website: arunstreasurybranches.woosaree.xyz
-name: Arun\'s Treasury Branches

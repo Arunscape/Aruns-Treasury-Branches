@@ -1,0 +1,5 @@
+name: Aruns Treasury Branches
+version: '${version}'
+main: xyz.woosaree.arunstreasurybranches.ArunsTreasuryBranches
+api-version: 1.18
+authors: [ Arun ]

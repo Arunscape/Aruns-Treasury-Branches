@@ -32,7 +32,7 @@ const Header: NextPage = () => {
                     <Link href="/transfers">
                         <a
                             // href="#_"
-                            className={"mr-5 font-medium leading-6 text-gray-600 hover:text-gray-900"  + (pathname === "/transfers" ? underline : "")}
+                            className={"mr-5 font-medium leading-6 text-gray-600 hover:text-gray-900" + (pathname === "/transfers" ? underline : "")}
                         >
                             Transfers
                         </a>
@@ -61,6 +61,12 @@ const Header: NextPage = () => {
                             FAQ
                         </a>
                     </Link>
+                    <a
+                    href="https://status.minecraft.woosaree.xyz"
+                    className="mr-5 font-medium leading-6 text-gray-600 hover:text-gray-900"
+                >
+                    Server Status
+                </a>
                 </nav>
             </div>
             <div className="inline-flex items-center ml-5 space-x-6 lg:justify-end">
