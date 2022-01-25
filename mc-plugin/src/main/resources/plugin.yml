@@ -1,4 +1,4 @@
-name: Aruns Treasury Branches
+name: aruns-treasury-branches
 version: '${version}'
 main: xyz.woosaree.arunstreasurybranches.ArunsTreasuryBranches
 api-version: 1.18
