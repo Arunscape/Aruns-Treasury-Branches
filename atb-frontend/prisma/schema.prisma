@@ -1,0 +1,45 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id Int @id @default(autoincrement()) @unique
+  created_at DateTime @default(now())
+  username String @unique
+  email String @unique
+  accounts Account[]
+
+  @@index([id, username])
+}
+
+model Account {
+  id Int @id @default(autoincrement()) @unique
+  created_at DateTime @default(now())
+  owner User @relation(fields: [owner_id], references: [id])
+  owner_id Int
+  sent_transactions Transaction[] @relation("from")
+  recieved_transactions Transaction[] @relation("to")
+
+  @@index([id, owner_id])
+}
+
+model Transaction {
+  id Int @id @default(autoincrement()) @unique(sort: Asc)
+  item_name String
+  // the actual amount is amount / 100
+  // because units of 0.01 are allowed
+  amount Int
+  other_attributes Json?
+  from_account_id Int
+  to_account_id Int
+  from Account @relation("from", fields: [from_account_id], references: [id])
+  to Account @relation("to", fields: [to_account_id], references: [id])
+}
