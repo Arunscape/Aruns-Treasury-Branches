@@ -3,6 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["extendedIndexes"]
 }
 
 datasource db {
@@ -11,7 +12,7 @@ datasource db {
 }
 
 model User {
-  id Int @id @default(autoincrement()) @unique
+  id String @id @default(cuid()) @unique
   created_at DateTime @default(now())
   username String @unique
   email String @unique
@@ -21,10 +22,10 @@ model User {
 }
 
 model Account {
-  id Int @id @default(autoincrement()) @unique
+  id String @id @default(cuid()) @unique
   created_at DateTime @default(now())
   owner User @relation(fields: [owner_id], references: [id])
-  owner_id Int
+  owner_id String
   sent_transactions Transaction[] @relation("from")
   recieved_transactions Transaction[] @relation("to")
 
@@ -38,8 +39,8 @@ model Transaction {
   // because units of 0.01 are allowed
   amount Int
   other_attributes Json?
-  from_account_id Int
-  to_account_id Int
   from Account @relation("from", fields: [from_account_id], references: [id])
+  from_account_id String
   to Account @relation("to", fields: [to_account_id], references: [id])
+  to_account_id String
 }
