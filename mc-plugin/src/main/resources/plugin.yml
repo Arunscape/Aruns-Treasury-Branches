@@ -1,5 +1,8 @@
-name: aruns-treasury-branches
-version: '${version}'
-main: xyz.woosaree.arunstreasurybranches.ArunsTreasuryBranches
+name: Aruns-Treasury-Branches
+version: '${project.version}'
+main: xyz.woosaree.arunstreasurybranches.ATB
 api-version: 1.18
-authors: [ Arun ]
+commands:
+  atb:
+    description: Arun's Treasury branches
+    usage: /<command> [args]
