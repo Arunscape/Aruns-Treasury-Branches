@@ -3,7 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  previewFeatures = ["extendedIndexes"]
+  previewFeatures = ["extendedIndexes", "interactiveTransactions"]
 }
 
 datasource db {
@@ -28,16 +28,20 @@ model Account {
   owner_id String
   sent_transactions Transaction[] @relation("from")
   recieved_transactions Transaction[] @relation("to")
+  balance Json @default("{}")
 
   @@index([id, owner_id])
 }
 
 model Transaction {
   id Int @id @default(autoincrement()) @unique(sort: Asc)
-  item_name String
-  // the actual amount is amount / 100
-  // because units of 0.01 are allowed
-  amount Int
+  item_id Int
+  // the actual amount is amount / 1 000 000 
+  // allowing for a max of 9223372036854.775807
+  // ~ 9 trillion diamonds
+  amount BigInt
+
+  // maybe add support for enchantments later
   other_attributes Json?
   from Account @relation("from", fields: [from_account_id], references: [id])
   from_account_id String
