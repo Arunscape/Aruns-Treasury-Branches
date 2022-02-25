@@ -1,6 +1,8 @@
 import express from "express";
 import { createServer } from "http";
 import { Account, Prisma, PrismaClient, Transaction, User } from '@prisma/client'
+import { Server } from "socket.io";
+
 const prisma = new PrismaClient()
 
 const app = express();
@@ -82,7 +84,7 @@ async function create_transaction(from_account_id: cuid, to_account_id: cuid, it
             }
         });
 
-        if (from.balance[item_id] < amount){
+        if (from.balance[item_id] < amount) {
             throw Error("Insufficient balance")
         }
 
@@ -136,7 +138,7 @@ async function create_transaction(from_account_id: cuid, to_account_id: cuid, it
 
 
 app.get('/balance', async (req, res) => {
-    let r = await prisma.user.findMany({})
+    const r = await prisma.user.findMany({})
 
     res.json(r)
 })
@@ -144,3 +146,16 @@ app.get('/balance', async (req, res) => {
 
 
 httpServer.listen(5000);
+
+const io = new Server(3000, {
+    // options
+    cors: {
+        origin: ["http://localhost:8000"]
+    }
+});
+
+io.on("connection", (socket) => {
+    // ...
+});
+
+io.listen(8000);
