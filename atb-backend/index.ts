@@ -3,12 +3,14 @@ import { createServer } from "http";
 import { Account, Prisma, PrismaClient, Transaction, User } from '@prisma/client'
 import { Server } from "socket.io";
 
+type cuid = string;
+
 const prisma = new PrismaClient()
 
 const app = express();
 const httpServer = createServer(app);
 
-type cuid = string;
+// type cuid = string;
 
 async function get_accounts(owner_id: cuid): Promise<Account[]> {
     return await prisma.account.findMany({
@@ -28,28 +30,32 @@ async function create_account(owner_id: cuid): Promise<Account | null> {
 }
 
 // @throws if account has a nonzero balance
-async function delete_account(id: cuid): Promise<Account> {
+// async function delete_account(id: cuid): Promise<Account> {
 
-    return await prisma.$transaction(async (prisma) => {
-        const { balance } = await prisma.account.findFirst({
-            where: {
-                id
-            }
-        });
+//     return await prisma.$transaction(async (prisma) => {
 
-        for (const [_, value] of Object.entries(balance)) {
-            if (value != 0) {
-                throw new Error("Nonzero balance")
-            }
-        }
-        return prisma.account.delete({
-            where: {
-                id
-            }
-        });
+        
+//         const account = await prisma.account.findFirst({
+//             where: {
+//                 id
+//             }
+//         });
 
-    });
-}
+//         const balance = account?.balance;
+
+//         for (const [_, value] of Object.entries(balance)) {
+//             if (value != 0) {
+//                 throw new Error("Nonzero balance")
+//             }
+//         }
+//         return prisma.account.delete({
+//             where: {
+//                 id
+//             }
+//         });
+
+//     });
+// }
 
 // @throws if user already exists
 async function create_user(username: string, email: string): Promise<User> {
@@ -73,74 +79,95 @@ async function delete_user(user_id: cuid): Promise<User> {
 // @throws if insufficient balance
 // todo: actually, the balance json object will also need to keep track of other attributes  (nbt data)
 // so can't just add them
-async function create_transaction(from_account_id: cuid, to_account_id: cuid, item_id: number, amount: bigint, other_attributes: Prisma.JsonValue): Promise<Transaction> {
+// async function create_transaction(from_account_id: cuid, to_account_id: cuid, item_id: number, amount: bigint, other_attributes: Prisma.JsonValue): Promise<Transaction | null> {
 
-    return await prisma.$transaction(async (prisma) => {
+//     return await prisma.$transaction(async (prisma) => {
 
-        const from: Account = await prisma.account.findFirst({
-            where: {
-                id: from_account_id
 
-            }
-        });
+//         const from = await prisma.account.findFirst({
+//             where: {
+//                 id: from_account_id
 
-        if (from.balance[item_id] < amount) {
-            throw Error("Insufficient balance")
+//             }
+//         });
+
+//         if (!from?.balance || !from.balance[item_id ]){
+//             throw Error("no balance");
+//         }
+
+//         if (from.balance[item_id] < amount) {
+//             throw Error("Insufficient balance")
+//         }
+
+//         await prisma.account.update({
+//             data: {
+//                 balance: {
+//                     // @ts-ignore
+//                     ...from?.balance,
+//                     [item_id]: from.balance[item_id] - amount
+//                 }
+//             },
+//             where: {
+//                 id: from_account_id
+//             }
+//         });
+
+//         const to: Account = await prisma.account.findFirst({
+//             where: {
+//                 id: to_account_id
+
+//             }
+//         });
+
+//         await prisma.account.update({
+//             data: {
+//                 balance: {
+//                     // @ts-ignore
+//                     ...to.balance,
+//                     [item_id]: to.balance[item_id] + amount
+//                 }
+//             },
+//             where: {
+//                 id: to_account_id
+//             }
+//         });
+
+//         return await prisma.transaction.create({
+//             data: {
+//                 from_account_id,
+//                 to_account_id,
+//                 item_id,
+//                 amount,
+//                 other_attributes
+//             }
+//         });
+//     })
+
+
+// }
+
+async function get_balance(accountid: cuid): Promise<Prisma.JsonValue> {
+
+    const account = await prisma.account.findFirst({
+        where: {
+            id: accountid
         }
+    });
 
-        await prisma.account.update({
-            data: {
-                balance: {
-                    // @ts-ignore
-                    ...from.balance,
-                    [item_id]: from.balance[item_id] - amount
-                }
-            },
-            where: {
-                id: from_account_id
-            }
-        });
-
-        const to: Account = await prisma.account.findFirst({
-            where: {
-                id: to_account_id
-
-            }
-        });
-
-        await prisma.account.update({
-            data: {
-                balance: {
-                    // @ts-ignore
-                    ...to.balance,
-                    [item_id]: to.balance[item_id] + amount
-                }
-            },
-            where: {
-                id: to_account_id
-            }
-        });
-
-        return await prisma.transaction.create({
-            data: {
-                from_account_id,
-                to_account_id,
-                item_id,
-                amount,
-                other_attributes
-            }
-        });
-    })
-
-
+    if (!account){
+        throw Error("Account not found");
+    }
+    
+    return account.balance;
 }
 
 
 
-app.get('/balance', async (req, res) => {
-    const r = await prisma.user.findMany({})
+app.get('/accounts/:id/balance', async (req, res) => {
+   
+    const balance = await get_balance(req.params.id);
 
-    res.json(r)
+    res.json(balance)
 })
 
 
