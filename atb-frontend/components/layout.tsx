@@ -8,7 +8,7 @@ const Layout: NextPage = props => <>
       <title>Arun's Treasury Branches</title>
       <link rel="icon" href="/favicon.ico" />
     </Head>
-    <Header user={{name: 'Arunscape', image: "https://avatars.githubusercontent.com/arunscape"}} tabs={['a', 'b', 'c']}/>
+    <Header user={{name: 'Arunscape', image: "https://avatars.githubusercontent.com/arunscape"}} tabs={['Home', 'Account', 'FAQ']}/>
     {props.children}
 
 </>

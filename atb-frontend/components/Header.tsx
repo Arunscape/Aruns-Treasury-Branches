@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import {
   createStyles,
   Container,
@@ -23,7 +22,7 @@ import {
   SwitchHorizontal,
   ChevronDown,
 } from 'tabler-icons-react';
-// import { MantineLogo } from '../../shared/MantineLogo';
+import { MantineLogo } from './MantineLogo';
 
 const useStyles = createStyles((theme) => ({
   header: {
@@ -106,7 +105,7 @@ export default function HeaderTabsColored({ user, tabs }: HeaderTabsProps) {
     <div className={classes.header}>
       <Container className={classes.mainSection}>
         <Group position="apart">
-          {/* <MantineLogo variant="white" /> */}
+          <MantineLogo variant="white" />
 
           <Burger
             opened={opened}

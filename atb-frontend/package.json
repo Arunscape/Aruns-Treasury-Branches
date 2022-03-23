@@ -15,16 +15,24 @@
     "@mantine/next": "^4.0.7",
     "@mantine/notifications": "^4.0.7",
     "@mantine/prism": "^4.0.7",
+    "@trpc/client": "^9.20.3",
+    "@trpc/next": "^9.20.3",
+    "@trpc/react": "^9.20.3",
+    "@trpc/server": "^9.20.3",
     "next": "12.1.0",
     "react": "17.0.2",
     "react-dom": "17.0.2",
-    "tabler-icons-react": "^1.39.0"
+    "react-query": "^3.34.16",
+    "supertokens-auth-react": "^0.19.0",
+    "tabler-icons-react": "^1.39.0",
+    "zod": "^3.14.2"
   },
   "devDependencies": {
     "@types/node": "17.0.22",
     "@types/react": "17.0.41",
     "eslint": "8.11.0",
     "eslint-config-next": "12.1.0",
+    "prisma": "^3.11.0",
     "typescript": "4.6.2"
   }
 }
