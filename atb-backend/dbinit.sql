@@ -13,11 +13,11 @@ CREATE TABLE accounts (
 CREATE TABLE balances (
     accountid REFERENCES accounts (id)
     item STRING NOT NULL -- minecraft:diamond
-    amount INT -- 64 bit in cockroachdb 
+    amount INT -- 64 bit signed in cockroachdb 
 );
 
 CREATE TABLE transactions (
-    time_millis TIMESTAMP PRIMARY KEY -- milliseconds since 1970
+    time_millis INT PRIMARY KEY -- milliseconds since 1970
     from UUID NOT NULL REFERENCES accounts (id)
     to UUID NOT NULL REFERENCESS accounts (id)
     amount INT NOT NULL
