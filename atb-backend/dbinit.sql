@@ -1,4 +1,3 @@
-
 -- For a time column expressed as the number of milliseconds since the UNIX epoch, set chunk_time_interval to 24 hour
 -- SELECT set_chunk_time_interval('conditions', 86400000);
 CREATE TABLE users (
@@ -17,13 +16,14 @@ CREATE TABLE balances (
     accountid UUID,
     item TEXT NOT NULL,
     -- minecraft:diamond
-    amount BIGINT, -- 64 bit int in postgresA,
+    amount BIGINT,
+    -- 64 bit int in postgresA,
     FOREIGN KEY (accountid) REFERENCES accounts (id)
 );
 CREATE TABLE transactions (
     id BIGSERIAL PRIMARY KEY,
-    time_millis BIGINT,
     -- milliseconds since 1970
+    time_millis BIGINT,
     amount BIGINT NOT NULL,
     item TEXT NOT NULL,
     fromid UUID,
