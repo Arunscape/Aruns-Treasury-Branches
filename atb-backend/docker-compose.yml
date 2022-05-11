@@ -1,0 +1,22 @@
+version: "3"
+services:
+  timescale:
+    container_name: timescale
+    image: timescale/timescaledb-ha:pg14-latest
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: changeme
+    volumes:
+      - ./data:/var/lib/postgresql/data
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      PGADMIN_LISTEN_PORT: 9000
+      PGADMIN_DEFAULT_EMAIL: arun@example.com
+      PGADMIN_DEFAULT_PASSWORD: changeme
+    ports:
+      - 9000:9000
+    volumes:
+      - ./pgadmin:/var/lib/pgadmin
