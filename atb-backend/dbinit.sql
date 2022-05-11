@@ -23,7 +23,7 @@ CREATE TABLE balances (
 CREATE TABLE transactions (
     id BIGSERIAL PRIMARY KEY,
     -- milliseconds since 1970
-    time_millis BIGINT,
+    time_millis BIGINT UNIQUE,
     amount BIGINT NOT NULL,
     item TEXT NOT NULL,
     fromid UUID,

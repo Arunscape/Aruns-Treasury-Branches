@@ -1,22 +1,14 @@
 version: "3"
 services:
-  timescale:
-    container_name: timescale
-    image: timescale/timescaledb-ha:pg14-latest
+  questdb:
+    container_name: questdb
+    image: questdb/questdb
     ports:
-      - 5432:5432
+      - 9000:9000 # webui and rest api
+      - 9009:9009 # influxdb line protocol
+      - 8812:8812 # postgres wire protocol
+      - 9003:9003 # min health server
     environment:
       POSTGRES_PASSWORD: changeme
     volumes:
-      - ./data:/var/lib/postgresql/data
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: pgadmin
-    environment:
-      PGADMIN_LISTEN_PORT: 9000
-      PGADMIN_DEFAULT_EMAIL: arun@example.com
-      PGADMIN_DEFAULT_PASSWORD: changeme
-    ports:
-      - 9000:9000
-    volumes:
-      - ./pgadmin:/var/lib/pgadmin
+      - ./questdb:/root/.questdb/
