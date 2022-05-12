@@ -1,29 +1,22 @@
-CREATE TABLE IF NOT EXISTS users (
-    id string,
-    email string
-);
-
-
+CREATE TABLE IF NOT EXISTS users (id string, email string);
 CREATE TABLE IF NOT EXISTS accounts (
     id string,
     ownerid string,
     nickname string
 );
-
 CREATE TABLE IF NOT EXISTS balances (
     accountid string,
     item string,
     amount long
 );
-
 CREATE TABLE IF NOT EXISTS transactions (
     id long,
-    time_millis date, -- I don't think we'll have more than 1000 transactions per second
+    time_micros timestamp,
+    -- I don't think we'll have more than 1 million transactions/second
     item string,
     fromid string,
     toid string
 );
-
 -- -- For a time column expressed as the number of milliseconds since the UNIX epoch, set chunk_time_interval to 24 hour
 -- -- SELECT set_chunk_time_interval('conditions', 86400000);
 -- CREATE TABLE IF NOT EXISTS users (
@@ -57,4 +50,4 @@ CREATE TABLE IF NOT EXISTS transactions (
 --     FOREIGN KEY (toid) REFERENCES accounts (id),
 --     CONSTRAINT from_to_different CHECK (fromid != toid)
 -- );
--- 
+--
