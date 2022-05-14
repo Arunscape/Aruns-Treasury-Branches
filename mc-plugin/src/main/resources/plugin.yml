@@ -1,8 +1,7 @@
-name: Aruns-Treasury-Branches
+name: ATB
 version: '${project.version}'
-main: xyz.woosaree.arunstreasurybranches.ATB
+main: xyz.woosaree.atb.Atb
 api-version: 1.18
-commands:
-  atb:
-    description: Arun's Treasury branches
-    usage: /<command> [args]
+prefix: Hey the atb plugin loaded
+authors: [ Arun ]
+description: Trade diamonds
