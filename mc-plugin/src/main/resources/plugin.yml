@@ -3,5 +3,7 @@ version: '${project.version}'
 main: xyz.woosaree.atb.Atb
 api-version: 1.18
 prefix: Hey the atb plugin loaded
-authors: [ Arun ]
 description: Trade diamonds
+commands:
+  atb:
+    description: "/atb hello"
