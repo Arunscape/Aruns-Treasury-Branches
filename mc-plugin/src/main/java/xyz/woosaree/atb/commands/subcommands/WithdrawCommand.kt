@@ -5,17 +5,17 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import xyz.woosaree.atb.commands.SubCommand
 
-class DepositCommand : SubCommand() {
+class WithdrawCommand : SubCommand() {
     override fun getName(): String {
-        return "deposit"
+        return "withdraw"
     }
 
     override fun getDescription(): String {
-        return "Deposit an item into ATB"
+        return "Withdraw an item from ATB"
     }
 
     override fun getSyntax(): String {
-        return "/atb deposit <item> <amount>"
+        return "/atb withdraw <item> <amount>"
         // return "/atb withdraw <item> <amount> <account_nickname>"
     }
 
@@ -38,21 +38,22 @@ class DepositCommand : SubCommand() {
             return
         }
 
-//        val items = player.inventory.filterNotNull().filter { it.type == item }\
-//        player.sendMessage("found these items: $items")
 
+        player.sendMessage("Contacting backend...")
 
-        val removeThese = ItemStack(item, amount)
-        val cantRemove = player.inventory.removeItem(removeThese)
+        val addThese = ItemStack(item, amount)
+        val failed = player.inventory.addItem(addThese)
+        if (failed.isNotEmpty()) {
+            player.sendMessage("Error: failed to withdraw these: $failed")
+            val failedAmount = failed.values.map { it.amount }.reduce { acc, it -> acc + it }
 
-        if (cantRemove.isNotEmpty()) {
-            player.sendMessage("failed to remove these items: $cantRemove")
-            return
+            player.sendMessage("Contacting backend...")
+
+            player.sendMessage("$failedAmount/$amount items were not deposssited and returned to your online account")
         }
 
 
-        player.sendMessage("Removed items. Contacting backend...")
-
+        player.sendMessage("Success")
 
 //        val inventory = Bukkit.createInventory(player, 9, "${ChatColor.GREEN}Deposit: Drag items here to deposit them")
 //        player.openInventory(inventory)

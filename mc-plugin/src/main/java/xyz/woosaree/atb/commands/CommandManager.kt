@@ -5,6 +5,7 @@ import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import xyz.woosaree.atb.commands.subcommands.DepositCommand
+import xyz.woosaree.atb.commands.subcommands.WithdrawCommand
 
 class CommandManager : CommandExecutor {
     var subcommands: HashMap<String, SubCommand> = HashMap()
@@ -12,6 +13,7 @@ class CommandManager : CommandExecutor {
 
     init {
         subcommands["deposit"] = DepositCommand()
+        subcommands["withdraw"] = WithdrawCommand()
     }
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
