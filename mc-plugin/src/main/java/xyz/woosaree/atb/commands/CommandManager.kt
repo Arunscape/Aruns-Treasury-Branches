@@ -33,12 +33,10 @@ class CommandManager : CommandExecutor {
         val subcommand = args[0]
         if (subcommand !in subcommands) {
             val m = "Error: subcommand not found. Available commands are:\n" +
-                    subcommands.map { it ->
-                        it.value.getSyntax() + "\n"
-                    }.reduce { acc, it -> acc + it }
+                    subcommands.map { it.value.getSyntax() + "\n" }.reduce { acc, it -> acc + it }
 
             sender.sendMessage(m)
-            //return false
+            return false
         }
 
         subcommands[args[0]]?.perform(sender, args)
