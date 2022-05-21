@@ -4,7 +4,6 @@ import { ColorSwatch } from 'tabler-icons-react';
 
 import dynamic from 'next/dynamic'
 import Passwordless from 'supertokens-auth-react/recipe/passwordless'
-import ProtectedPage from "./protectedPage";
 
 const PasswordlessAuthNoSSR = dynamic(
     new Promise((res) =>
