@@ -30,12 +30,11 @@ jobs:
       run: |
           mvn -B package --file mc-plugin/pom.xml
           ls mc-plugin/target/*.jar
-    
-    - name: Release
-      uses: softprops/action-gh-release@v1
+          
+    - uses: actions/upload-artifact@v3
       with:
-        files: mc-plugin/target/atb*.jar
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        name: publish plugin
+        path: mc-plugin/target/atb-*.jar
+        if-no-files-found: error
   
     
