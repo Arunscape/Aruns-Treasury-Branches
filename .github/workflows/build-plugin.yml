@@ -6,12 +6,12 @@ name: Build and test plugin
 on:
   push:
     branches: [ master ]
-    paths:
-      - 'mc-plugin/**'
+#     paths:
+#       - 'mc-plugin/**'
   pull_request:
     branches: [ master ]
-    paths:
-      - 'mc-plugin/**'
+#     paths:
+#       - 'mc-plugin/**'
 
 jobs:
   build:
