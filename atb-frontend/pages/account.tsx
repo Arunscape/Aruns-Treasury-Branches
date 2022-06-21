@@ -3,14 +3,6 @@ import { createStyles, Paper, Text, ThemeIcon } from '@mantine/core';
 import { ColorSwatch } from 'tabler-icons-react';
 
 import dynamic from 'next/dynamic'
-import Passwordless from 'supertokens-auth-react/recipe/passwordless'
-
-const PasswordlessAuthNoSSR = dynamic(
-    new Promise((res) =>
-        res(Passwordless.PasswordlessAuth)
-    ) as any,
-    { ssr: false }
-)
 
 const useStyles = createStyles((theme) => ({
     card: {
@@ -67,9 +59,7 @@ export function CardGradient({ title, description }: CardGradientProps) {
 
 const Account: NextPage = () => <>
 
-    <PasswordlessAuthNoSSR>
-        <CardGradient title="Balance" description="0 diamonds" />
-    </PasswordlessAuthNoSSR>
+    <CardGradient title="Balance" description="0 diamonds" />
 
 </>
 

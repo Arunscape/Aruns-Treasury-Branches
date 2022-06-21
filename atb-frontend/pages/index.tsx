@@ -9,7 +9,9 @@ import {
   List,
   ThemeIcon,
 } from '@mantine/core';
+import { useContext } from 'react';
 import { Check } from 'tabler-icons-react';
+import { AuthContext } from '../util/auth';
 // import image from './image.svg';
 
 const useStyles = createStyles((theme) => ({
@@ -69,13 +71,18 @@ const useStyles = createStyles((theme) => ({
 
 export function HeroBullets() {
   const { classes } = useStyles();
+
+  const { authstate } = useContext(AuthContext);
+
+
+
   return (
     <div>
       <Container>
         <div className={classes.inner}>
           <div className={classes.content}>
             <Title className={classes.title}>
-              A <span className={classes.highlight}>silly</span> way to <br/> trade diamonds
+              A <span className={classes.highlight}>silly</span> way to <br /> trade diamonds
             </Title>
             <Text color="dimmed" mt="md">
               Trade diamonds on minecraft.woosaree.xyz
@@ -106,7 +113,9 @@ export function HeroBullets() {
               <Button radius="xl" size="md" className={classes.control}>
                 Sign up / Log  in
               </Button>
-              <Button variant="default" radius="xl" size="md" className={classes.control}>
+              <Button variant="default" radius="xl" size="md" className={classes.control} onClick={() => {
+
+              }}>
                 Sauce code
               </Button>
             </Group>
