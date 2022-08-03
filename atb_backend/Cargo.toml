@@ -6,3 +6,9 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+redis = { version = "*", features = ["async-std-tls-comp"] }
+tide = "*"
+async-std = { version = "*", features = ["attributes"] }
+serde = { version = "*", features = ["derive"] }
+futures = "*"
+async-graphql = { version = "*", features = ["bson", "chrono"] }
