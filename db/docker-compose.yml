@@ -1,0 +1,20 @@
+version: '3'
+services:
+  redis:
+    container_name: redis
+    image: redis/redis-stack
+    # image: redis/redis-stack-server
+    volumes:
+      - ./data:/data
+      - ./redis-stack.conf:/redis-stack.conf
+    ports:
+      - 6379:6379
+      - 8001:8001
+
+#  environment:
+#    REDIS_ARGS: extra arguments for Redis
+#    REDISEARCH_ARGS: arguments for RediSearch
+#    REDISJSON_ARGS: arguments for RedisJSON
+#    REDISGRAPH_ARGS: arguments for RedisGraph
+#    REDISTIMESERIES_ARGS: arguments for RedisTimeSeries
+#    REDISBLOOM_ARGS: arguments for RedisBloom
