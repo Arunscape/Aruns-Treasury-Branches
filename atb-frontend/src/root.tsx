@@ -1,14 +1,17 @@
-import { Html } from '@builder.io/qwik-city';
-import { Head } from './components/head/head';
-import { Body } from './components/body/body';
+import { App } from './components/app/app';
 
 import './global.css';
 
 export default () => {
   return (
-    <Html lang="en">
-      <Head />
-      <Body />
-    </Html>
+    <html>
+      <head>
+        <meta charSet="utf-8" />
+        <title>Qwik Blank App</title>
+      </head>
+      <body>
+        <App />
+      </body>
+    </html>
   );
 };
