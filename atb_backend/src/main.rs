@@ -7,8 +7,12 @@ use std::env;
 use juniper::{http::graphiql, http::GraphQLRequest, RootNode};
 use tide::{http::mime, Body, Redirect, Request, Response, Server, StatusCode};
 
-pub type Schema =
-    RootNode<'static, QueryRoot, juniper::EmptyMutation<State>, juniper::EmptySubscription<State>>;
+pub type Schema = RootNode<
+    'static,
+    QueryRoot,
+    juniper::EmptyMutation<Context>,
+    juniper::EmptySubscription<Context>,
+>;
 
 lazy_static! {
     static ref SCHEMA: Schema = Schema::new(
@@ -21,14 +25,14 @@ lazy_static! {
 }
 
 #[derive(Clone)]
-pub struct State {}
-impl juniper::Context for State {}
+pub struct Context {}
+impl juniper::Context for Context {}
 
 #[async_std::main]
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
     tide::log::start();
-    let mut app = Server::with_state(State {});
+    let mut app = Server::with_state(Context {});
     app.at("/").get(Redirect::permanent("/graphiql"));
     app.at("/graphql").post(handle_graphql);
     app.at("/graphiql").get(handle_graphiql);
@@ -36,7 +40,7 @@ async fn main() -> std::io::Result<()> {
     Ok(())
 }
 
-async fn handle_graphql(mut request: Request<State>) -> tide::Result {
+async fn handle_graphql(mut request: Request<Context>) -> tide::Result {
     let query: GraphQLRequest = request.body_json().await?;
     let response = query.execute(&SCHEMA, request.state()).await;
     let status = if response.is_ok() {
@@ -50,7 +54,7 @@ async fn handle_graphql(mut request: Request<State>) -> tide::Result {
         .build())
 }
 
-async fn handle_graphiql(_: Request<State>) -> tide::Result<impl Into<Response>> {
+async fn handle_graphiql(_: Request<Context>) -> tide::Result<impl Into<Response>> {
     Ok(Response::builder(200)
         .body(graphiql::graphiql_source(
             "/graphql",
@@ -60,9 +64,9 @@ async fn handle_graphiql(_: Request<State>) -> tide::Result<impl Into<Response>>
 }
 
 pub struct QueryRoot;
-#[juniper::graphql_object(Context=State)]
+#[juniper::graphql_object(Context=Context)]
 impl QueryRoot {
-    fn idk(context: &State) -> i32 {
+    fn idk(context: &Context) -> i32 {
         69
     }
 }
