@@ -1,22 +1,5 @@
-[package]
-name = "atb_backend"
-version = "0.1.0"
-edition = "2021"
+[workspace]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[dependencies]
-redis = { version = "*", features = ["async-std-tls-comp"] }
-tide = "*"
-async-std = { version = "*", features = ["attributes"] }
-serde = { version = "*", features = ["derive"] }
-futures = "*"
-#async-graphql = { version = "*", features = ["bson", "chrono"] }
-dotenv = "*"
-lazy_static = "*"
-regex = "*"
-jsonwebtoken = "*"
-base64 = "*"
-dotenv_codegen = "*"
-#async-graphql-tide = { version = "*", features = ["tide-websockets"] }
-juniper = "*"
+members = [
+    "atb_backend",
+]
