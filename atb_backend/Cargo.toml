@@ -11,4 +11,12 @@ tide = "*"
 async-std = { version = "*", features = ["attributes"] }
 serde = { version = "*", features = ["derive"] }
 futures = "*"
-async-graphql = { version = "*", features = ["bson", "chrono"] }
+#async-graphql = { version = "*", features = ["bson", "chrono"] }
+dotenv = "*"
+lazy_static = "*"
+regex = "*"
+jsonwebtoken = "*"
+base64 = "*"
+dotenv_codegen = "*"
+#async-graphql-tide = { version = "*", features = ["tide-websockets"] }
+juniper = "*"
