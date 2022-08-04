@@ -25,14 +25,16 @@ lazy_static! {
 }
 
 #[derive(Clone)]
-pub struct Context {}
+pub struct Context {
+message: String
+}
 impl juniper::Context for Context {}
 
 #[async_std::main]
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
     tide::log::start();
-    let mut app = Server::with_state(Context {});
+    let mut app = Server::with_state(Context {message: String::new()});
     app.at("/").get(Redirect::permanent("/graphiql"));
     app.at("/graphql").post(handle_graphql);
     app.at("/graphiql").get(handle_graphiql);
@@ -66,8 +68,8 @@ async fn handle_graphiql(_: Request<Context>) -> tide::Result<impl Into<Response
 pub struct QueryRoot;
 #[juniper::graphql_object(Context=Context)]
 impl QueryRoot {
-    fn idk(context: &Context) -> i32 {
-        69
+    fn idk(message: String) -> String {
+        message.clone()
     }
 }
 
