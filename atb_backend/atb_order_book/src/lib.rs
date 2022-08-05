@@ -24,8 +24,7 @@ pub struct Order {
 impl Ord for Order {
     fn cmp(&self, other: &Self) -> Ordering {
         // quantity must be the same sign else bad things happen
-        // only works on int types
-        if self.quantity ^ other.quantity < 0 {
+        if (self.quantity < 0) == (other.quantity < 0) {
             panic!("tried to compare a buy order with a sell order. Can only compare buy<=>buy or sell<=>sell")
         }
         self.cmp(other)
@@ -34,7 +33,7 @@ impl Ord for Order {
 
 impl PartialOrd for Order {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        if self.quantity ^ other.quantity < 0 {
+        if (self.quantity < 0) == (other.quantity < 0) {
             return None;
         }
 
@@ -44,7 +43,7 @@ impl PartialOrd for Order {
 
 impl PartialEq for Order {
     fn eq(&self, other: &Self) -> bool {
-        if self.quantity ^ other.quantity < 0 {
+        if (self.quantity < 0) == (other.quantity < 0) {
             panic!("tried to compare a buy order with a sell order. Can only compare buy<=>buy or sell<=>sell")
         }
         match (&self.order_type, &other.order_type) {
