@@ -19,6 +19,8 @@ pub struct Order {
 
 // Market is highest for Buys
 // Market is lowest for Sell
+// Highest buy at the end of the array
+// Lowest sell at the end
 impl Ord for Order {
     fn cmp(&self, other: &Self) -> Ordering {
         // quantity must be the same sign else bad things happen
@@ -111,19 +113,19 @@ impl Order {
             (OrderType::Market, OrderType::Market) => Ordering::Equal,
             (OrderType::Market, OrderType::Limit(_limit)) => {
                 if self.is_buy() {
-                    Ordering::Greater
-                } else {
                     Ordering::Less
+                } else {
+                    Ordering::Greater
                 }
             }
             (OrderType::Limit(_limit), OrderType::Market) => {
                 if other.is_buy() {
-                    Ordering::Less
-                } else {
                     Ordering::Greater
+                } else {
+                    Ordering::Less
                 }
             }
-            (OrderType::Limit(s_limit), OrderType::Limit(o_limit)) => s_limit.cmp(&o_limit),
+            (OrderType::Limit(s_limit), OrderType::Limit(o_limit)) => o_limit.cmp(s_limit),
         }
     }
 }
