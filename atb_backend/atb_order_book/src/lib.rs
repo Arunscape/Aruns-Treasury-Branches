@@ -5,44 +5,32 @@ use std::time::SystemTime;
 // negative quantity is selling
 // leave possibillity for negative price in case we have a negative oil futures situation
 // stop limit, stop orders are processsed by atb_order_queue and submitted here as limit/market orderss
-#[derive(Debug, Eq)]
+#[derive(Debug)]
 pub struct Order {
     id: String,
-    quantity: i128,
+    amount: i128,
     order_type: OrderType,
     time_received: SystemTime,
 }
 impl Order {
-    pub fn new(id: &str, quantity: i128, order_type: OrderType) -> Self {
+    pub fn new(id: &str, amount: i128, order_type: OrderType) -> Self {
         let time_received = SystemTime::now();
         let id = id.into();
 
         Self {
             id,
-            quantity,
+            amount,
             order_type,
             time_received,
         }
     }
-}
-// Market is highest for Buys
-// Market is lowest for Sell
-// Highest buy at the end of the array
-// Lowest sell at the end
-impl Ord for Order {
-    fn cmp(&self, other: &Self) -> Ordering {
-    }
-}
 
-impl PartialOrd for Order {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(self.cmp(other))
-    }
-}
-
-impl PartialEq for Order {
-    fn eq(&self, other: &Self) -> bool {
-        false
+    pub fn price(&self) -> i128 {
+        match self.order_type {
+            OrderType::LimitBuy(price) => self.amount * price,
+            OrderType::LimitSell(price) => self.amount * price,
+            OrderType::MarketBuy | OrderType::MarketSell => todo!(),
+        }
     }
 }
 
@@ -54,65 +42,58 @@ pub struct OrderBook {
 
 impl OrderBook {
     pub fn submit(&mut self, order: Order) {
+        let index = match order.order_type {
+            // go to front of bid queue unless another market order was placed earlier
+            OrderType::MarketBuy => self.bid.partition_point(|other| match other.order_type {
+                OrderType::LimitBuy(_) => true,
+                OrderType::MarketBuy => order.time_received < other.time_received,
+                _ => unreachable!(),
+            }),
+            // go to front of ask queue unlese another market order was placed earlier
+            OrderType::MarketSell => self.ask.partition_point(|other| match other.order_type {
+                OrderType::LimitSell(_) => true,
+                OrderType::MarketSell => order.time_received < other.time_received,
+                _ => unreachable!(),
+            }),
+            OrderType::LimitBuy(price) => {
+                self.bid.partition_point(|other| match other.order_type {
+                    OrderType::MarketBuy => false,
+                    OrderType::LimitBuy(other_price) => other_price < price,
+                    _ => unreachable!(),
+                })
+            }
+            OrderType::LimitSell(price) => {
+                self.ask.partition_point(|other| match other.order_type {
+                    OrderType::MarketSell => false,
+                    OrderType::LimitSell(other_price) => price < other_price,
+                    _ => unreachable!(),
+                })
+            }
+        };
+
         match order.order_type {
-            OrderType::MarketBuy
-        }
-        if order.is_buy() {
-            let index = self.bid.binary_search_by(|o| o.cmp(&order));
-            let index = match index {
-                Ok(idx) => idx,
-                Err(idx) => idx,
-            };
-            self.bid.insert(index, order)
-        } else {
-            let index = self.ask.binary_search_by(|o| o.cmp(&order));
-            let index = match index {
-                Ok(idx) => idx,
-                Err(idx) => idx,
-            };
-            self.ask.insert(index, order)
+            OrderType::MarketBuy | OrderType::LimitBuy(_) => self.bid.insert(index, order),
+            OrderType::MarketSell | OrderType::LimitSell(_) => self.ask.insert(index, order),
         }
 
-        // TODO: match some orders togeether
         println!("sumbitted an order");
         dbg!(&self);
     }
 
     // returns true if successful
-    pub fn cancel(&mut self, order: Order) -> bool {
-        if order.is_buy() {
-            if let Some(index) = self.bid.iter().position(|o| o.id == order.id) {
+    pub fn cancel(&mut self, order: Order) -> Result<(), ()> {
+        match order.order_type {
+            OrderType::MarketBuy | OrderType::LimitBuy(_) => {
+                let index = self.bid.iter().position(|o| o.id == order.id).ok_or(())?;
                 self.bid.remove(index);
-                return true;
             }
-        } else {
-            if let Some(index) = self.ask.iter().position(|o| o.id == order.id) {
+
+            OrderType::MarketSell | OrderType::LimitSell(_) => {
+                let index = self.ask.iter().position(|o| o.id == order.id).ok_or(())?;
                 self.ask.remove(index);
-                return true;
             }
         }
-        false
-    }
-}
-
-impl Order {
-    pub fn is_buy(&self) -> bool {
-        self.quantity > 0
-    }
-
-    fn cmp(&self, other: &Self) -> Ordering {
-        match (&self.order_type, &other.order_type) {
-            (OrderType::Market, OrderType::Market) => other.time_received.cmp(&self.time_received),
-            (OrderType::Market, OrderType::Limit(_limit)) => Ordering::Greater,
-            (OrderType::Limit(_limit), OrderType::Market) => Ordering::Less,
-            (OrderType::Limit(s_limit), OrderType::Limit(o_limit)) => {
-                let c = s_limit.cmp(o_limit);
-                match s_limit.cmp(o_limit) {
-                    Ordering::Greater | Ordering::Less => c,
-                    Ordering::Equal => other.time_received.cmp(&self.time_received),
-                }
-            }
-        }
+        Ok(())
     }
 }
 

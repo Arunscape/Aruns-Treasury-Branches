@@ -3,5 +3,6 @@
 members = [
     "atb_backend",
     "atb_order_book",
-    "atb_order_queue"
+    "atb_order_queue",
+    "atb_types",
 ]
