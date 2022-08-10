@@ -1,57 +1,48 @@
-use lazy_static::lazy_static;
-use std::{cmp::Ordering, collections::HashMap};
-
-#[derive(Debug, Eq, PartialEq)]
-pub enum OrderType {
-    Market,
-    Limit(i128),
-}
+use atb_types::prelude::*;
+use std::cmp::Ordering;
+use std::time::SystemTime;
 
 // negative quantity is selling
 // leave possibillity for negative price in case we have a negative oil futures situation
 // stop limit, stop orders are processsed by atb_order_queue and submitted here as limit/market orderss
 #[derive(Debug, Eq)]
 pub struct Order {
-    pub id: String,
-    pub quantity: i128,
-    pub order_type: OrderType,
+    id: String,
+    quantity: i128,
+    order_type: OrderType,
+    time_received: SystemTime,
 }
+impl Order {
+    pub fn new(id: &str, quantity: i128, order_type: OrderType) -> Self {
+        let time_received = SystemTime::now();
+        let id = id.into();
 
+        Self {
+            id,
+            quantity,
+            order_type,
+            time_received,
+        }
+    }
+}
 // Market is highest for Buys
 // Market is lowest for Sell
 // Highest buy at the end of the array
 // Lowest sell at the end
 impl Ord for Order {
     fn cmp(&self, other: &Self) -> Ordering {
-        // quantity must be the same sign else bad things happen
-        if (self.quantity < 0) == (other.quantity < 0) {
-            panic!("tried to compare a buy order with a sell order. Can only compare buy<=>buy or sell<=>sell")
-        }
-        self.cmp(other)
     }
 }
 
 impl PartialOrd for Order {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        if (self.quantity < 0) == (other.quantity < 0) {
-            return None;
-        }
-
         Some(self.cmp(other))
     }
 }
 
 impl PartialEq for Order {
     fn eq(&self, other: &Self) -> bool {
-        if (self.quantity < 0) == (other.quantity < 0) {
-            panic!("tried to compare a buy order with a sell order. Can only compare buy<=>buy or sell<=>sell")
-        }
-        match (&self.order_type, &other.order_type) {
-            (OrderType::Market, OrderType::Market) => true,
-            (OrderType::Market, OrderType::Limit(_limit)) => false,
-            (OrderType::Limit(_limit), OrderType::Market) => false,
-            (OrderType::Limit(s_limit), OrderType::Limit(o_limit)) => s_limit == o_limit,
-        }
+        false
     }
 }
 
@@ -63,9 +54,11 @@ pub struct OrderBook {
 
 impl OrderBook {
     pub fn submit(&mut self, order: Order) {
-        // pick matching algorithm
+        match order.order_type {
+            OrderType::MarketBuy
+        }
         if order.is_buy() {
-            let index = self.bid.binary_search_by(|o| order.cmp(o));
+            let index = self.bid.binary_search_by(|o| o.cmp(&order));
             let index = match index {
                 Ok(idx) => idx,
                 Err(idx) => idx,
@@ -109,30 +102,18 @@ impl Order {
 
     fn cmp(&self, other: &Self) -> Ordering {
         match (&self.order_type, &other.order_type) {
-            (OrderType::Market, OrderType::Market) => Ordering::Equal,
-            (OrderType::Market, OrderType::Limit(_limit)) => {
-                if self.is_buy() {
-                    Ordering::Less
-                } else {
-                    Ordering::Greater
+            (OrderType::Market, OrderType::Market) => other.time_received.cmp(&self.time_received),
+            (OrderType::Market, OrderType::Limit(_limit)) => Ordering::Greater,
+            (OrderType::Limit(_limit), OrderType::Market) => Ordering::Less,
+            (OrderType::Limit(s_limit), OrderType::Limit(o_limit)) => {
+                let c = s_limit.cmp(o_limit);
+                match s_limit.cmp(o_limit) {
+                    Ordering::Greater | Ordering::Less => c,
+                    Ordering::Equal => other.time_received.cmp(&self.time_received),
                 }
             }
-            (OrderType::Limit(_limit), OrderType::Market) => {
-                if other.is_buy() {
-                    Ordering::Greater
-                } else {
-                    Ordering::Less
-                }
-            }
-            (OrderType::Limit(s_limit), OrderType::Limit(o_limit)) => o_limit.cmp(s_limit),
         }
     }
-}
-
-lazy_static! {
-    // key: ticker
-    // value: OrderBook
-    static ref ORDERBOOKS: HashMap<&'static str, OrderBook> = HashMap::new();
 }
 
 #[cfg(test)]
