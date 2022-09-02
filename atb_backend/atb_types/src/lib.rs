@@ -20,11 +20,12 @@ pub struct ATBAccount {
 
 #[derive(Debug)]
 pub struct Transaction {
-    id: UUID,
+    // id: UUID,
     from_account_id: String,
     to_account_id: String,
     item: String,
-    quantity: String,
+    quantity: i128,
+    price: i128,
 }
 
 #[derive(Debug, Eq, PartialEq)]
@@ -34,3 +35,27 @@ pub enum OrderType {
     LimitBuy(i128),
     LimitSell(i128),
 }
+
+impl Transaction {
+    pub fn new(
+        //id: &str,
+        from_account_id: &str,
+        to_account_id: &str,
+        item: &str,
+        quantity: i128,
+        price: i128,
+    ) -> Self {
+        //let id = id.into();
+        let from_account_id = from_account_id.into();
+        let to_account_id = to_account_id.into();
+        let item = item.into();
+
+        Self {
+            //id,
+            from_account_id,
+            to_account_id,
+            item,
+            quantity,
+            price,
+        }
+        

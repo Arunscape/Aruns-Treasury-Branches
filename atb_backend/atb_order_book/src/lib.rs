@@ -1,5 +1,4 @@
 use atb_types::prelude::*;
-use std::cmp::Ordering;
 use std::time::SystemTime;
 
 // negative quantity is selling
@@ -8,18 +7,24 @@ use std::time::SystemTime;
 #[derive(Debug)]
 pub struct Order {
     id: String,
-    amount: i128,
+    account_id: String,
+    split_id: u128,
+    quantity: i128,
     order_type: OrderType,
     time_received: SystemTime,
 }
 impl Order {
-    pub fn new(id: &str, amount: i128, order_type: OrderType) -> Self {
+    pub fn new(id: &str, account_id: &str, quantity: i128, order_type: OrderType) -> Self {
         let time_received = SystemTime::now();
         let id = id.into();
+        let split_id = 0;
+        let account_id = account_id.into();
 
         Self {
             id,
-            amount,
+            account_id,
+            split_id,
+            quantity,
             order_type,
             time_received,
         }
@@ -27,8 +32,8 @@ impl Order {
 
     pub fn price(&self) -> i128 {
         match self.order_type {
-            OrderType::LimitBuy(price) => self.amount * price,
-            OrderType::LimitSell(price) => self.amount * price,
+            OrderType::LimitBuy(price) => self.quantity * price,
+            OrderType::LimitSell(price) => self.quantity * price,
             OrderType::MarketBuy | OrderType::MarketSell => todo!(),
         }
     }
@@ -78,6 +83,29 @@ impl OrderBook {
 
         println!("sumbitted an order");
         dbg!(&self);
+    }
+
+    fn order_match(&mut self) -> Option<Transaction> {
+        let bid = self.bid.pop()?;
+        let ask = self.ask.pop()?;
+
+        match (bid.order_type, ask.order_type) {
+            (OrderType::MarketBuy, OrderType::LimitSell(price)) => {
+                if bid.quantity == ask.quantity {
+                    // ezpz
+                    Transaction::new(&bid.account_id, &ask.account_id, item, bid.quantity, price)
+                } else if bid.quantity < ask.quantity {
+                    // split sell order
+                    
+                    Transaction::new(&bid.account_id, &ask.account_id, item, bid.quantity, price)
+                } else {
+                    // split buy order
+                }
+
+                None
+            }
+            _ => unreachable!(),
+        }
     }
 
     // returns true if successful

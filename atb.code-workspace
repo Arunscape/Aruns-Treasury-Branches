@@ -1,0 +1,20 @@
+{
+	"folders": [
+		{
+			"path": "atb_backend"
+		},
+		{
+			"path": "atb_frontend"
+		},
+		{
+			"path": "db"
+		},
+		{
+			"path": "mc-plugin"
+		},
+		{
+			"path": "server-status"
+		}
+	],
+	"settings": {}
+}
