@@ -30,10 +30,8 @@ pub struct Transaction {
 
 #[derive(Debug, Eq, PartialEq)]
 pub enum OrderType {
-    MarketBuy,
-    MarketSell,
-    LimitBuy(i128),
-    LimitSell(i128),
+    Market,
+    Limit(i128),
 }
 
 impl Transaction {
@@ -58,4 +56,7 @@ impl Transaction {
             quantity,
             price,
         }
+        
+    }
+}
         

@@ -12,35 +12,35 @@ lazy_static! {
 fn main() {
     let mut ob = OrderBook::default();
 
-    let buy = Order::new("1", 100, OrderType::LimitBuy(69));
+    let buy = Order::new("1", "buyer", 100, OrderType::LimitBuy(69));
     ob.submit(buy);
 
-    let buy = Order::new("2", 100, OrderType::LimitBuy(420));
+    let buy = Order::new("2", "buyer", 100, OrderType::LimitBuy(420));
     ob.submit(buy);
 
-    let buy = Order::new("3", 100, OrderType::MarketBuy);
+    let buy = Order::new("3", "buyer", 100, OrderType::MarketBuy);
     ob.submit(buy);
-    let buy = Order::new("4", 100, OrderType::MarketBuy);
-    ob.submit(buy);
-
-    let buy = Order::new("5", 100, OrderType::LimitBuy(1337));
-    ob.submit(buy);
-    let buy = Order::new("6", 100, OrderType::LimitBuy(1337));
+    let buy = Order::new("4", "buyer", 100, OrderType::MarketBuy);
     ob.submit(buy);
 
-    let sell = Order::new("01", 100, OrderType::LimitSell(420));
+    let buy = Order::new("5", "buyer", 100, OrderType::LimitBuy(1337));
+    ob.submit(buy);
+    let buy = Order::new("6", "buyer", 100, OrderType::LimitBuy(1337));
+    ob.submit(buy);
+
+    let sell = Order::new("01", "seller", 100, OrderType::LimitSell(420));
     ob.submit(sell);
 
-    let sell = Order::new("02", 100, OrderType::LimitSell(69));
+    let sell = Order::new("02", "seller", 100, OrderType::LimitSell(69));
     ob.submit(sell);
 
-    let sell = Order::new("03", 100, OrderType::MarketSell);
+    let sell = Order::new("03", "seller", 100, OrderType::MarketSell);
     ob.submit(sell);
-    let sell = Order::new("04", 100, OrderType::MarketSell);
+    let sell = Order::new("04", "seller", 100, OrderType::MarketSell);
     ob.submit(sell);
 
-    let buy = Order::new("05", 100, OrderType::LimitSell(42));
+    let buy = Order::new("05", "seller", 100, OrderType::LimitSell(42));
     ob.submit(buy);
-    let buy = Order::new("06", 100, OrderType::LimitSell(42));
+    let buy = Order::new("06", "seller", 100, OrderType::LimitSell(42));
     ob.submit(buy);
 }
