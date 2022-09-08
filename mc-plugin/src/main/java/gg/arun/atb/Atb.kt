@@ -1,4 +1,4 @@
-package xyz.woosaree.atb
+package gg.arun.atb
 
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -7,7 +7,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.java.JavaPlugin
-import xyz.woosaree.atb.commands.CommandManager
+import gg.arun.atb.commands.CommandManager
 
 class Atb : JavaPlugin() {
     override fun onEnable() {

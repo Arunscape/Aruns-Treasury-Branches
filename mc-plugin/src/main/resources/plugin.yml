@@ -1,9 +1,9 @@
 name: ATB
 version: '${project.version}'
-main: xyz.woosaree.atb.Atb
+main: gg.arun.atb.Atb
 api-version: 1.18
-prefix: Hey the atb plugin loaded
-description: Trade diamonds
+prefix: atb.arun.gg
+description: atb.arun.gg
 commands:
   atb:
     description: "/atb hello"

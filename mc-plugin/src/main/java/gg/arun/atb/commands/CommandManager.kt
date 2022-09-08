@@ -1,11 +1,13 @@
-package xyz.woosaree.atb.commands
+package gg.arun.atb.commands
 
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import xyz.woosaree.atb.commands.subcommands.DepositCommand
-import xyz.woosaree.atb.commands.subcommands.WithdrawCommand
+import gg.arun.atb.commands.subcommands.DepositCommand
+import gg.arun.atb.commands.subcommands.EmailCommand
+import gg.arun.atb.commands.subcommands.LoginCommand
+import gg.arun.atb.commands.subcommands.WithdrawCommand
 
 class CommandManager : CommandExecutor {
     var subcommands: HashMap<String, SubCommand> = HashMap()
@@ -14,6 +16,8 @@ class CommandManager : CommandExecutor {
     init {
         subcommands["deposit"] = DepositCommand()
         subcommands["withdraw"] = WithdrawCommand()
+        subcommands["login"] = LoginCommand()
+        subcommands["email"] = EmailCommand()
     }
 
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {

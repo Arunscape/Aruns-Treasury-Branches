@@ -1,21 +1,21 @@
-package xyz.woosaree.atb.commands.subcommands
+package gg.arun.atb.commands.subcommands
 
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import xyz.woosaree.atb.commands.SubCommand
+import gg.arun.atb.commands.SubCommand
 
-class WithdrawCommand : SubCommand() {
+class DepositCommand : SubCommand() {
     override fun getName(): String {
-        return "withdraw"
+        return "deposit"
     }
 
     override fun getDescription(): String {
-        return "Withdraw an item from ATB"
+        return "Deposit an item into ATB"
     }
 
     override fun getSyntax(): String {
-        return "/atb withdraw <item> <amount>"
+        return "/atb deposit <item> <amount>"
         // return "/atb withdraw <item> <amount> <account_nickname>"
     }
 
@@ -38,22 +38,21 @@ class WithdrawCommand : SubCommand() {
             return
         }
 
+//        val items = player.inventory.filterNotNull().filter { it.type == item }\
+//        player.sendMessage("found these items: $items")
 
-        player.sendMessage("Contacting backend...")
 
-        val addThese = ItemStack(item, amount)
-        val failed = player.inventory.addItem(addThese)
-        if (failed.isNotEmpty()) {
-            player.sendMessage("Error: failed to withdraw these: $failed")
-            val failedAmount = failed.values.map { it.amount }.reduce { acc, it -> acc + it }
+        val removeThese = ItemStack(item, amount)
+        val cantRemove = player.inventory.removeItem(removeThese)
 
-            player.sendMessage("Contacting backend...")
-
-            player.sendMessage("$failedAmount/$amount items were not deposssited and returned to your online account")
+        if (cantRemove.isNotEmpty()) {
+            player.sendMessage("failed to remove these items: $cantRemove")
+            return
         }
 
 
-        player.sendMessage("Success")
+        player.sendMessage("Removed items. Contacting backend...")
+
 
 //        val inventory = Bukkit.createInventory(player, 9, "${ChatColor.GREEN}Deposit: Drag items here to deposit them")
 //        player.openInventory(inventory)

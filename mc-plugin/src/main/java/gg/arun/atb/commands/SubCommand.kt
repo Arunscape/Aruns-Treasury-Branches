@@ -1,4 +1,4 @@
-package xyz.woosaree.atb.commands
+package gg.arun.atb.commands
 
 import org.bukkit.entity.Player
 
