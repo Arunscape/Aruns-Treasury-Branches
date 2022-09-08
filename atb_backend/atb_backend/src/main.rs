@@ -3,84 +3,23 @@ use lazy_static::lazy_static;
 use tide::prelude::*;
 
 use std::env;
-
-use juniper::{http::graphiql, http::GraphQLRequest, RootNode};
 use tide::{http::mime, Body, Redirect, Request, Response, Server, StatusCode};
 
-pub type Schema = RootNode<
-    'static,
-    QueryRoot,
-    juniper::EmptyMutation<Context>,
-    juniper::EmptySubscription<Context>,
->;
-
 lazy_static! {
-    static ref SCHEMA: Schema = Schema::new(
-        QueryRoot {},
-        juniper::EmptyMutation::new(),
-        juniper::EmptySubscription::new()
-    );
-    static ref ADDRESS: String = env::var("ADDRESS").unwrap();
-    static ref PORT: String = env::var("PORT").unwrap();
-}
+    static ref PORT: u16 = env::var("PORT")
+        .ok()
+        .and_then(|p| p.parse().ok())
+        .unwrap_or(8080);
+    static ref ADDRESS: String = env::var("ADDRESS").unwrap_or("0.0.0.0".into());
 
-#[derive(Clone)]
-pub struct Context {
-message: String
+    static ref CLIENT_ID: &'static str = "b65a4f90-a35f-4345-a755-fa4c05c7a8d9";
 }
-impl juniper::Context for Context {}
 
 #[async_std::main]
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
     tide::log::start();
-    let mut app = Server::with_state(Context {message: String::new()});
-    app.at("/").get(Redirect::permanent("/graphiql"));
-    app.at("/graphql").post(handle_graphql);
-    app.at("/graphiql").get(handle_graphiql);
+    let mut app = tide::new();
     app.listen(format!("{}:{}", *ADDRESS, *PORT)).await?;
     Ok(())
 }
-
-async fn handle_graphql(mut request: Request<Context>) -> tide::Result {
-    let query: GraphQLRequest = request.body_json().await?;
-    let response = query.execute(&SCHEMA, request.state()).await;
-    let status = if response.is_ok() {
-        StatusCode::Ok
-    } else {
-        StatusCode::BadRequest
-    };
-
-    Ok(Response::builder(status)
-        .body(Body::from_json(&response)?)
-        .build())
-}
-
-async fn handle_graphiql(_: Request<Context>) -> tide::Result<impl Into<Response>> {
-    Ok(Response::builder(200)
-    .body(graphiql::graphiql_source(
-        "/graphql",
-        Some(&format!("ws://{}:{}/subscriptions", *ADDRESS, *PORT)),
-    ))
-    .content_type(mime::HTML))
-}
-
-pub struct QueryRoot;
-#[juniper::graphql_object(Context=Context)]
-impl QueryRoot {
-    fn idk(message: String) -> String {
-        message.clone()
-    }
-}
-
-pub struct MutationRoot;
-#[juniper::graphql_object]
-impl MutationRoot  {
-    fn new_user(username: &str) -> Option<()> {
-        None
-    }
-}
-
-//pub struct SubscriptionRoot;
-//#[juniper::graphql_object(Context=State)]
-//impl SubscriptionRoot {}
