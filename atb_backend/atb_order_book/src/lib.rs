@@ -39,7 +39,7 @@ impl BuyOrder {
         }
 
         let x = self.quantity.cmp(&other.quantity);
-        if let std::cmp::Ordering::Less | std::cmp::Ordering::Greater = x{
+        if let std::cmp::Ordering::Less | std::cmp::Ordering::Greater = x {
             return x;
         }
 
@@ -122,59 +122,58 @@ impl OrderBook {
     /// use atb_order_book::{OrderBook, BuyOrder};
     ///
     /// let mut order_book = OrderBook::default();
-    /// 
+    ///
     /// // higher price gets priority
     /// let buy_order = BuyOrder::new("0", "buyer", 0, 10, 100);
     /// order_book.submit_buy(buy_order);
-    /// 
+    ///
     /// let buy_order = BuyOrder::new("1", "buyer", 0, 100, 100);
     /// order_book.submit_buy(buy_order);
-    /// 
+    ///
     /// assert_eq!(order_book.buy_orders_ids(), vec!["0", "1"]);
-    /// 
+    ///
     /// // quantity gets next priority
     /// let buy_order = BuyOrder::new("2", "buyer", 0, 100, 1000);
     /// order_book.submit_buy(buy_order);
     /// assert_eq!(order_book.buy_orders_ids(), vec!["0", "1", "2"]);
-    /// 
+    ///
     /// // earlier order gets priority  if price and quantity are the same
     /// let buy_order = BuyOrder::new("3", "buyer", 0, 100, 1000);
     /// order_book.submit_buy(buy_order);
     /// assert_eq!(order_book.buy_orders_ids(), vec!["0", "1", "3", "2"]);
-    /// 
+    ///
     /// ```
     pub fn submit_buy(&mut self, order: BuyOrder) {
         let index = self.bid.partition_point(|x| x < &order);
         self.bid.insert(index, order);
     }
 
-    
     /// ```
     /// use atb_types::prelude::*;
     /// use atb_order_book::{OrderBook, SellOrder};
     ///
     /// let mut order_book = OrderBook::default();
-    /// 
+    ///
     /// // lower price gets priority
     /// let sell_order = SellOrder::new("0", "seller", 0, 100, 100);
     /// order_book.submit_sell(sell_order);
-    /// 
+    ///
     /// let sell_order = SellOrder::new("1", "seller", 0, 10, 100);
     /// order_book.submit_sell(sell_order);
-    /// 
+    ///
     /// assert_eq!(order_book.sell_orders_ids(), vec!["0", "1"]);
     /// dbg!(&order_book);
-    /// 
+    ///
     /// // quantity gets next priority
     /// let sell_order = SellOrder::new("2", "seller", 0, 10, 1000);
     /// order_book.submit_sell(sell_order);
     /// assert_eq!(order_book.sell_orders_ids(), vec!["0", "1", "2"]);
-    /// 
+    ///
     /// // earlier order gets priority  if price and quantity are the same
     /// let sell_order = SellOrder::new("3", "seller", 0, 10, 1000);
     /// order_book.submit_sell(sell_order);
     /// assert_eq!(order_book.sell_orders_ids(), vec!["0", "1", "3", "2"]);
-    /// 
+    ///
     /// ```
     pub fn submit_sell(&mut self, order: SellOrder) {
         let index = self.ask.partition_point(|x| x < &order);
