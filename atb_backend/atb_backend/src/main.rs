@@ -58,11 +58,11 @@ async fn handle_graphql(mut request: Request<Context>) -> tide::Result {
 
 async fn handle_graphiql(_: Request<Context>) -> tide::Result<impl Into<Response>> {
     Ok(Response::builder(200)
-        .body(graphiql::graphiql_source(
-            "/graphql",
-            Some(&format!("ws://{}:{}/subscriptions", *ADDRESS, *PORT)),
-        ))
-        .content_type(mime::HTML))
+    .body(graphiql::graphiql_source(
+        "/graphql",
+        Some(&format!("ws://{}:{}/subscriptions", *ADDRESS, *PORT)),
+    ))
+    .content_type(mime::HTML))
 }
 
 pub struct QueryRoot;
@@ -73,10 +73,14 @@ impl QueryRoot {
     }
 }
 
-//pub struct MutationRoot;
-//#[juniper::graphql_object(Context=State)]
-//impl MutationRoot {}
-//
+pub struct MutationRoot;
+#[juniper::graphql_object]
+impl MutationRoot  {
+    fn new_user(username: &str) -> Option<()> {
+        None
+    }
+}
+
 //pub struct SubscriptionRoot;
 //#[juniper::graphql_object(Context=State)]
 //impl SubscriptionRoot {}

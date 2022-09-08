@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 pub mod prelude;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Account {
     uuid: UUID,
     accounts: Vec<ATBAccount>,
@@ -10,7 +10,7 @@ pub struct Account {
 
 type UUID = String;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct ATBAccount {
     account_id: UUID,
     nickname: String,
@@ -18,7 +18,7 @@ pub struct ATBAccount {
     balances: HashMap<String, i128>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Transaction {
     // id: UUID,
     from_account_id: String,
@@ -28,7 +28,7 @@ pub struct Transaction {
     price: i128,
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub enum OrderType {
     Market,
     Limit(i128),
