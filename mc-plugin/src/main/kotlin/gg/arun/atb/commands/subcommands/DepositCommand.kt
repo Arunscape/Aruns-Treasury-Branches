@@ -1,14 +1,13 @@
 package gg.arun.atb.commands.subcommands
 
 import gg.arun.atb.commands.SubCommand
-import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
-class DepositCommand : ArunSubCommand() {
+class DepositCommand : SubCommand() {
     override fun getName(): String {
         return "deposit"
     }
@@ -67,7 +66,16 @@ class DepositCommand : ArunSubCommand() {
     ): MutableList<String>? {
 
 
-        return null
+        if (args?.size == 1) {
+            return Material.values().map { it.toString().lowercase() }.filter { it.contains(args[0].lowercase()) }
+                .toMutableList()
+        }
+
+        if (args?.size == 2) {
+            return mutableListOf("2", "4", "8", "16", "32", "64")
+        }
+
+        return mutableListOf()
     }
 
 }

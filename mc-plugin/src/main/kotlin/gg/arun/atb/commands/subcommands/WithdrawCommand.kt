@@ -1,13 +1,13 @@
 package gg.arun.atb.commands.subcommands
 
-import org.bukkit.Material
-import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
 import gg.arun.atb.commands.SubCommand
+import org.bukkit.Material
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
+import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 
-class WithdrawCommand : ArunSubCommand() {
+class WithdrawCommand : SubCommand() {
     override fun getName(): String {
         return "withdraw"
     }
@@ -63,13 +63,19 @@ class WithdrawCommand : ArunSubCommand() {
     }
 
     override fun onTabComplete(
-        sender: CommandSender,
-        command: Command,
-        label: String,
-        args: Array<out String>?
+        sender: CommandSender, command: Command, label: String, args: Array<out String>?
     ): MutableList<String>? {
-        TODO("Not yet implemented")
-    }
 
+        if (args?.size == 1) {
+            return Material.values().map { it.toString().lowercase() }.filter { it.contains(args[0].lowercase()) }
+                .toMutableList()
+        }
+
+        if (args?.size == 2) {
+            return mutableListOf("2", "4", "8", "16", "32", "64")
+        }
+
+        return mutableListOf()
+    }
 
 }

@@ -9,7 +9,7 @@ import org.bukkit.command.TabCompleter
 import org.bukkit.entity.Player
 
 class CommandManager : CommandExecutor, TabCompleter {
-    var subcommands: HashMap<String, ArunSubCommand> = HashMap()
+    var subcommands: HashMap<String, SubCommand> = HashMap()
 
     init {
         subcommands["deposit"] = DepositCommand()
@@ -62,7 +62,7 @@ class CommandManager : CommandExecutor, TabCompleter {
             return null
         }
 
-        val subcommand = args[1]
+        val subcommand = args[0]
 
         if (!subcommands.containsKey(subcommand)) {
             return null
@@ -70,6 +70,7 @@ class CommandManager : CommandExecutor, TabCompleter {
 
 
 
-        return subcommands[subcommand]?.onTabComplete(sender, command, label, args)
+        return subcommands[subcommand]?.onTabComplete(sender, command, label, args.sliceArray(1 until args.size))
+
     }
 }

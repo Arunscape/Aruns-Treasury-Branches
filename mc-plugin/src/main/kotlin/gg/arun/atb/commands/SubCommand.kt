@@ -1,8 +1,9 @@
 package gg.arun.atb.commands
 
+import org.bukkit.command.TabCompleter
 import org.bukkit.entity.Player
 
-abstract class SubCommand {
+abstract class SubCommand : TabCompleter {
     abstract fun getName(): String
     abstract fun getDescription(): String
     abstract fun getSyntax(): String

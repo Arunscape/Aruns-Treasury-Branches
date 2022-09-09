@@ -1,13 +1,11 @@
 package gg.arun.atb.commands.subcommands
 
-import org.bukkit.Material
-import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
 import gg.arun.atb.commands.SubCommand
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
+import org.bukkit.entity.Player
 
-class EmailCommand : ArunSubCommand() {
+class EmailCommand : SubCommand() {
     override fun getName(): String {
         return "email"
     }
@@ -31,12 +29,10 @@ class EmailCommand : ArunSubCommand() {
     }
 
     override fun onTabComplete(
-        sender: CommandSender,
-        command: Command,
-        label: String,
-        args: Array<out String>?
+        sender: CommandSender, command: Command, label: String, args: Array<out String>?
     ): MutableList<String>? {
-        TODO("Not yet implemented")
+
+        return mutableListOf()
     }
 
 
