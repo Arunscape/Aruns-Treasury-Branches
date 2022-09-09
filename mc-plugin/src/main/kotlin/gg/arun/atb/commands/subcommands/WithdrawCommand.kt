@@ -4,8 +4,10 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import gg.arun.atb.commands.SubCommand
+import org.bukkit.command.Command
+import org.bukkit.command.CommandSender
 
-class WithdrawCommand : SubCommand() {
+class WithdrawCommand : ArunSubCommand() {
     override fun getName(): String {
         return "withdraw"
     }
@@ -58,6 +60,15 @@ class WithdrawCommand : SubCommand() {
 //        val inventory = Bukkit.createInventory(player, 9, "${ChatColor.GREEN}Deposit: Drag items here to deposit them")
 //        player.openInventory(inventory)
 
+    }
+
+    override fun onTabComplete(
+        sender: CommandSender,
+        command: Command,
+        label: String,
+        args: Array<out String>?
+    ): MutableList<String>? {
+        TODO("Not yet implemented")
     }
 
 

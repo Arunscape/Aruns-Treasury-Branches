@@ -4,8 +4,10 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import gg.arun.atb.commands.SubCommand
+import org.bukkit.command.Command
+import org.bukkit.command.CommandSender
 
-class EmailCommand : SubCommand() {
+class EmailCommand : ArunSubCommand() {
     override fun getName(): String {
         return "email"
     }
@@ -26,6 +28,15 @@ class EmailCommand : SubCommand() {
         // todo
         player.sendMessage(getDescription())
 
+    }
+
+    override fun onTabComplete(
+        sender: CommandSender,
+        command: Command,
+        label: String,
+        args: Array<out String>?
+    ): MutableList<String>? {
+        TODO("Not yet implemented")
     }
 
 

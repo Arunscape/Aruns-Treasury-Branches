@@ -1,11 +1,14 @@
 package gg.arun.atb.commands.subcommands
 
+import gg.arun.atb.commands.SubCommand
+import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.bukkit.command.Command
+import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import gg.arun.atb.commands.SubCommand
 
-class DepositCommand : SubCommand() {
+class DepositCommand : ArunSubCommand() {
     override fun getName(): String {
         return "deposit"
     }
@@ -59,5 +62,12 @@ class DepositCommand : SubCommand() {
 
     }
 
+    override fun onTabComplete(
+        sender: CommandSender, command: Command, label: String, args: Array<out String>?
+    ): MutableList<String>? {
+
+
+        return null
+    }
 
 }

@@ -1,11 +1,13 @@
 package gg.arun.atb.commands.subcommands
 
-import org.bukkit.Material
 import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
 import gg.arun.atb.commands.SubCommand
+import org.bukkit.command.Command
+import org.bukkit.command.CommandSender
 
-class LoginCommand : SubCommand() {
+class LoginCommand : ArunSubCommand() {
+
+    val login_secret: String = System.getenv("ATB_PLUGIN_SECRET") ?: "changeme"
     override fun getName(): String {
         return "login"
     }
@@ -23,8 +25,18 @@ class LoginCommand : SubCommand() {
 
         val uuid = player.uniqueId
 
-        player.sendMessage("your id is " + uuid)
+        player.sendMessage("your id is " + uuid + " " + login_secret)
 
+
+    }
+
+    override fun onTabComplete(
+        sender: CommandSender,
+        command: Command,
+        label: String,
+        args: Array<out String>?
+    ): MutableList<String>? {
+        TODO("Not yet implemented")
     }
 
 
