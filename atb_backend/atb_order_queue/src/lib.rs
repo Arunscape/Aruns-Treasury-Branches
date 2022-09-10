@@ -1,3 +1,4 @@
+#![cfg_attr(debug_assertions, allow(dead_code, unused_imports))]
 // todo: drop orders if quantity is 0
 
 #[cfg(test)]

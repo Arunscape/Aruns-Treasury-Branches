@@ -1,25 +1,57 @@
+#![cfg_attr(debug_assertions, allow(dead_code, unused_imports))]
+
 use dotenv::dotenv;
+use futures::try_join;
 use lazy_static::lazy_static;
 use tide::prelude::*;
 
 use std::env;
 use tide::{http::mime, Body, Redirect, Request, Response, Server, StatusCode};
 
-lazy_static! {
-    static ref PORT: u16 = env::var("PORT")
-        .ok()
-        .and_then(|p| p.parse().ok())
-        .unwrap_or(8080);
-    static ref ADDRESS: String = env::var("ADDRESS").unwrap_or("0.0.0.0".into());
+mod auth_server;
+use auth_server::auth_server;
 
-    static ref CLIENT_ID: &'static str = "b65a4f90-a35f-4345-a755-fa4c05c7a8d9";
+lazy_static! {
+    static ref SERVER_ADDR: String = env::var("SERVER_ADDR").unwrap_or("localhost:8080".into());
+    static ref AUTH_SERVER_ADDR: String = env::var("AUTH_ADDR").unwrap_or("localhost:8081".into());
 }
 
 #[async_std::main]
-async fn main() -> std::io::Result<()> {
-    dotenv().ok();
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    dotenv()?;
     tide::log::start();
+
     let mut app = tide::new();
-    app.listen(format!("{}:{}", *ADDRESS, *PORT)).await?;
+    app.at("/sse")
+        .get(tide::sse::endpoint(|_req, sender| async move {
+            loop {
+                async_std::task::sleep(std::time::Duration::from_secs(1)).await;
+                sender.send("fruit", "banana", None).await?;
+                async_std::task::sleep(std::time::Duration::from_secs(5)).await;
+                sender.send("fruit", "apple", None).await?;
+            }
+            //Ok(())
+        }));
+    let app = {
+        #[cfg(debug_assertions)]
+        {
+            app.listen(&*SERVER_ADDR)
+        }
+
+        #[cfg(not(debug_assertions))]
+        {
+            use tide_acme::rustls_acme::caches::DirCache;
+            use tide_acme::{AcmeConfig, TideRustlsExt};
+            app.listen(
+                tide_rustls::TlsListener::build().addrs(&*SERVER_ADDR).acme(
+                    AcmeConfig::new(vec!["atb.arun.gg"])
+                        .contact_push("mailto:atb-acme@arun.gg")
+                        .cache(DirCache::new("./acme")),
+                ),
+            )
+        }
+    };
+
+    try_join!(app, auth_server())?;
     Ok(())
 }

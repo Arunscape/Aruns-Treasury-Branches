@@ -1,4 +1,4 @@
-#[allow(dead_code)]
+#![cfg_attr(debug_assertions, allow(dead_code, unused_imports))]
 use atb_types::prelude::*;
 use std::time::SystemTime;
 

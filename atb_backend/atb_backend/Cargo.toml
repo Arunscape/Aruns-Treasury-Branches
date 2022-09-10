@@ -19,4 +19,7 @@ jsonwebtoken = "*"
 base64 = "*"
 dotenv_codegen = "*"
 #async-graphql-tide = { version = "*", features = ["tide-websockets"] }
-juniper = "*"
+#juniper = "*"
+tide-acme = "*"
+tide-rustls = "*"
+chrono = "*"
