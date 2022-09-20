@@ -25,7 +25,7 @@ lazy_static! {
     static ref VALIDATION: Validation = Validation::new(Algorithm::EdDSA);
 }
 
-pub fn make_jwt(uuid: String) -> Result<String, jsonwebtoken::errors::Error> {
+pub fn make_jwt(uuid: String) -> Result<String, tide::Error> {
     let expiration = (Utc::now() + Duration::minutes(15)).timestamp();
 
     let claims = Claims {
@@ -33,25 +33,27 @@ pub fn make_jwt(uuid: String) -> Result<String, jsonwebtoken::errors::Error> {
         exp: expiration as usize,
     };
 
-    encode(&*HEADER, &claims, &*ENCODING_KEY)
+    _make_jwt(&claims)
+}
+
+fn _make_jwt(claims: &Claims)-> Result<std::string::String, tide::Error> {
+    encode(&*HEADER, &claims, &*ENCODING_KEY).map_err(|e|{
+        tide::Error::from_str(tide::StatusCode::InternalServerError, e.to_string())
+    })
 }
 
 pub fn refresh_jwt(token: &str) -> Result<String, tide::Error> {
     let expiration = (Utc::now() + Duration::minutes(15)).timestamp();
 
     
-    let uuid = verify_jwt(token).map_err(|e|{
-        tide::Error::from_str(tide::StatusCode::Unauthorized, e.to_string())
-    })?;
+    let uuid = verify_jwt(token)?;
 
     let claims = Claims {
         sub: uuid,
         exp: expiration as usize,
     };
 
-    encode(&*HEADER, &claims, &*ENCODING_KEY).map_err(|e|{
-        tide::Error::from_str(tide::StatusCode::InternalServerError, e.to_string())
-    })
+    _make_jwt(&claims)
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -60,8 +62,10 @@ pub struct Claims {
     exp: usize,
 }
 
-pub fn verify_jwt(token: &str) -> Result<String, jsonwebtoken::errors::Error> {
-    let claims = decode::<Claims>(token, &*DECODING_KEY, &*VALIDATION)?;
+pub fn verify_jwt(token: &str) -> Result<String, tide::Error> {
+    let claims = decode::<Claims>(token, &*DECODING_KEY, &*VALIDATION).map_err(|e|{
+        tide::Error::from_str(tide::StatusCode::Unauthorized, e.to_string())
+    })?;
     Ok(claims.claims.sub)
 }
 
