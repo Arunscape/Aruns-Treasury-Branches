@@ -68,10 +68,3 @@ pub fn verify_jwt(token: &str) -> Result<String, tide::Error> {
     })?;
     Ok(claims.claims.sub)
 }
-
-pub async fn login(req: Request) {
-
-    // validate jwt
-
-    // send refresh token
-}
