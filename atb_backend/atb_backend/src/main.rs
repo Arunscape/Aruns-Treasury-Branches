@@ -5,10 +5,11 @@ use futures::try_join;
 use lazy_static::lazy_static;
 use tide::prelude::*;
 
-use std::env;
+use std::{env, error};
 use tide::{http::mime, Body, Redirect, Request, Response, Server, StatusCode};
 
 mod auth_server;
+mod authentication;
 use auth_server::auth_server;
 
 lazy_static! {
@@ -32,6 +33,20 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
             //Ok(())
         }));
+
+    app.at("/refresh")
+        .get(|req: Request<()>| async move {
+            let token = req.header("Authorization").ok_or(tide::Error::from_str(
+                StatusCode::Unauthorized,
+                "No Authorization header",
+            ))?;
+            dbg!(&token);
+            let token = token.as_str().replacen("Bearer ", "", 1);
+            dbg!(&token);
+            let new_token = authentication::refresh_jwt(&token)?;
+            Ok(new_token)
+        });
+
     let app = {
         #[cfg(debug_assertions)]
         {
