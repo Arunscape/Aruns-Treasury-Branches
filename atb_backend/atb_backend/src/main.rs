@@ -21,16 +21,17 @@ lazy_static! {
 #[async_std::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     dotenv()?;
-    // tide::log::start();
+
+    tide::log::start();
     let mut app = tide::new();
-    app.with(tide::log::LogMiddleware::new());
+    // app.with(tide::log::LogMiddleware::new());
 
 
-    // #[cfg(debug_assertions)]
-    app.with(After(|mut res: Response| async {
+    
+    app.with(After(|mut res: Response| async move {
         dbg!(&res);
-        if let Some(err) = res.downcast_error::<Box<dyn error::Error + Send + Sync>>() {
-            res.set_body(err.to_string())
+        if let Some(err) = res.error() {
+            res.set_body(err.to_string());
         }
         Ok(res)
     }));
@@ -75,7 +76,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .http_only(true);
 
             if cfg!(debug_assertions) {
-                cookie
+                cookie.domain("")
             } else {
                 cookie.secure(true)
             }.finish()
@@ -84,6 +85,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         let mut res = Response::new(tide::StatusCode::Ok);
         res.insert_cookie(cookie);
         Ok(res)
+    });
+
+    app.at("/hello").get(|_| async {
+        Ok("Hello, world!")
     });
 
     let app = {
@@ -106,6 +111,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     };
 
-    try_join!(app, auth_server())?;
+    try_join!(app, auth_server())?; 
     Ok(())
 }
