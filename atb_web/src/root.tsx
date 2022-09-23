@@ -1,8 +1,9 @@
-import { component$ } from '@builder.io/qwik';
+import { component$, useContextProvider, useStore } from '@builder.io/qwik';
 import { QwikCity, RouterOutlet, ServiceWorkerRegister } from '@builder.io/qwik-city';
 import { RouterHead } from './components/router-head/router-head';
 
 import './global.css';
+import { AuthContext, AuthState } from './util/auth';
 
 export default component$(() => {
   /**
@@ -11,6 +12,8 @@ export default component$(() => {
    *
    * Dont remove the `<head>` and `<body>` elements.
    */
+
+  useContextProvider(AuthContext, useStore<AuthState>({token: ""}));
   return (
     <QwikCity>
       <head>
