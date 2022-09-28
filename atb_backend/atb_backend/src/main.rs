@@ -1,6 +1,6 @@
 #![cfg_attr(debug_assertions, allow(dead_code, unused_imports))]
 
-use dotenv::dotenv;
+use dotenvy::dotenv;
 use futures::try_join;
 use lazy_static::lazy_static;
 use tide::{prelude::*, utils::After};
@@ -11,11 +11,16 @@ use tide::{http::mime, Body, Redirect, Request, Response, Server, StatusCode};
 
 mod auth_server;
 mod authentication;
+mod db;
+
 use auth_server::auth_server;
+
 
 lazy_static! {
     static ref SERVER_ADDR: String = env::var("SERVER_ADDR").unwrap_or("localhost:8080".into());
     static ref AUTH_SERVER_ADDR: String = env::var("AUTH_ADDR").unwrap_or("localhost:8081".into());
+    static ref DOMAIN: String = env::var("DOMAIN").unwrap_or("api.atb.arun.gg".into());
+    static ref API_URL: String = env::var("API_URL").unwrap_or("http://localhost:8080".into());
 }
 
 #[async_std::main]
@@ -78,7 +83,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             if cfg!(debug_assertions) {
                 cookie.domain("")
             } else {
-                cookie.secure(true)
+                cookie
+                .domain(&*DOMAIN)
+                .secure(true)
             }.finish()
         };
 
@@ -89,6 +96,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     app.at("/hello").get(|_| async {
         Ok("Hello, world!")
+    });
+
+    app.at("/accounts").get(|_| async {
+        Ok("accounts")
     });
 
     let app = {
@@ -103,7 +114,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             use tide_acme::{AcmeConfig, TideRustlsExt};
             app.listen(
                 tide_rustls::TlsListener::build().addrs(&*SERVER_ADDR).acme(
-                    AcmeConfig::new(vec!["atb.arun.gg"])
+                    AcmeConfig::new(vec![&*DOMAIN])
                         .contact_push("mailto:atb-acme@arun.gg")
                         .cache(DirCache::new("./acme")),
                 ),
