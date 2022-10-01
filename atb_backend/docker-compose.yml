@@ -1,0 +1,24 @@
+version: '3'
+services:
+  atb_db:
+    container_name: atb_db
+    image: postgres:alpine
+    restart: always
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    volumes:
+      - ./db/postgres-data:/var/lib/postgresql/data:z
+      - ./db/setup.sql:/docker-entrypoint-initdb.d/setup.sql
+    ports:
+      - 127.0.0.1:5432:5432 # comment out in prod, use internal network
+
+  # atb_backend:
+  #   container_name: atb_backend
+  #   build: .
+  #   restart: always
+  #   environment:
+  #     - DATABASE_URL=postgres://postgres@atb_db/postgres
+  #   ports:
+  #     - 8080:8080
+  #   depends_on:
+  #     - atb_db
