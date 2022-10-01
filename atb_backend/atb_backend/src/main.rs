@@ -102,6 +102,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         Ok("accounts")
     });
 
+
+    app.at("/users").get(|_| async {
+
+        let db = db::ATBDB::new().await.unwrap();
+        Ok("users")
+    });
+
     let app = {
         #[cfg(debug_assertions)]
         {

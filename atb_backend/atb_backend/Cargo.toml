@@ -25,5 +25,9 @@ tide-acme = "*"
 tide-rustls = "*"
 chrono = "*"
 cookie = "*"
-sqlx = { version = "0.6", features = [ "runtime-async-std-native-tls", "postgres" ] }
+sqlx = { version = "*", features = [ "runtime-async-std-native-tls", "postgres", "macros", "chrono", "uuid"] }
 atb_types = { version = "*", path = "../atb_types" }
+
+
+[profile.dev.package.sqlx-macros]
+opt-level = 3

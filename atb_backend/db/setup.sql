@@ -28,5 +28,6 @@ CREATE TABLE transactions (
     toid UUID NOT NULL REFERENCES accounts (id),
     amount BIGINT NOT NULL,
     item TEXT NOT NULL,
+    price BIGINT NOT NULL,
     CONSTRAINT from_to_different CHECK (fromid != toid)
 );

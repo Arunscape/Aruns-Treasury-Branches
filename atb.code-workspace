@@ -16,5 +16,9 @@
 			"path": "server-status"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"rust-analyzer.cargo.extraEnv": {
+			"DATABASE_URL": "postgres://postgres@localhost/postgres"
+		}
+	},
 }
