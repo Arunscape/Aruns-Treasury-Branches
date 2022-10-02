@@ -17,17 +17,17 @@ CREATE TABLE mc_items (
 CREATE TABLE balances (
     accountid UUID REFERENCES accounts (id),
     item TEXT NOT NULL REFERENCES mc_items(id),
-    amount BIGINT,
+    quantity BIGINT NOT NULL,
     PRIMARY KEY(accountid, item)
 );
 CREATE TABLE transactions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    time_millis TIMESTAMP(6),
     -- the 6 means microsecond precision since 2000
     fromid UUID NOT NULL REFERENCES accounts (id),
     toid UUID NOT NULL REFERENCES accounts (id),
-    amount BIGINT NOT NULL,
+    quantity BIGINT NOT NULL,
     item TEXT NOT NULL,
     price BIGINT NOT NULL,
+    time_processed TIMESTAMPTZ(6) NOT NULL DEFAULT NOW(),
     CONSTRAINT from_to_different CHECK (fromid != toid)
 );

@@ -23,7 +23,7 @@ pub struct Account {
 pub struct Balance {
     pub accountid: Uuid,
     pub item: String,
-    pub amount: i64,
+    pub quantity: i64,
 }
 
 #[derive(Debug)]
@@ -34,7 +34,7 @@ pub struct McItem {
 #[derive(Debug)]
 pub struct Transaction {
     pub id: Uuid,
-    pub time_millis: chrono::DateTime<chrono::Utc>,
+    pub time_processed: chrono::DateTime<chrono::Utc>,
     pub fromid: Uuid,
     pub toid: Uuid,
     pub item: String,
