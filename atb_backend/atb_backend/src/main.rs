@@ -9,11 +9,11 @@ use tide::http::Cookie;
 use std::{env, error, io::ErrorKind};
 use tide::{http::mime, Body, Redirect, Request, Response, Server, StatusCode};
 
-mod auth_server;
+mod server_for_plugin;
 mod authentication;
 mod db;
 
-use auth_server::auth_server;
+use server_for_plugin::auth_server;
 
 
 lazy_static! {

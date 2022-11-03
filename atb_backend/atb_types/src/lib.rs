@@ -1,6 +1,7 @@
 #![cfg_attr(debug_assertions, allow(dead_code, unused_imports))]
 
 use std::collections::HashMap;
+use serde::{Serialize, Deserialize};
 use uuid::Uuid;
 
 pub mod prelude;
@@ -19,7 +20,7 @@ pub struct Account {
     pub nickname: String,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Balance {
     pub accountid: Uuid,
     pub item: String,

@@ -12,6 +12,8 @@ lazy_static! {
 pub struct ATBError(String);
 
 use sqlx::postgres::PgPoolOptions;
+
+#[derive(Clone)]
 pub struct ATBDB {
     pool: sqlx::Pool<sqlx::Postgres>,
 }
@@ -155,6 +157,7 @@ impl ATBDB {
             Balance,
             "
         UPDATE balances SET quantity = (quantity - $3) WHERE accountid = $1 AND item = $2
+        RETURNING *;
       
         ",
             accountid,
@@ -166,4 +169,5 @@ impl ATBDB {
 
         Ok(balance)
     }
+
 }
