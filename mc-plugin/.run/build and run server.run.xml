@@ -1,12 +1,12 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="run server" type="JarApplication">
+  <configuration default="false" name="build and run server" type="JarApplication">
     <option name="JAR_PATH" value="$PROJECT_DIR$/test/server.jar" />
-    <option name="PROGRAM_PARAMETERS" value="nogui" />
+    <option name="VM_PARAMETERS" value="-nogui" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/test" />
     <option name="ALTERNATIVE_JRE_PATH" />
     <method v="2">
       <option name="BuildArtifacts" enabled="true">
-        <artifact name="ATB:jar" />
+        <artifact name="atb:jar" />
       </option>
     </method>
   </configuration>

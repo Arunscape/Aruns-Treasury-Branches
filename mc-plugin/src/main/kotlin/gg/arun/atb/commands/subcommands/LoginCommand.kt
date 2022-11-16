@@ -6,7 +6,8 @@ import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import java.util.*
-import khttp.post
+
+//import khttp.post
 
 
 class LoginCommand : SubCommand() {
@@ -38,11 +39,12 @@ class LoginCommand : SubCommand() {
 
     fun getToken(uuid: UUID): String {
 
-        val url = "http://localhost:8081/login"
-        val body = mapOf("uuid" to uuid.toString())
-        val res = post(url, body)
-
-        return res.text
+        return ""
+//        val url = "http://localhost:8081/login"
+//        val body = mapOf("uuid" to uuid.toString())
+//        val res = post(url, body)
+//
+//        return res.text
     }
 
     override fun onTabComplete(

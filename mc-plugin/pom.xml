@@ -15,10 +15,11 @@
     <properties>
         <java.version>18</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <kotlin.version>1.7.0</kotlin.version>
+        <kotlin.version>1.7.21</kotlin.version>
     </properties>
 
     <build>
+        <sourceDirectory>src/main/kotlin</sourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
