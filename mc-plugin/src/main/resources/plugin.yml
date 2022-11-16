@@ -1,9 +1,9 @@
 name: ATB
 version: '${project.version}'
 main: gg.arun.atb.Atb
-api-version: 1.18
+api-version: 1.19
 prefix: atb.arun.gg
 description: atb.arun.gg
 commands:
   atb:
-    description: "/atb hello"
+    description: "atb hello"

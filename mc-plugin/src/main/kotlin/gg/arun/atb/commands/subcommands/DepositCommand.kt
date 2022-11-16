@@ -62,8 +62,8 @@ class DepositCommand : SubCommand() {
     }
 
     override fun onTabComplete(
-        sender: CommandSender, command: Command, label: String, args: Array<out String>?
-    ): MutableList<String>? {
+        sender: CommandSender, command: Command, label: String, args: Array<out String>
+    ): MutableList<String> {
 
 
         if (args?.size == 1) {
