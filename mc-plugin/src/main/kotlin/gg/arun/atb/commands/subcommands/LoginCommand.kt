@@ -13,14 +13,27 @@ import io.ktor.client.statement.*
 import kotlinx.coroutines.runBlocking
 import java.lang.Error
 import java.util.*
+import io.ktor.client.*
+import io.ktor.client.call.*
+import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.serialization.gson.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
+import io.ktor.serialization.kotlinx.json.*
+import kotlinx.coroutines.*
+import kotlinx.serialization.*
+import kotlinx.serialization.json.*
+
+@Serializable
+data class LoginPayload(val uuid: String)
 
 class LoginCommand : SubCommand() {
 
     val client = HttpClient(CIO) {
         install(ContentNegotiation) {
-            gson()
+//            gson()
+            json()
         }
     }
 
@@ -72,12 +85,14 @@ class LoginCommand : SubCommand() {
 //
 //        return res.text
 
-        Bukkit.getLogger().info { "HEY I MADE IT THIS FAR" }
         try {
-            val response = client.request("https://pokeapi.co/api/v2/pokemon/ditto") {
-                // Configure request parameters exposed by HttpRequestBuilder
+            val response = client.post("http://[::1]:8081/login") {
+                val body = LoginPayload(uuid.toString())
+                println(Json.encodeToString(body))
+                setBody(body)
+                contentType(ContentType.Application.Json)
             }
-            return@runBlocking response.body<String>()
+            return@runBlocking response.body()
 
         } catch (e: Error) {
             return@runBlocking e.toString()
