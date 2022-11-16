@@ -48,11 +48,8 @@ class CommandManager : CommandExecutor, TabCompleter {
     }
 
     override fun onTabComplete(
-        sender: CommandSender, command: Command, label: String, args: Array<out String>?
+        sender: CommandSender, command: Command, label: String, args: Array<out String>
     ): MutableList<String>? {
-        if (args == null) {
-            return null
-        }
         Bukkit.getLogger().info(args.joinToString())
         if (args.size == 1) {
             return subcommands.keys.toMutableList()
