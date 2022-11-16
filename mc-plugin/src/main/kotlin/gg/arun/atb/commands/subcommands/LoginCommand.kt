@@ -1,13 +1,16 @@
 package gg.arun.atb.commands.subcommands
 
 import gg.arun.atb.commands.SubCommand
+import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import java.util.*
+import khttp.post
+
 
 class LoginCommand : SubCommand() {
 
-    val login_secret: String = System.getenv("ATB_PLUGIN_SECRET") ?: "changeme"
     override fun getName(): String {
         return "login"
     }
@@ -25,17 +28,29 @@ class LoginCommand : SubCommand() {
 
         val uuid = player.uniqueId
 
-        player.sendMessage("your id is " + uuid + " " + login_secret)
+        player.sendMessage("your id is $uuid ")
 
+        val token = getToken(uuid)
 
+        player.sendMessage("your token is $token")
+
+    }
+
+    fun getToken(uuid: UUID): String {
+
+        val url = "http://localhost:8081/login"
+        val body = mapOf("uuid" to uuid.toString())
+        val res = post(url, body)
+
+        return res.text
     }
 
     override fun onTabComplete(
         sender: CommandSender,
         command: Command,
         label: String,
-        args: Array<out String>?
-    ): MutableList<String>? {
+        args: Array<out String>
+    ): MutableList<String> {
         return mutableListOf()
     }
 
