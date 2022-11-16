@@ -1,20 +1,28 @@
 package gg.arun.atb.commands.subcommands
 
 import gg.arun.atb.commands.SubCommand
+import io.ktor.client.*
+import io.ktor.client.call.*
+import io.ktor.client.engine.cio.*
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import java.net.URI
-import java.net.http.HttpClient
-import java.net.http.HttpRequest
-import java.net.http.HttpResponse
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import kotlinx.coroutines.runBlocking
+import java.lang.Error
 import java.util.*
-
-//import khttp.post
-
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.serialization.gson.*
 
 class LoginCommand : SubCommand() {
+
+    val client = HttpClient(CIO) {
+        install(ContentNegotiation) {
+            gson()
+        }
+    }
 
     override fun getName(): String {
         return "login"
@@ -41,24 +49,41 @@ class LoginCommand : SubCommand() {
 
     }
 
-    fun getToken(uuid: UUID): String {
-        val values = mapOf("uuid" to uuid.toString())
+    fun getToken(uuid: UUID): String = runBlocking {
 
+//        old java way
+//        val values = mapOf("uuid" to uuid.toString())
+//
+//
+//        val client = HttpClient.newBuilder().build();
+//        val request = HttpRequest.newBuilder()
+//            .uri(URI.create("http://localhost:8081/login"))
+//            .POST(HttpRequest.BodyPublishers.ofString("\"uuid\": \"$uuid\""))
+//            .build()
+//        val response = client.send(request, HttpResponse.BodyHandlers.ofString());
+//        println(response.body())
+//
 
-        val client = HttpClient.newBuilder().build();
-        val request = HttpRequest.newBuilder()
-            .uri(URI.create("http://localhost:8081/login"))
-            .POST(HttpRequest.BodyPublishers.ofString("\"uuid\": \"$uuid\""))
-            .build()
-        val response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        println(response.body())
-
-        return response.body()
+        // khttp
+//        return response.body()
 //        val url = "http://localhost:8081/login"
 //        val body = mapOf("uuid" to uuid.toString())
 //        val res = post(url, body)
 //
 //        return res.text
+
+        Bukkit.getLogger().info { "HEY I MADE IT THIS FAR" }
+        try {
+            val response = client.request("https://pokeapi.co/api/v2/pokemon/ditto") {
+                // Configure request parameters exposed by HttpRequestBuilder
+            }
+            return@runBlocking response.body<String>()
+
+        } catch (e: Error) {
+            return@runBlocking e.toString()
+        }
+
+
     }
 
     override fun onTabComplete(
