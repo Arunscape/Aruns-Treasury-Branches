@@ -8,3 +8,5 @@ edition = "2021"
 [dependencies]
 yew = "*"
 yew-router = "*"
+gloo = "*"
+gloo-storage = "*"

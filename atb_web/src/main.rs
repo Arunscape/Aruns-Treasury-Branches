@@ -3,11 +3,14 @@ use yew_router::prelude::*;
 mod pages;
 
 use pages::notfound::NotFound;
+use pages::login::Login;
 
 #[derive(Clone, Routable, PartialEq)]
-enum Route {
+pub enum Route {
     #[at("/")]
     Home,
+    #[at("/login")]
+    Login,
     #[not_found]
     #[at("/404")]
     NotFound,
@@ -16,6 +19,7 @@ enum Route {
 fn switch(routes: &Route) -> Html {
     match routes {
         Route::Home => html! { <h1>{ "Home" }</h1> },
+        Route::Login    => html! { <Login/> },
         Route::NotFound => html! { <NotFound /> },
     }
 }
