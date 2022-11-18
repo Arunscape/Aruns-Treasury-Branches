@@ -58,8 +58,8 @@ pub async fn auth_server() -> std::io::Result<()> {
     // ie not available to the public
     secret_server
         .at("/login")
-        .post(|mut req: Request<()>| async move {
-            let LoginRequest { uuid } = req.body_json().await?;
+        .get(|req: Request<()>| async move {
+            let LoginRequest { uuid } = req.query()?;
 
             let token = make_jwt(uuid)?;
             Ok(token)
