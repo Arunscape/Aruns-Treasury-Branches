@@ -8,7 +8,7 @@ const ProtectedPage = (props: any) => {
 
   useEffect(() => {
     if (!authenticated) {
-      router.push("/login");
+      router.push("/");
     }
   });
 

@@ -4,32 +4,35 @@ import { SignJWT, jwtVerify, importSPKI, importPKCS8, decodeJwt } from 'jose';
 import { useLocalStorage } from '@mantine/hooks';
 
 
-const checkJWT = (token: string | null) => false;
+const checkJWT = (token: string | null) => true;
 
 const getUuid = (token: string | null) => {
 
   if (!token) return null;
 
-  const { payload } = decodeJwt(token);
-
-  // @ts-ignore - uuid is a string
-  return payload?.uuid;
+  try {
+    const { payload } = decodeJwt(token);
+  
+    // @ts-ignore - uuid is a string
+    return payload?.uuid;
+  } catch(e) {
+    return null;
+  }
 
 }
 
 const useAuth = () => {
 
   const [token, setToken] = useLocalStorage<string | null>({key: 'token', defaultValue: null});
-  const [username, setUsername] = useLocalStorage<string | null>({key: 'username', defaultValue: null});
-  
-  const uuid = getUuid(token);
+
   const authenticated = checkJWT(token);
+  const uuid = getUuid(token);
 
   return {
     authenticated,
     token,
     uuid,
-    username,
+    // username,
     setToken,
   }
 
