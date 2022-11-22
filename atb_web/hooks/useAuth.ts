@@ -1,3 +1,4 @@
+'use client';
 
 import React, { useState, useContext, useEffect } from "react"
 import { SignJWT, jwtVerify, importSPKI, importPKCS8, decodeJwt } from 'jose';
@@ -27,11 +28,11 @@ const useAuth = () => {
 
   const authenticated = checkJWT(token);
 
-  useEffect(() => {
-    if (!authenticated) {
-      setToken(null);
-    }
-  }, [token]);
+
+  if (!authenticated) {
+    setToken(null);
+  }
+
 
   const uuid = getUuid(token);
 
