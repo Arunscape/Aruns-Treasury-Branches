@@ -26,6 +26,13 @@ const useAuth = () => {
   const [token, setToken] = useLocalStorage<string | null>({key: 'token', defaultValue: null});
 
   const authenticated = checkJWT(token);
+
+  useEffect(() => {
+    if (!authenticated) {
+      setToken(null);
+    }
+  }, [token]);
+
   const uuid = getUuid(token);
 
   return {
