@@ -12,7 +12,6 @@ pub fn login() -> Html {
 
     let query_params: HashMap<String, String> = location.query().unwrap_or_default();
 
-    let s = String::from("no token");
     let token= query_params.get("token");
 
     if let Some(t) = token {

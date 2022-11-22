@@ -10,3 +10,8 @@ yew = "*"
 yew-router = "*"
 gloo = "*"
 gloo-storage = "*"
+gloo-net = "*"
+wasm-bindgen-futures = "*"
+uuid = { version = "*", features =  [ "v4", "js" ] }
+serde = { version = "*", features = ["derive"] }
+serde_json = "*"

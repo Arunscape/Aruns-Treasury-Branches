@@ -1,11 +1,13 @@
 use yew::prelude::*;
 use yew_router::prelude::*;
 mod pages;
+mod components;
 
 use pages::notfound::NotFound;
 use pages::login::Login;
+use components::header::Header;
 
-#[derive(Clone, Routable, PartialEq)]
+#[derive(Clone, Routable, PartialEq, Debug)]
 pub enum Route {
     #[at("/")]
     Home,
@@ -28,6 +30,7 @@ fn switch(routes: &Route) -> Html {
 fn app() -> Html {
     html! {
         <BrowserRouter>
+            <Header/>
             <Switch<Route> render={Switch::render(switch)} />
         </BrowserRouter>
     }
