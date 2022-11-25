@@ -6,8 +6,11 @@ use lazy_static::lazy_static;
 use tide::{prelude::*, utils::After};
 use tide::http::Cookie;
 
+use std::vec;
 use std::{env, error, io::ErrorKind};
 use tide::{http::mime, Body, Redirect, Request, Response, Server, StatusCode};
+use http_types::headers::{HeaderValue, HeaderValues};
+use tide::security::{CorsMiddleware, Origin};
 
 mod server_for_plugin;
 mod authentication;
@@ -19,7 +22,7 @@ use server_for_plugin::auth_server;
 lazy_static! {
     static ref SERVER_ADDR: String = env::var("SERVER_ADDR").unwrap_or("localhost:8080".into());
     static ref AUTH_SERVER_ADDR: String = env::var("AUTH_ADDR").unwrap_or("localhost:8081".into());
-    static ref DOMAIN: String = env::var("DOMAIN").unwrap_or("api.atb.arun.gg".into());
+    static ref DOMAIN: String = env::var("DOMAIN").unwrap_or("http://localhost:8080".into());
     static ref API_URL: String = env::var("API_URL").unwrap_or("http://localhost:8080".into());
 }
 
@@ -40,6 +43,21 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         Ok(res)
     }));
+
+    let cors = CorsMiddleware::new()
+    .allow_methods("GET, POST, OPTIONS".parse::<HeaderValue>().unwrap())
+    .allow_origin(Origin::from(vec![
+        "http://localhost:3000",
+        "https://atb.arun.gg",
+    ]))
+    .allow_credentials(true)
+    .allow_headers(HeaderValues::from(vec![
+        "Authorization".try_into().unwrap(),
+        "Content-Type".try_into().unwrap(),
+    ]))
+    ;
+
+    app.with(cors);
 
     app.at("/sse")
         .get(tide::sse::endpoint(|_req, sender| async move {
@@ -77,19 +95,28 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         let cookie = {
 
             let cookie = Cookie::build("jwt", token)
-            .domain(&*SERVER_ADDR)
-            .http_only(true);
+            // .http_only(true)
+            // .secure(true)
+            .same_site(tide::http::cookies::SameSite::None)
+            .domain("")
+            ;
 
             if cfg!(debug_assertions) {
-                cookie.domain("")
+                cookie
             } else {
                 cookie
                 .domain(&*DOMAIN)
                 .secure(true)
+                .http_only(true)
             }.finish()
         };
 
-        let mut res = Response::new(tide::StatusCode::Ok);
+
+
+        // let mut res = Response::new(json!({
+        //     "username": todo!()
+        // }));
+        let mut res = Response::new(StatusCode::Ok);
         res.insert_cookie(cookie);
         Ok(res)
     });

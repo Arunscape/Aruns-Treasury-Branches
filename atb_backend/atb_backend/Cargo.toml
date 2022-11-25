@@ -28,6 +28,7 @@ cookie = "*"
 sqlx = { version = "*", features = [ "runtime-async-std-native-tls", "postgres", "macros", "chrono", "uuid"] }
 atb_types = { version = "*", path = "../atb_types" }
 uuid = { version = "*", features = ["serde"] }
+http-types = "*"
 
 
 [profile.dev.package.sqlx-macros]

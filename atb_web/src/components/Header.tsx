@@ -1,7 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import useApiClient from "../hooks/apiclient";
+import useAuth from "../hooks/useAuth";
 
 const Header = () => {
+
+  const {username} = useAuth();
   return (
     <header>
       <h1>Arun's Treasury Branches</h1>
@@ -22,6 +26,7 @@ const Header = () => {
           </li>
         </ul>
       </nav>
+      <div>Welcome, {username}</div>
     </header>
   );
 };

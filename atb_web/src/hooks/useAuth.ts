@@ -1,52 +1,48 @@
-'use client';
-
 import React, { useState, useContext, useEffect } from "react"
-import { SignJWT, jwtVerify, importSPKI, importPKCS8, decodeJwt } from 'jose';
+// import jwt_decode, {JwtPayload} from "jwt-decode";
 import { useLocalStorage } from '@mantine/hooks';
 
 
-const checkJWT = (token: string | null) => true;
+// const checkJWT = (token: string) => {
+//   const payload: JwtPayload = jwt_decode(token);
+//   return payload?.sub;
+// };
 
-const getUuid = (token: string | null) => {
-
-  if (!token) return null;
-
-  try {
-    const { payload } = decodeJwt(token);
-
-    // @ts-ignore - uuid is a string
-    return payload?.uuid;
-  } catch (e) {
-    return null;
-  }
-
-}
 
 const useAuth = () => {
 
-  const [token, setToken] = useLocalStorage<string | null>({ key: 'token', defaultValue: null });
-
-  const authenticated = checkJWT(token);
+  const [token, setToken] = useLocalStorage<string | undefined>({ key: 'token', defaultValue: undefined });
+  const [username, setUsername] = useLocalStorage<string | undefined>({ key: 'username', defaultValue: undefined });
+  const [authenticated, setAuthenticated] = useState(false);
+  // const [uuid, setUuid] = useState<string | null>(null);
 
 
   useEffect(() => {
-    if (!authenticated) {
-      setToken(null);
-    }
-  }, [token]);
+    if (!token) {
+      return;
+    };
+    // const uuid = checkJWT(token);
+    // if (!uuid) {
+    //   return;
+    // };
+    // setUuid(uuid);
+    setAuthenticated(true);
+  }, [token, authenticated,
+    // uuid,
+  ]);
 
 
-  const uuid = getUuid(token);
+
 
   return {
     authenticated,
     token,
-    uuid,
-    // username,
+    // uuid,
+    username,
+    setUsername,
     setToken,
   }
 
 }
 
 export default useAuth;
-

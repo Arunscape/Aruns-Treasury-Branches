@@ -62,6 +62,7 @@ class LoginCommand : SubCommand() {
                 URLBuilder(websiteUrl).run {
                     path("login")
                     parameters.append("token", token)
+                    parameters.append("username", username)
                     buildString()
                 }
             val textComponent = net.md_5.bungee.api.chat.TextComponent(loginUrl)
