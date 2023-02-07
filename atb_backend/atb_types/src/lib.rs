@@ -13,7 +13,7 @@ pub struct User {
     pub id: Uuid,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Account {
     pub id: Uuid,
     pub userid: Uuid,

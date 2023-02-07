@@ -5,6 +5,7 @@ use futures::try_join;
 use lazy_static::lazy_static;
 use tide::{prelude::*, utils::After};
 use tide::http::Cookie;
+use uuid::Uuid;
 
 use std::vec;
 use std::{env, error, io::ErrorKind};
@@ -17,6 +18,8 @@ mod authentication;
 mod db;
 
 use server_for_plugin::auth_server;
+
+use crate::authentication::verify_jwt;
 
 
 lazy_static! {
@@ -125,8 +128,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         Ok("Hello, world!")
     });
 
-    app.at("/accounts").get(|_| async {
-        Ok("accounts")
+    app.at("/accounts").get(| req: Request<()>| async move {
+
+        let token: Cookie = req.cookie("jwt").unwrap();
+        let token = token.value();
+
+        let uuid = verify_jwt(token)?;
+        let uuid: Uuid = uuid.parse()?;
+
+        let mut db = db::ATBDB::new().await?;
+        let res = db.get_accounts_for_user(uuid).await.unwrap();
+
+        Ok(json!(res))
     });
 
 
