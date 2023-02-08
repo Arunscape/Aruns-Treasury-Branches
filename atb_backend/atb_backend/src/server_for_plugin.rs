@@ -40,7 +40,6 @@ struct BalanceRequest {
 lazy_static! {
     static ref AUTH_SERVER_ADDR: String = env::var("AUTH_ADDR").unwrap_or("localhost:8081".into());
     static ref DB: ATBDB = {
-
         let x = async_std::task::block_on(ATBDB::new());
 
         x.unwrap()
@@ -50,7 +49,7 @@ lazy_static! {
 pub async fn auth_server() -> std::io::Result<()> {
     let mut secret_server = tide::new();
 
-    // let db: &'static = ATBDB::new().await.map_err(|e| { 
+    // let db: &'static = ATBDB::new().await.map_err(|e| {
     //     std::io::Error::new(std::io::ErrorKind::Other, "Error connecting to database")
     // })?;
 
@@ -77,17 +76,19 @@ pub async fn auth_server() -> std::io::Result<()> {
             Ok(tide::StatusCode::Ok)
         });
 
-    secret_server.at("/withdraw").post(|mut req: Request<()>| async move {
-        let WithDrawRequest {
-            uuid,
-            item,
-            quantity,
-        } = req.body_json().await?;
+    secret_server
+        .at("/withdraw")
+        .post(|mut req: Request<()>| async move {
+            let WithDrawRequest {
+                uuid,
+                item,
+                quantity,
+            } = req.body_json().await?;
 
-        Ok(tide::StatusCode::Ok)
-    });
+            Ok(tide::StatusCode::Ok)
+        });
 
-    secret_server.at("/balance").get(| req: Request<()>| async  {
+    secret_server.at("/balance").get(|req: Request<()>| async {
         let mut req = req;
         let BalanceRequest { accountid } = req.body_json().await?;
 

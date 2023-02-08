@@ -3,24 +3,23 @@
 use dotenvy::dotenv;
 use futures::try_join;
 use lazy_static::lazy_static;
-use tide::{prelude::*, utils::After};
 use tide::http::Cookie;
+use tide::{prelude::*, utils::After};
 use uuid::Uuid;
 
+use http_types::headers::{HeaderValue, HeaderValues};
 use std::vec;
 use std::{env, error, io::ErrorKind};
-use tide::{http::mime, Body, Redirect, Request, Response, Server, StatusCode};
-use http_types::headers::{HeaderValue, HeaderValues};
 use tide::security::{CorsMiddleware, Origin};
+use tide::{http::mime, Body, Redirect, Request, Response, Server, StatusCode};
 
-mod server_for_plugin;
 mod authentication;
 mod db;
+mod server_for_plugin;
 
 use server_for_plugin::auth_server;
 
 use crate::authentication::verify_jwt;
-
 
 lazy_static! {
     static ref SERVER_ADDR: String = env::var("SERVER_ADDR").unwrap_or("localhost:8080".into());
@@ -37,8 +36,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut app = tide::new();
     // app.with(tide::log::LogMiddleware::new());
 
-
-    
     app.with(After(|mut res: Response| async move {
         dbg!(&res);
         if let Some(err) = res.error() {
@@ -48,17 +45,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     }));
 
     let cors = CorsMiddleware::new()
-    .allow_methods("GET, POST, OPTIONS".parse::<HeaderValue>().unwrap())
-    .allow_origin(Origin::from(vec![
-        "http://localhost:3000",
-        "https://atb.arun.gg",
-    ]))
-    .allow_credentials(true)
-    .allow_headers(HeaderValues::from(vec![
-        "Authorization".try_into().unwrap(),
-        "Content-Type".try_into().unwrap(),
-    ]))
-    ;
+        .allow_methods("GET, POST, OPTIONS".parse::<HeaderValue>().unwrap())
+        .allow_origin(Origin::from(vec![
+            "http://localhost:3000",
+            "https://atb.arun.gg",
+        ]))
+        .allow_credentials(true)
+        .allow_headers(HeaderValues::from(vec![
+            "Authorization".try_into().unwrap(),
+            "Content-Type".try_into().unwrap(),
+        ]));
 
     app.with(cors);
 
@@ -95,41 +91,36 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         ))?;
         let token = token.as_str().replacen("Bearer ", "", 1);
 
-        let cookie = {
+        // let cookie = {
 
-            let cookie = Cookie::build("jwt", token)
-            // .http_only(true)
-            // .secure(true)
-            .same_site(tide::http::cookies::SameSite::None)
-            .domain("")
-            ;
+        //     let cookie = Cookie::build("jwt", token)
+        //     // .http_only(true)
+        //     // .secure(true)
+        //     .same_site(tide::http::cookies::SameSite::None)
+        //     .domain("")
+        //     ;
 
-            if cfg!(debug_assertions) {
-                cookie
-            } else {
-                cookie
-                .domain(&*DOMAIN)
-                .secure(true)
-                .http_only(true)
-            }.finish()
-        };
+        //     if cfg!(debug_assertions) {
+        //         cookie
+        //     } else {
+        //         cookie
+        //         .domain(&*DOMAIN)
+        //         .secure(true)
+        //         .http_only(true)
+        //     }.finish()
+        // };
 
-
-
-        // let mut res = Response::new(json!({
-        //     "username": todo!()
-        // }));
         let mut res = Response::new(StatusCode::Ok);
-        res.insert_cookie(cookie);
+        res.set_body(json!({
+            "token": token.as_str()
+        }));
+        // res.insert_cookie(cookie);
         Ok(res)
     });
 
-    app.at("/hello").get(|_| async {
-        Ok("Hello, world!")
-    });
+    app.at("/hello").get(|_| async { Ok("Hello, world!") });
 
-    app.at("/accounts").get(| req: Request<()>| async move {
-
+    app.at("/accounts").get(|req: Request<()>| async move {
         let token: Cookie = req.cookie("jwt").unwrap();
         let token = token.value();
 
@@ -142,9 +133,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         Ok(json!(res))
     });
 
-
     app.at("/users").get(|_| async {
-
         let db = db::ATBDB::new().await.unwrap();
         Ok("users")
     });
@@ -169,6 +158,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     };
 
-    try_join!(app, auth_server())?; 
+    try_join!(app, auth_server())?;
     Ok(())
 }

@@ -169,5 +169,4 @@ impl ATBDB {
 
         Ok(balance)
     }
-
 }
