@@ -22,12 +22,12 @@ CREATE TABLE balances (
 );
 CREATE TABLE transactions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    -- the 6 means microsecond precision since 2000
     fromid UUID NOT NULL REFERENCES accounts (id),
     toid UUID NOT NULL REFERENCES accounts (id),
     quantity BIGINT NOT NULL,
     item TEXT NOT NULL,
     price BIGINT NOT NULL,
+    -- the 6 means microsecond precision since 2000
     time_processed TIMESTAMPTZ(6) NOT NULL DEFAULT NOW(),
     CONSTRAINT from_to_different CHECK (fromid != toid)
 );

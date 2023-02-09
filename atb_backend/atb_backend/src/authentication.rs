@@ -4,6 +4,7 @@ use chrono::{Duration, Utc};
 use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation};
 use lazy_static::lazy_static;
 use tide::{http::Request, prelude::*};
+use uuid::Uuid;
 
 lazy_static! {
     static ref ENCODING_KEY: EncodingKey = {
@@ -25,7 +26,7 @@ lazy_static! {
     static ref VALIDATION: Validation = Validation::new(Algorithm::EdDSA);
 }
 
-pub fn make_jwt(uuid: String) -> Result<String, tide::Error> {
+pub fn make_jwt(uuid: Uuid) -> Result<String, tide::Error> {
     let expiration = (Utc::now() + Duration::days(1)).timestamp();
 
     let claims = Claims {
@@ -44,7 +45,7 @@ fn _make_jwt(claims: &Claims) -> Result<std::string::String, tide::Error> {
 pub fn refresh_jwt(token: &str) -> Result<String, tide::Error> {
     let expiration = (Utc::now() + Duration::minutes(15)).timestamp();
 
-    let uuid = verify_jwt(token)?;
+    let uuid = verify_jwt(token)?.sub;
 
     let claims = Claims {
         sub: uuid,
@@ -56,12 +57,12 @@ pub fn refresh_jwt(token: &str) -> Result<String, tide::Error> {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Claims {
-    sub: String,
+    sub: Uuid,
     exp: usize,
 }
 
-pub fn verify_jwt(token: &str) -> Result<String, tide::Error> {
+pub fn verify_jwt(token: &str) -> Result<Claims, tide::Error> {
     let claims = decode::<Claims>(token, &*DECODING_KEY, &*VALIDATION)
         .map_err(|e| tide::Error::from_str(tide::StatusCode::Unauthorized, e.to_string()))?;
-    Ok(claims.claims.sub)
+    Ok(claims.claims)
 }

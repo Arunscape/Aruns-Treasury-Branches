@@ -15,6 +15,7 @@ futures = "*"
 #async-graphql = { version = "*", features = ["bson", "chrono"] }
 dotenvy = "*"
 lazy_static = "*"
+#once_cell = "*"
 regex = "*"
 jsonwebtoken = "*"
 base64 = "*"

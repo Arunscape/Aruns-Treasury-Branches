@@ -4,6 +4,7 @@ use dotenvy::dotenv;
 use futures::try_join;
 use lazy_static::lazy_static;
 use tide::http::Cookie;
+use tide::utils::Before;
 use tide::{prelude::*, utils::After};
 use uuid::Uuid;
 
@@ -32,6 +33,9 @@ lazy_static! {
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     dotenv()?;
 
+    #[cfg(debug_assertions)]
+    tide::log::with_level(tide::log::LevelFilter::Debug);
+    #[cfg(not(debug_assertions))]
     tide::log::start();
     let mut app = tide::new();
     // app.with(tide::log::LogMiddleware::new());
@@ -42,6 +46,28 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             res.set_body(err.to_string());
         }
         Ok(res)
+    }));
+
+    app.with(Before(|mut req: Request<()>| async move {
+        // let token: Cookie = req.cookie("jwt").ok_or(tide::Error::from_str(
+        //     StatusCode::Unauthorized,
+        //     "No jwt cookie",
+        // ))?;
+
+        dbg!(&req);
+        let token = req.header("Authorization");
+        if token.is_none() {
+            return req
+        }
+
+        let token = token.unwrap().as_str().replacen("Bearer ", "", 1);
+        let claims = verify_jwt(&token);
+
+        if claims.is_err() {
+            return req
+        }
+        req.set_ext(claims.unwrap());
+        req
     }));
 
     let cors = CorsMiddleware::new()
@@ -85,12 +111,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     });
 
     app.at("/login_web").get(|req: Request<()>| async move {
-        let token = req.header("Authorization").ok_or(tide::Error::from_str(
-            StatusCode::Unauthorized,
-            "No Authorization header",
-        ))?;
-        let token = token.as_str().replacen("Bearer ", "", 1);
-
         // let cookie = {
 
         //     let cookie = Cookie::build("jwt", token)
@@ -110,22 +130,26 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         //     }.finish()
         // };
 
+        #[derive(Serialize, Deserialize)]
+        struct Token {
+            token: String
+        }
+        let token: Token = req.query()?;
+        // .map_err(|mut e| {
+        //     e.set_status(StatusCode::BadRequest);
+        //     e
+        // })?;
         let mut res = Response::new(StatusCode::Ok);
-        res.set_body(json!({
-            "token": token.as_str()
-        }));
+        res.set_body(json!(token));
         // res.insert_cookie(cookie);
         Ok(res)
     });
 
-    app.at("/hello").get(|_| async { Ok("Hello, world!") });
-
     app.at("/accounts").get(|req: Request<()>| async move {
-        let token: Cookie = req.cookie("jwt").unwrap();
-        let token = token.value();
-
-        let uuid = verify_jwt(token)?;
-        let uuid: Uuid = uuid.parse()?;
+        let uuid = *req.ext::<Uuid>().ok_or(tide::Error::from_str(
+            StatusCode::Unauthorized,
+            "Missing token",
+        ))?;
 
         let mut db = db::ATBDB::new().await?;
         let res = db.get_accounts_for_user(uuid).await.unwrap();
@@ -133,9 +157,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         Ok(json!(res))
     });
 
-    app.at("/users").get(|_| async {
-        let db = db::ATBDB::new().await.unwrap();
-        Ok("users")
+    // app.at("/users").get(|_| async {
+    //     let db = db::ATBDB::new().await.unwrap();
+    //     Ok("users")
+    // });
+
+    app.at("/accounts").get(|req: Request<()>| async move {
+        let user = req.param("userid")?;
+
+        Ok(json!({}))
     });
 
     let app = {

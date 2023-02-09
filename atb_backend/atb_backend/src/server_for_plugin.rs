@@ -15,7 +15,7 @@ use uuid::Uuid;
 
 #[derive(Debug, Deserialize)]
 struct LoginRequest {
-    uuid: String,
+    uuid: Uuid,
 }
 
 #[derive(Debug, Deserialize)]

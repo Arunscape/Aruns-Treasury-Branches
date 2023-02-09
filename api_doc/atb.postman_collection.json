@@ -31,32 +31,49 @@
 					]
 				}
 			},
-			"response": []
-		},
-		{
-			"name": "hello",
-			"protocolProfileBehavior": {
-				"disabledSystemHeaders": {},
-				"followRedirects": true,
-				"followOriginalHttpMethod": false
-			},
-			"request": {
-				"auth": {
-					"type": "noauth"
-				},
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{baseurl}}/hello",
-					"host": [
-						"{{baseurl}}"
+			"response": [
+				{
+					"name": "login_web",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseurl}}/login_web?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSJ9.eyJzdWIiOiIyYjM4MjE5OS0wZTNiLTRiYWEtODQzMC01MDlkNzY1ZDcxNGMiLCJleHAiOjE2NzYwMTI4MDR9.tp0boGzWh42sV8oGP4TvJwtpuOzrMMF6Bf9T00vEBXCuzdt2A8tISf9omBKdObv1m7nGOgrj5qd5JIBYa_pqBA",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"login_web"
+							],
+							"query": [
+								{
+									"key": "token",
+									"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSJ9.eyJzdWIiOiIyYjM4MjE5OS0wZTNiLTRiYWEtODQzMC01MDlkNzY1ZDcxNGMiLCJleHAiOjE2NzYwMTI4MDR9.tp0boGzWh42sV8oGP4TvJwtpuOzrMMF6Bf9T00vEBXCuzdt2A8tISf9omBKdObv1m7nGOgrj5qd5JIBYa_pqBA"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "content-length",
+							"value": "220"
+						},
+						{
+							"key": "content-type",
+							"value": "application/json"
+						},
+						{
+							"key": "date",
+							"value": "Thu, 09 Feb 2023 07:22:48 GMT"
+						}
 					],
-					"path": [
-						"hello"
-					]
+					"cookie": [],
+					"body": "{\n    \"token\": \"eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSJ9.eyJzdWIiOiIyYjM4MjE5OS0wZTNiLTRiYWEtODQzMC01MDlkNzY1ZDcxNGMiLCJleHAiOjE2NzYwMTI4MDR9.tp0boGzWh42sV8oGP4TvJwtpuOzrMMF6Bf9T00vEBXCuzdt2A8tISf9omBKdObv1m7nGOgrj5qd5JIBYa_pqBA\"\n}"
 				}
-			},
-			"response": []
+			]
 		},
 		{
 			"name": "refresh",
@@ -84,15 +101,106 @@
 			"response": []
 		},
 		{
-			"name": "backend_login",
+			"name": "users",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {},
+				"followRedirects": true,
+				"followOriginalHttpMethod": false
+			},
 			"request": {
+				"auth": {
+					"type": "noauth"
+				},
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": ""
+					"raw": "{{baseurl}}/hello",
+					"host": [
+						"{{baseurl}}"
+					],
+					"path": [
+						"hello"
+					]
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "backend_login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"uuid\": \"test\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{secreturl}}/login",
+					"host": [
+						"{{secreturl}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "backend_login",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{secreturl}}/login?uuid=2b382199-0e3b-4baa-8430-509d765d714c",
+							"host": [
+								"{{secreturl}}"
+							],
+							"path": [
+								"login"
+							],
+							"query": [
+								{
+									"key": "uuid",
+									"value": "2b382199-0e3b-4baa-8430-509d765d714c"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "plain",
+					"header": [
+						{
+							"key": "content-length",
+							"value": "208"
+						},
+						{
+							"key": "content-type",
+							"value": "text/plain;charset=utf-8"
+						},
+						{
+							"key": "date",
+							"value": "Thu, 09 Feb 2023 07:06:44 GMT"
+						}
+					],
+					"cookie": [],
+					"body": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSJ9.eyJzdWIiOiIyYjM4MjE5OS0wZTNiLTRiYWEtODQzMC01MDlkNzY1ZDcxNGMiLCJleHAiOjE2NzYwMTI4MDR9.tp0boGzWh42sV8oGP4TvJwtpuOzrMMF6Bf9T00vEBXCuzdt2A8tISf9omBKdObv1m7nGOgrj5qd5JIBYa_pqBA"
+				}
+			]
 		}
 	]
 }
