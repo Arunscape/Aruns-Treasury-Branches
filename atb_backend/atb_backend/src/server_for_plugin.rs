@@ -1,6 +1,6 @@
 use crate::authentication::Claims;
 use crate::authentication::{make_jwt, verify_jwt};
-use crate::db::ATBDB;
+use crate::db::{ATBDB, self};
 use chrono;
 use chrono::offset::Utc;
 use chrono::Duration;
@@ -60,7 +60,12 @@ pub async fn auth_server() -> std::io::Result<()> {
         .get(|req: Request<()>| async move {
             let LoginRequest { uuid } = req.query()?;
 
+            let db = db::ATBDB::new();
             let token = make_jwt(uuid)?;
+
+            let mut db = db.await?;
+            db.add_user(uuid).await?;
+
             Ok(token)
         });
 

@@ -61,6 +61,12 @@ pub struct Claims {
     exp: usize,
 }
 
+impl Claims {
+    pub fn uuid(&self) -> Uuid {
+        self.sub
+    }
+}
+
 pub fn verify_jwt(token: &str) -> Result<Claims, tide::Error> {
     let claims = decode::<Claims>(token, &*DECODING_KEY, &*VALIDATION)
         .map_err(|e| tide::Error::from_str(tide::StatusCode::Unauthorized, e.to_string()))?;

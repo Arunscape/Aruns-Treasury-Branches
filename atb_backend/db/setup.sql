@@ -7,7 +7,11 @@ CREATE TABLE accounts (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     userid UUID NOT NULL REFERENCES users (id),
     nickname TEXT NOT NULL
+    -- nickname is unique per user
+    CONSTRAINT nickname_unique UNIQUE (userid, nickname)
 );
+   
+    
 -- right now it only makes sense to support fungible items
 -- e.g. diamond, or diamond block
 -- no non-stackable items like swords or armour

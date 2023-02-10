@@ -20,7 +20,7 @@ mod server_for_plugin;
 
 use server_for_plugin::auth_server;
 
-use crate::authentication::verify_jwt;
+use crate::authentication::{verify_jwt, Claims};
 
 lazy_static! {
     static ref SERVER_ADDR: String = env::var("SERVER_ADDR").unwrap_or("localhost:8080".into());
@@ -41,7 +41,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // app.with(tide::log::LogMiddleware::new());
 
     app.with(After(|mut res: Response| async move {
-        dbg!(&res);
+        // dbg!(&res);
         if let Some(err) = res.error() {
             res.set_body(err.to_string());
         }
@@ -54,19 +54,23 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         //     "No jwt cookie",
         // ))?;
 
-        dbg!(&req);
+        // dbg!(&req);
         let token = req.header("Authorization");
+        dbg!(&token);
         if token.is_none() {
-            return req
+            return req;
         }
 
         let token = token.unwrap().as_str().replacen("Bearer ", "", 1);
         let claims = verify_jwt(&token);
 
+        dbg!(&claims);
         if claims.is_err() {
-            return req
+            panic!("aaaaaaaaaaaaaaaaaaaaaa");
+            return req;
         }
-        req.set_ext(claims.unwrap());
+        let claims = claims.unwrap();
+        req.set_ext(claims);
         req
     }));
 
@@ -110,46 +114,44 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         Ok(res)
     });
 
-    app.at("/login_web").get(|req: Request<()>| async move {
-        // let cookie = {
+    // #[derive(Serialize, Deserialize)]
+    // struct TokenRequest {
+    //     token: String
+    // }
+    // app.at("/login_web").get(|req: Request<()>| async move {
+    //     // let cookie = {
+    //     //     let cookie = Cookie::build("jwt", token)
+    //     //     // .http_only(true)
+    //     //     // .secure(true)
+    //     //     .same_site(tide::http::cookies::SameSite::None)
+    //     //     .domain("")
+    //     //     ;
+    //     //     if cfg!(debug_assertions) {
+    //     //         cookie
+    //     //     } else {
+    //     //         cookie
+    //     //         .domain(&*DOMAIN)
+    //     //         .secure(true)
+    //     //         .http_only(true)
+    //     //     }.finish()
+    //     // };
 
-        //     let cookie = Cookie::build("jwt", token)
-        //     // .http_only(true)
-        //     // .secure(true)
-        //     .same_site(tide::http::cookies::SameSite::None)
-        //     .domain("")
-        //     ;
-
-        //     if cfg!(debug_assertions) {
-        //         cookie
-        //     } else {
-        //         cookie
-        //         .domain(&*DOMAIN)
-        //         .secure(true)
-        //         .http_only(true)
-        //     }.finish()
-        // };
-
-        #[derive(Serialize, Deserialize)]
-        struct Token {
-            token: String
-        }
-        let token: Token = req.query()?;
-        // .map_err(|mut e| {
-        //     e.set_status(StatusCode::BadRequest);
-        //     e
-        // })?;
-        let mut res = Response::new(StatusCode::Ok);
-        res.set_body(json!(token));
-        // res.insert_cookie(cookie);
-        Ok(res)
-    });
+    //     let token: TokenRequest = req.query()?;
+    //     // .map_err(|mut e| {
+    //     //     e.set_status(StatusCode::BadRequest);
+    //     //     e
+    //     // })?;
+    //     let mut res = Response::new(StatusCode::Ok);
+    //     res.set_body(json!(token));
+    //     // res.insert_cookie(cookie);
+    //     Ok(res)
+    // });
 
     app.at("/accounts").get(|req: Request<()>| async move {
-        let uuid = *req.ext::<Uuid>().ok_or(tide::Error::from_str(
+        let uuid = req.ext::<Claims>().ok_or(tide::Error::from_str(
             StatusCode::Unauthorized,
             "Missing token",
-        ))?;
+        ))?.uuid();
 
         let mut db = db::ATBDB::new().await?;
         let res = db.get_accounts_for_user(uuid).await.unwrap();
@@ -157,16 +159,60 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         Ok(json!(res))
     });
 
-    // app.at("/users").get(|_| async {
-    //     let db = db::ATBDB::new().await.unwrap();
-    //     Ok("users")
-    // });
+    #[derive(Serialize, Deserialize)]
+    struct NewAccountRequest {
+        nickname: String,
+    }
+    app.at("/accounts").post(|mut req: Request<()>| async move {
 
-    app.at("/accounts").get(|req: Request<()>| async move {
-        let user = req.param("userid")?;
+        dbg!(req.ext::<Claims>());
+        let uuid = req.ext::<Claims>().ok_or(tide::Error::from_str(
+            StatusCode::Unauthorized,
+            "Missing token",
+        ))?.uuid();
 
-        Ok(json!({}))
+        let mut db = db::ATBDB::new();
+        let NewAccountRequest { nickname } = req.body_json().await?;
+
+        let res = db.await?.new_account(uuid, nickname).await?;
+
+        Ok(json!(res))
     });
+
+    #[derive(Serialize, Deserialize)]
+    struct ModifyAccountRequest {
+        id: Uuid,
+        nickname: String,
+    }
+    app.at("/accounts").patch(|mut req: Request<()>| async move {
+        let userid = req.ext::<Claims>().ok_or(tide::Error::from_str(
+            StatusCode::Unauthorized,
+            "Missing token",
+        ))?.uuid();
+
+        let mut db = db::ATBDB::new();
+        let ModifyAccountRequest { id, nickname } = req.body_json().await?;
+
+        let res = db.await?.change_account_name(id, userid, nickname).await?;
+
+        Ok(json!(res))
+    });
+
+    app.at("/accounts/:id").delete(|req: Request<()>| async move {
+        let uuid = req.ext::<Claims>().ok_or(tide::Error::from_str(
+            StatusCode::Unauthorized,
+            "Missing token",
+        ))?.uuid();
+
+        let mut db = db::ATBDB::new();
+        let id = req.param("id")?;
+
+        // let res = db.await?.delete_account(uuid, id).await?;
+
+        // Ok(json!(res))
+        Ok(tide::Error::from_str(StatusCode::NotImplemented, "not implemented"))
+    });
+
 
     let app = {
         #[cfg(debug_assertions)]
