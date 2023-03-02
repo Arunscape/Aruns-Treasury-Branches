@@ -29,7 +29,7 @@ impl ATBDB {
 
     /// Takes in a minecraft UUID
     pub async fn add_user(&mut self, id: Uuid) -> Result<User, sqlx::Error> {
-        let user = query_as!(User, "INSERT INTO users (id) VALUES ($1) ON CONFLICT DO NOTHING RETURNING *", id)
+        let user = query_as!(User, "INSERT INTO users (id) VALUES ($1) ON CONFLICT (id) DO UPDATE SET id = users.id RETURNING *", id)
             .fetch_one(&self.pool)
             .await?;
 
@@ -52,20 +52,28 @@ impl ATBDB {
 
     pub async fn change_account_name(
         &mut self,
-        id: Uuid,
         userid: Uuid,
-        nickname: String,
+        old_nickname: &str,
+        new_nickname: &str,   
     ) -> Result<Account, sqlx::Error> {
         let account = query_as!(Account,
-            "UPDATE accounts SET nickname = $1 WHERE id = $2 AND userid = $3 RETURNING *",
-            nickname,
-            id,
+            "UPDATE accounts SET nickname = $1 WHERE nickname = $2 AND userid = $3 RETURNING *",
+            new_nickname,
+            old_nickname,
             userid,
         )
         .fetch_one(&self.pool)
         .await?;
 
         Ok(account)
+    }
+
+    pub async fn delete_account(&mut self, accountid: Uuid, userid: Uuid) -> Result<(), sqlx::Error> {
+        let _account = query_as!(Account, "DELETE FROM accounts WHERE id = $1 and userid = $2 RETURNING *", accountid, userid)
+            .fetch_one(&self.pool)
+            .await?;
+
+        Ok(())
     }
 
     pub async fn get_accounts_for_user(&mut self, id: Uuid) -> Result<Vec<Account>, sqlx::Error> {

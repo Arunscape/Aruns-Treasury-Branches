@@ -1,4 +1,4 @@
-#![cfg_attr(debug_assertions, allow(dead_code, unused_imports))]
+#![cfg_attr(debug_assertions, allow(unused))]
 
 use dotenvy::dotenv;
 use futures::try_join;
@@ -66,7 +66,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         dbg!(&claims);
         if claims.is_err() {
-            panic!("aaaaaaaaaaaaaaaaaaaaaa");
             return req;
         }
         let claims = claims.unwrap();
@@ -165,7 +164,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
     app.at("/accounts").post(|mut req: Request<()>| async move {
 
-        dbg!(req.ext::<Claims>());
+        // dbg!(req.ext::<Claims>());
         let uuid = req.ext::<Claims>().ok_or(tide::Error::from_str(
             StatusCode::Unauthorized,
             "Missing token",
@@ -181,8 +180,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     #[derive(Serialize, Deserialize)]
     struct ModifyAccountRequest {
-        id: Uuid,
-        nickname: String,
+        old: String,
+        new: String,
     }
     app.at("/accounts").patch(|mut req: Request<()>| async move {
         let userid = req.ext::<Claims>().ok_or(tide::Error::from_str(
@@ -191,9 +190,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         ))?.uuid();
 
         let mut db = db::ATBDB::new();
-        let ModifyAccountRequest { id, nickname } = req.body_json().await?;
+        let ModifyAccountRequest { old, new } = req.body_json().await?;
 
-        let res = db.await?.change_account_name(id, userid, nickname).await?;
+        let res = db.await?.change_account_name(userid, &old, &new).await?;
 
         Ok(json!(res))
     });
@@ -204,13 +203,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             "Missing token",
         ))?.uuid();
 
-        let mut db = db::ATBDB::new();
+        let db = db::ATBDB::new();
         let id = req.param("id")?;
+        let id = Uuid::parse_str(&id)?;
 
-        // let res = db.await?.delete_account(uuid, id).await?;
+        let res = db.await?.delete_account(id, uuid).await?;
 
-        // Ok(json!(res))
-        Ok(tide::Error::from_str(StatusCode::NotImplemented, "not implemented"))
+        Ok(StatusCode::NoContent)
+        // Ok(tide::Error::from_str(StatusCode::NotImplemented, "not implemented"))
     });
 
 
