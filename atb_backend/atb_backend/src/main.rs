@@ -199,7 +199,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         let res = res
             .map_err(|e| tide::Error::from_str(StatusCode::BadRequest, format!("Error: {}", e)))?;
 
-        Ok(json!(res))
+        let res = Response::builder(StatusCode::Created)
+            .body(json!(res))
+            .build();
+
+        Ok(res)
     });
 
     #[derive(Serialize, Deserialize)]
