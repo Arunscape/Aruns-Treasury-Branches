@@ -9,6 +9,8 @@ edition = "2021"
 #redis = { version = "*", features = ["async-std-tls-comp", "cluster", "json"] }
 #redis = { git = "https://github.com/redis-rs/redis-rs.git", features = ["async-std-tls-comp", "cluster", "json"] }
 tide = "*"
+tide-acme = "*"
+tide-rustls = "*"
 async-std = { version = "*", features = ["attributes"] }
 serde = { version = "*", features = ["derive"] }
 futures = "*"
@@ -22,15 +24,13 @@ base64 = "*"
 dotenv_codegen = "*"
 #async-graphql-tide = { version = "*", features = ["tide-websockets"] }
 #juniper = "*"
-tide-acme = "*"
-tide-rustls = "*"
 chrono = "*"
 cookie = "*"
-sqlx = { version = "*", features = [ "runtime-async-std-native-tls", "postgres", "macros", "chrono", "uuid"] }
+sqlx = { version = "0.6.2", features = [ "runtime-async-std-rustls", "postgres", "macros", "chrono", "uuid"] }
+tide-sqlx = { git = "https://github.com/Arunscape/tide-sqlx.git", features = ["postgres"] }
 atb_types = { version = "*", path = "../atb_types" }
 uuid = { version = "*", features = ["serde", "v4"] }
 http-types = "*"
 
 
-[profile.dev.package.sqlx-macros]
-opt-level = 3
+

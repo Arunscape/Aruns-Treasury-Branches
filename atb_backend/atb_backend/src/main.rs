@@ -13,6 +13,11 @@ use std::vec;
 use std::{env, error, io::ErrorKind};
 use tide::security::{CorsMiddleware, Origin};
 use tide::{http::mime, Body, Redirect, Request, Response, Server, StatusCode};
+use tide_sqlx::{SQLxMiddleware, SQLxRequestExt};
+use tide::log::LevelFilter;
+use sqlx::postgres::{Postgres, PgConnectOptions, PgPoolOptions};
+use sqlx::ConnectOptions;
+use std::str::FromStr;
 
 mod authentication;
 mod db;
@@ -27,6 +32,8 @@ lazy_static! {
     static ref AUTH_SERVER_ADDR: String = env::var("AUTH_ADDR").unwrap_or("localhost:8081".into());
     static ref DOMAIN: String = env::var("DOMAIN").unwrap_or("http://localhost:8080".into());
     static ref API_URL: String = env::var("API_URL").unwrap_or("http://localhost:8080".into());
+    static ref DB_URL: String =
+        env::var("DATABASE_URL").unwrap_or("postgres://postgres@localhost/postgres".into());
 }
 
 #[async_std::main]
@@ -86,6 +93,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         ]));
 
     app.with(cors);
+
+    let mut connect_opts = PgConnectOptions::from_str(&DB_URL)?;
+    connect_opts.log_statements(LevelFilter::Debug);
+
+    let pg_pool = PgPoolOptions::new()
+        .max_connections(50)
+        .connect_with(connect_opts)
+        .await?;
+
+    app.with(SQLxMiddleware::from(pg_pool));
 
     app.at("/sse")
         .get(tide::sse::endpoint(|_req, sender| async move {
@@ -152,8 +169,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             "Missing token",
         ))?.uuid();
 
-        let mut db = db::ATBDB::new().await?;
-        let res = db.get_accounts_for_user(uuid).await.unwrap();
+        let mut conn = req.sqlx_conn::<Postgres>().await;
+        let res = db::get_accounts_for_user(&mut conn, uuid).await?;
 
         Ok(json!(res))
     });
@@ -170,10 +187,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             "Missing token",
         ))?.uuid();
 
-        let mut db = db::ATBDB::new();
         let NewAccountRequest { nickname } = req.body_json().await?;
 
-        let res = db.await?.new_account(uuid, nickname).await?;
+        let mut conn = req.sqlx_conn::<Postgres>().await;
+        let res = db::new_account(&mut conn, uuid, nickname).await?;
 
         Ok(json!(res))
     });
@@ -189,10 +206,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             "Missing token",
         ))?.uuid();
 
-        let mut db = db::ATBDB::new();
         let ModifyAccountRequest { old, new } = req.body_json().await?;
 
-        let res = db.await?.change_account_name(userid, &old, &new).await?;
+        let mut conn = req.sqlx_conn::<Postgres>().await;
+        let res = db::change_account_name(&mut conn, userid, &old, &new).await?;
 
         Ok(json!(res))
     });
@@ -203,14 +220,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             "Missing token",
         ))?.uuid();
 
-        let db = db::ATBDB::new();
         let id = req.param("id")?;
         let id = Uuid::parse_str(&id)?;
 
-        let res = db.await?.delete_account(id, uuid).await?;
+        let mut conn = req.sqlx_conn::<Postgres>().await;
+        let res = db::delete_account(&mut conn, id, uuid).await?;
 
         Ok(StatusCode::NoContent)
-        // Ok(tide::Error::from_str(StatusCode::NotImplemented, "not implemented"))
     });
 
 
@@ -234,6 +250,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     };
 
-    try_join!(app, auth_server())?;
+    let auth_server = auth_server().await?;
+
+    try_join!(app, auth_server)?;
     Ok(())
 }

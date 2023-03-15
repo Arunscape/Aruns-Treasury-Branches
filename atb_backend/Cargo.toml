@@ -6,3 +6,7 @@ members = [
     "atb_order_queue",
     "atb_types",
 ]
+
+
+[profile.dev.package.sqlx-macros]
+opt-level = 3
