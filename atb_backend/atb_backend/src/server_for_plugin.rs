@@ -7,14 +7,14 @@ use chrono::Duration;
 use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation};
 use lazy_static::lazy_static;
 use serde::{Deserialize, Serialize};
+use sqlx::postgres::{PgConnectOptions, PgPoolOptions, Postgres};
 use std::env;
+use std::str::FromStr;
 use std::sync::Arc;
 use tide::prelude::*;
 use tide::Request;
-use uuid::Uuid;
 use tide_sqlx::{SQLxMiddleware, SQLxRequestExt};
-use sqlx::postgres::{Postgres, PgConnectOptions, PgPoolOptions};
-use std::str::FromStr;
+use uuid::Uuid;
 
 #[derive(Debug, Deserialize)]
 struct LoginRequest {
@@ -46,7 +46,8 @@ lazy_static! {
         env::var("DATABASE_URL").unwrap_or("postgres://postgres@localhost/postgres".into());
 }
 
-pub async fn auth_server() -> Result<impl futures::Future<Output = Result<(), std::io::Error>>, Box<dyn std::error::Error>> {
+pub async fn auth_server(
+) -> Result<impl futures::Future<Output = Result<(), std::io::Error>>, Box<dyn std::error::Error>> {
     let mut secret_server = tide::new();
 
     // let db: &'static = ATBDB::new().await.map_err(|e| {
@@ -55,7 +56,6 @@ pub async fn auth_server() -> Result<impl futures::Future<Output = Result<(), st
 
     // should only be accessible from the internal docker network
     // ie not available to the public
-
 
     let mut connect_opts = PgConnectOptions::from_str(&DB_URL)?;
     let pg_pool = PgPoolOptions::new()
@@ -114,6 +114,5 @@ pub async fn auth_server() -> Result<impl futures::Future<Output = Result<(), st
         Ok(balance)
     });
 
-    Ok(secret_server
-        .listen(&*AUTH_SERVER_ADDR))
+    Ok(secret_server.listen(&*AUTH_SERVER_ADDR))
 }

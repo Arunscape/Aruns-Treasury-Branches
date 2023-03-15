@@ -1,6 +1,9 @@
 use atb_types::prelude::*;
 use lazy_static::lazy_static;
-use sqlx::{query, query_as, PgConnection, postgres::{PgConnectOptions, PgPoolOptions}};
+use sqlx::{
+    postgres::{PgConnectOptions, PgPoolOptions},
+    query, query_as, PgConnection,
+};
 use std::env;
 use uuid::Uuid;
 //use sqlx::{Acquire, Connection};
@@ -10,7 +13,6 @@ lazy_static! {
     static ref DB_URL: String =
         env::var("DATABASE_URL").unwrap_or("postgres://postgres@localhost/postgres".into());
 }
-
 
 /// Takes in a minecraft UUID
 pub async fn add_user(conn: &mut PgConnection, id: Uuid) -> Result<User, sqlx::Error> {

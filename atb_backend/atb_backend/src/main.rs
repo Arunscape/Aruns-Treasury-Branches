@@ -9,15 +9,15 @@ use tide::{prelude::*, utils::After};
 use uuid::Uuid;
 
 use http_types::headers::{HeaderValue, HeaderValues};
+use sqlx::postgres::{PgConnectOptions, PgPoolOptions, Postgres};
+use sqlx::ConnectOptions;
+use std::str::FromStr;
 use std::vec;
 use std::{env, error, io::ErrorKind};
+use tide::log::LevelFilter;
 use tide::security::{CorsMiddleware, Origin};
 use tide::{http::mime, Body, Redirect, Request, Response, Server, StatusCode};
 use tide_sqlx::{SQLxMiddleware, SQLxRequestExt};
-use tide::log::LevelFilter;
-use sqlx::postgres::{Postgres, PgConnectOptions, PgPoolOptions};
-use sqlx::ConnectOptions;
-use std::str::FromStr;
 
 mod authentication;
 mod db;
@@ -164,10 +164,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // });
 
     app.at("/accounts").get(|req: Request<()>| async move {
-        let uuid = req.ext::<Claims>().ok_or(tide::Error::from_str(
-            StatusCode::Unauthorized,
-            "Missing token",
-        ))?.uuid();
+        let uuid = req
+            .ext::<Claims>()
+            .ok_or(tide::Error::from_str(
+                StatusCode::Unauthorized,
+                "Missing token",
+            ))?
+            .uuid();
 
         let mut conn = req.sqlx_conn::<Postgres>().await;
         let res = db::get_accounts_for_user(&mut conn, uuid).await?;
@@ -180,12 +183,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         nickname: String,
     }
     app.at("/accounts").post(|mut req: Request<()>| async move {
-
         // dbg!(req.ext::<Claims>());
-        let uuid = req.ext::<Claims>().ok_or(tide::Error::from_str(
-            StatusCode::Unauthorized,
-            "Missing token",
-        ))?.uuid();
+        let uuid = req
+            .ext::<Claims>()
+            .ok_or(tide::Error::from_str(
+                StatusCode::Unauthorized,
+                "Missing token",
+            ))?
+            .uuid();
 
         let NewAccountRequest { nickname } = req.body_json().await?;
 
@@ -200,35 +205,42 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         old: String,
         new: String,
     }
-    app.at("/accounts").patch(|mut req: Request<()>| async move {
-        let userid = req.ext::<Claims>().ok_or(tide::Error::from_str(
-            StatusCode::Unauthorized,
-            "Missing token",
-        ))?.uuid();
+    app.at("/accounts")
+        .patch(|mut req: Request<()>| async move {
+            let userid = req
+                .ext::<Claims>()
+                .ok_or(tide::Error::from_str(
+                    StatusCode::Unauthorized,
+                    "Missing token",
+                ))?
+                .uuid();
 
-        let ModifyAccountRequest { old, new } = req.body_json().await?;
+            let ModifyAccountRequest { old, new } = req.body_json().await?;
 
-        let mut conn = req.sqlx_conn::<Postgres>().await;
-        let res = db::change_account_name(&mut conn, userid, &old, &new).await?;
+            let mut conn = req.sqlx_conn::<Postgres>().await;
+            let res = db::change_account_name(&mut conn, userid, &old, &new).await?;
 
-        Ok(json!(res))
-    });
+            Ok(json!(res))
+        });
 
-    app.at("/accounts/:id").delete(|req: Request<()>| async move {
-        let uuid = req.ext::<Claims>().ok_or(tide::Error::from_str(
-            StatusCode::Unauthorized,
-            "Missing token",
-        ))?.uuid();
+    app.at("/accounts/:id")
+        .delete(|req: Request<()>| async move {
+            let uuid = req
+                .ext::<Claims>()
+                .ok_or(tide::Error::from_str(
+                    StatusCode::Unauthorized,
+                    "Missing token",
+                ))?
+                .uuid();
 
-        let id = req.param("id")?;
-        let id = Uuid::parse_str(&id)?;
+            let id = req.param("id")?;
+            let id = Uuid::parse_str(&id)?;
 
-        let mut conn = req.sqlx_conn::<Postgres>().await;
-        let res = db::delete_account(&mut conn, id, uuid).await?;
+            let mut conn = req.sqlx_conn::<Postgres>().await;
+            let res = db::delete_account(&mut conn, id, uuid).await?;
 
-        Ok(StatusCode::NoContent)
-    });
-
+            Ok(StatusCode::NoContent)
+        });
 
     let app = {
         #[cfg(debug_assertions)]

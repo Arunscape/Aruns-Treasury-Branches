@@ -1,14 +1,15 @@
 #![cfg_attr(debug_assertions, allow(dead_code, unused_imports))]
 
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use serde::{Serialize, Deserialize};
 use uuid::Uuid;
 
 pub mod prelude;
 
-#[derive(Debug, 
+#[derive(
+    Debug,
     // sqlx::FromRow
-)] 
+)]
 pub struct User {
     pub id: Uuid,
 }
@@ -29,7 +30,7 @@ pub struct Balance {
 
 #[derive(Debug)]
 pub struct McItem {
-    pub id: String
+    pub id: String,
 }
 
 #[derive(Debug)]
