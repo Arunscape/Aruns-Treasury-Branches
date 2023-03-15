@@ -195,7 +195,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         let NewAccountRequest { nickname } = req.body_json().await?;
 
         let mut conn = req.sqlx_conn::<Postgres>().await;
-        let res = db::new_account(&mut conn, uuid, nickname).await?;
+        let res = db::new_account(&mut conn, uuid, nickname).await;
+        let res = res
+            .map_err(|e| tide::Error::from_str(StatusCode::BadRequest, format!("Error: {}", e)))?;
 
         Ok(json!(res))
     });
@@ -218,7 +220,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             let ModifyAccountRequest { old, new } = req.body_json().await?;
 
             let mut conn = req.sqlx_conn::<Postgres>().await;
-            let res = db::change_account_name(&mut conn, userid, &old, &new).await?;
+            let res = db::change_account_name(&mut conn, userid, &old, &new).await;
+            let res = res.map_err(|e| {
+                tide::Error::from_str(StatusCode::BadRequest, format!("Error: {}", e))
+            })?;
 
             Ok(json!(res))
         });
@@ -239,7 +244,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             let mut conn = req.sqlx_conn::<Postgres>().await;
             let res = db::delete_account(&mut conn, id, uuid).await?;
 
-            Ok(StatusCode::NoContent)
+            match res {
+                Some(account) => Ok(json!({ "deleted": account })),
+                None => Err(tide::Error::from_str(
+                    StatusCode::NotFound,
+                    "The account you tried to delete does not exist",
+                )),
+            }
         });
 
     let app = {

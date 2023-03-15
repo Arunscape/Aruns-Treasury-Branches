@@ -63,17 +63,17 @@ pub async fn delete_account(
     conn: &mut PgConnection,
     accountid: Uuid,
     userid: Uuid,
-) -> Result<(), sqlx::Error> {
-    let _account = query_as!(
+) -> Result<Option<Account>, sqlx::Error> {
+    let account = query_as!(
         Account,
         "DELETE FROM accounts WHERE id = $1 and userid = $2 RETURNING *",
         accountid,
         userid
     )
-    .fetch_one(conn)
+    .fetch_optional(conn)
     .await?;
 
-    Ok(())
+    Ok(account)
 }
 
 pub async fn get_accounts_for_user(
