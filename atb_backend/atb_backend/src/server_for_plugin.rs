@@ -87,6 +87,8 @@ pub async fn auth_server(
                 quantity,
             } = req.body_json().await?;
 
+            let mut conn = req.sqlx_conn::<Postgres>().await;
+            db::transfer(uuid, "", item, quantity)
             Ok(tide::StatusCode::Ok)
         });
 

@@ -11,7 +11,7 @@ class Atb : JavaPlugin() {
     override fun onEnable() {
         // Plugin startup logic
 
-        config.addDefault("server_url", "http://localhost:8081")
+        config.addDefault("server_url", "http://[::]:8081")
         config.addDefault("website_url", "https://atb.arun.gg")
         config.options().copyDefaults(true)
         saveConfig()

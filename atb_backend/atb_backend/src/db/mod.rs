@@ -136,7 +136,12 @@ pub async fn transfer(
 
     let mut transaction = conn.begin().await?;
     query!(
-        "UPDATE balances SET quantity = (quantity - $1) WHERE accountid = $2 AND item = $3",
+        "
+        UPDATE balances SET quantity = (quantity - $1)
+        FROM accounts
+        WHERE accounts.userid = $2
+        AND accountid = $2 AND item = $3
+        ",
         quantity,
         fromid,
         item
