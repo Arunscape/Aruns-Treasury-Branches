@@ -4,7 +4,7 @@ import json
 import urllib.request
 
 def get_stats():
-    server = MinecraftServer.lookup("minecraft.woosaree.xyz")
+    server = MinecraftServer.lookup("mc.arun.gg")
     status = server.status()
 
     external_ip = urllib.request.urlopen('https://ifconfig.me').read().decode('utf8')

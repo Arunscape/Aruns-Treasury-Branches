@@ -19,10 +19,10 @@
 		num_online: number;
 	};
 
-	const data = fetch('https://status.minecraft.woosaree.xyz/api/info').then((res) => res.json());
+	const data = fetch('https://mcstatus.arun.gg/api/info').then((res) => res.json());
 </script>
 
-<h1 class="changecolour">minecraft.woosaree.xyz status page</h1>
+<h1 class="changecolour">mc.arun.gg status page</h1>
 <!-- <div>{JSON.stringify(data)}</div> -->
 {#await data}
 	<div>loading...</div>
@@ -47,7 +47,7 @@
 		<div>
 			<div>Additional info</div>
 			<div>
-				<div>Ping from {d.ping.from} to minecraft.woosaree.xyz is {d.ping.time}ms</div>
+				<div>Ping from {d.ping.from} to mc.arun.gg is {d.ping.time}ms</div>
 			</div>
 		</div>
 	</div>
