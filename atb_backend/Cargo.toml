@@ -5,7 +5,6 @@ members = [
     "atb_order_book",
     "atb_order_queue",
     "atb_types",
-    "atb_api",
 ]
 
 

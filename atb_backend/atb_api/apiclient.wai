@@ -1,2 +1,0 @@
-// hello world endpoint
-helloworld: async func() -> string
