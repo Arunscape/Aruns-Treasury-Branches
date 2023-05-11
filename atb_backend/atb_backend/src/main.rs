@@ -1,7 +1,23 @@
-use std::{str::FromStr, net::SocketAddr};
+#![allow(dead_code)]
+use std::{net::SocketAddr, str::FromStr};
 
-use axum::{routing::get, Router};
+use axum::{
+    async_trait,
+    extract::{FromRef, FromRequestParts},
+    http::{
+        self,
+        header::{HeaderMap, HeaderValue},
+        request::Parts,
+        StatusCode,
+    },
+    response::IntoResponse,
+    routing::get,
+    RequestPartsExt, Router,
+};
 use lazy_static::lazy_static;
+use serde::{Deserialize, Serialize};
+use uuid::Uuid;
+use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 mod authentication;
 mod db;
@@ -18,15 +34,19 @@ lazy_static! {
 }
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>>{
-    // build our application with a single route
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+
+    tracing_subscriber::registry()
+        .with(tracing_subscriber::fmt::layer())
+        .init();
+
     let app = Router::new().route("/", get(|| async { "Hello, World!" }));
 
-    let server_address: SocketAddr = SERVER_ADDR.parse()?;
-    axum::Server::bind(&server_address)
-        .serve(app.into_make_service())
-        .await
-        .unwrap();
+    let server_address = SERVER_ADDR.parse()?;
+    let server = axum::Server::bind(&server_address).serve(app.into_make_service());
+
+    tracing::info!("Starting server on {server_address}");
+    server.await?;
 
     Ok(())
 }
