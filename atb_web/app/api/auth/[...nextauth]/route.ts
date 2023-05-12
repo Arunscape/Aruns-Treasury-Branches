@@ -1,9 +1,12 @@
 import NextAuth from "next-auth"
 import AzureADProvider from "next-auth/providers/azure-ad";
 
-if (!process.env.AZURE_AD_CLIENT_ID) throw new Error("AZURE_AD_CLIENT_ID is not defined")
+if (!process.env.AZURE_AD_CLIENT_SECRET) throw new Error("AZURE_AD_CLIENT_SECRET is not defined")
 
-const handler = NextAuth({
+export const authOptions = {
+  session: {
+    strategy: "jwt",
+  },
   providers: [
     AzureADProvider({
       // clientId: process.env.AZURE_AD_CLIENT_ID,
@@ -13,6 +16,8 @@ const handler = NextAuth({
       tenantId: "01aee9c7-5d1f-409d-b90a-c21e44a429e5",
     }),
   ]
-})
+}
+
+const handler = NextAuth(authOptions)
 
 export { handler as GET, handler as POST }

@@ -1,19 +1,18 @@
-import { useSession, signIn, signOut } from "next-auth/react"
+import { getServerSession } from "next-auth";
+import { useSession, signIn, signOut } from "next-auth/react";
+import { authOptions } from "../api/auth/[...nextauth]/route";
+import Btns from "@/components/Btns";
 
-export default function Component() {
-  const { data: session } = useSession()
-  if (session) {
-    return (
-      <>
-        Signed in as {session?.user?.email} <br />
-        <button onClick={() => signOut()}>Sign out</button>
-      </>
-    )
-  }
+
+
+export default async function Component() {
+  const session = await getServerSession(authOptions as any);
+
   return (
     <>
-      Not signed in <br />
-      <button onClick={() => signIn()}>Sign in</button>
+      <h1>Server Session</h1>
+      <pre>{JSON.stringify(session)}</pre>
+      <Btns />
     </>
-  )
+  );
 }
