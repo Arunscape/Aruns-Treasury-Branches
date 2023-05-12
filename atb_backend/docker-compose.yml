@@ -8,7 +8,7 @@ services:
       - POSTGRES_HOST_AUTH_METHOD=trust
     volumes:
       - ./db/postgres-data:/var/lib/postgresql/data:z
-      - ./db/setup.sql:/docker-entrypoint-initdb.d/setup.sql
+      # - ./db/setup.sql:/docker-entrypoint-initdb.d/setup.sql
     ports:
       - 127.0.0.1:5432:5432 # comment out in prod, use internal network
 

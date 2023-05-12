@@ -1,284 +1,152 @@
-#![cfg_attr(debug_assertions, allow(unused))]
+#![allow(dead_code, unused)]
+use std::{net::SocketAddr, str::FromStr};
 
-use dotenvy::dotenv;
-use futures::try_join;
+use atb_types::Account;
+use axum::{
+    async_trait,
+    extract::{FromRef, FromRequestParts, State, MatchedPath, Path},
+    http::{
+        self,
+        header::{HeaderMap, HeaderValue},
+        request::Parts,
+        StatusCode,
+    },
+    response::{ErrorResponse, IntoResponse},
+    routing::{get, delete, post},
+    Json, RequestPartsExt, Router,
+};
 use lazy_static::lazy_static;
-use tide::http::Cookie;
-use tide::utils::Before;
-use tide::{prelude::*, utils::After};
-use uuid::Uuid;
+use serde::{Deserialize, Serialize};
+use sqlx::{
+    migrate::Migrator,
+    postgres::{PgConnectOptions, PgPool, PgPoolOptions},
+    ConnectOptions, Connection, PgConnection, Pool,
+};
 
-use http_types::headers::{HeaderValue, HeaderValues};
-use sqlx::postgres::{PgConnectOptions, PgPoolOptions, Postgres};
-use sqlx::ConnectOptions;
-use std::str::FromStr;
-use std::vec;
-use std::{env, error, io::ErrorKind};
-use tide::log::LevelFilter;
-use tide::security::{CorsMiddleware, Origin};
-use tide::{http::mime, Body, Redirect, Request, Response, Server, StatusCode};
-use tide_sqlx::{SQLxMiddleware, SQLxRequestExt};
+use tracing_subscriber::{
+    filter::{filter_fn, LevelFilter},
+    prelude::*,
+};
+
+use uuid::Uuid;
 
 mod authentication;
 mod db;
-mod server_for_plugin;
-
-use server_for_plugin::auth_server;
 
 use crate::authentication::{verify_jwt, Claims};
 
 lazy_static! {
-    static ref SERVER_ADDR: String = env::var("SERVER_ADDR").unwrap_or("localhost:8080".into());
-    static ref AUTH_SERVER_ADDR: String = env::var("AUTH_ADDR").unwrap_or("localhost:8081".into());
-    static ref DOMAIN: String = env::var("DOMAIN").unwrap_or("http://localhost:8080".into());
-    static ref API_URL: String = env::var("API_URL").unwrap_or("http://localhost:8080".into());
+    static ref SERVER_ADDR: String = std::env::var("SERVER_ADDR").unwrap_or("[::]:8080".into());
+    static ref AUTH_SERVER_ADDR: String = std::env::var("AUTH_ADDR").unwrap_or("[::]:8081".into());
+    static ref DOMAIN: String = std::env::var("DOMAIN").unwrap_or("http://[::]:8080".into());
+    static ref API_URL: String = std::env::var("API_URL").unwrap_or("http://[::]:8080".into());
     static ref DB_URL: String =
-        env::var("DATABASE_URL").unwrap_or("postgres://postgres@localhost/postgres".into());
+        std::env::var("DATABASE_URL").unwrap_or("postgres://postgres@localhost/postgres".into());
 }
 
-#[async_std::main]
+#[derive(Debug, Clone, FromRef)]
+struct AppState {
+    pool: PgPool,
+}
+
+#[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    dotenv()?;
+    let fmt_layer = tracing_subscriber::fmt::layer();
 
-    #[cfg(debug_assertions)]
-    tide::log::with_level(tide::log::LevelFilter::Debug);
-    #[cfg(not(debug_assertions))]
-    tide::log::start();
-    let mut app = tide::new();
-    // app.with(tide::log::LogMiddleware::new());
-
-    app.with(After(|mut res: Response| async move {
-        // dbg!(&res);
-        if let Some(err) = res.error() {
-            res.set_body(err.to_string());
-        }
-        Ok(res)
-    }));
-
-    app.with(Before(|mut req: Request<()>| async move {
-        // let token: Cookie = req.cookie("jwt").ok_or(tide::Error::from_str(
-        //     StatusCode::Unauthorized,
-        //     "No jwt cookie",
-        // ))?;
-
-        // dbg!(&req);
-        let token = req.header("Authorization");
-        dbg!(&token);
-        if token.is_none() {
-            return req;
-        }
-
-        let token = token.unwrap().as_str().replacen("Bearer ", "", 1);
-        let claims = verify_jwt(&token);
-
-        dbg!(&claims);
-        if claims.is_err() {
-            return req;
-        }
-        let claims = claims.unwrap();
-        req.set_ext(claims);
-        req
-    }));
-
-    let cors = CorsMiddleware::new()
-        .allow_methods("GET, POST, OPTIONS".parse::<HeaderValue>().unwrap())
-        .allow_origin(Origin::from(vec![
-            "http://localhost:3000",
-            "https://atb.arun.gg",
-        ]))
-        .allow_credentials(true)
-        .allow_headers(HeaderValues::from(vec![
-            "Authorization".try_into().unwrap(),
-            "Content-Type".try_into().unwrap(),
-        ]));
-
-    app.with(cors);
+    tracing_subscriber::registry()
+        // .with(tracing_subscriber::fmt::layer())
+        .with(fmt_layer.with_filter(LevelFilter::DEBUG))
+        .init();
 
     let mut connect_opts = PgConnectOptions::from_str(&DB_URL)?;
-    connect_opts.log_statements(LevelFilter::Debug);
+    connect_opts.log_statements(tracing::log::LevelFilter::Debug);
 
-    let pg_pool = PgPoolOptions::new()
+    let pool = PgPoolOptions::new()
         .max_connections(50)
         .connect_with(connect_opts)
         .await?;
 
-    app.with(SQLxMiddleware::from(pg_pool));
+    let app_state = AppState { pool };
 
-    app.at("/sse")
-        .get(tide::sse::endpoint(|_req, sender| async move {
-            loop {
-                async_std::task::sleep(std::time::Duration::from_secs(1)).await;
-                sender.send("fruit", "banana", None).await?;
-                async_std::task::sleep(std::time::Duration::from_secs(5)).await;
-                sender.send("fruit", "apple", None).await?;
-            }
-            //Ok(())
-        }));
+    sqlx::migrate!("./src/db/queries/migrations")
+        .run(&app_state.pool)
+        .await?;
 
-    app.at("/refresh").get(|req: Request<()>| async move {
-        let _token = req.header("Authorization").ok_or(tide::Error::from_str(
-            StatusCode::Unauthorized,
-            "No Authorization header",
-        ))?;
+    let app = Router::new()
+        .route("/", get(|| async { "Hello, World!" }))
+        .route("/refresh", get(refresh_jwt))
+        .route("/accounts", get(get_accounts).patch(update_account_name))
+        // .route("/accounts/:name", post(new_account))
+        .route("/accounts/:id", delete(delete_account).post(new_account))
+        .with_state(app_state);
 
-        // let token = token.as_str().replacen("Bearer ", "", 1);
-        // let new_token = authentication::refresh_jwt(&token)?;
-        // Ok(new_token)
+    let server_address = SERVER_ADDR.parse()?;
+    let server = axum::Server::bind(&server_address).serve(app.into_make_service());
 
-        let mut res = Response::new(tide::StatusCode::NotImplemented);
-        res.set_body("maybe I'll implement this later");
-        Ok(res)
-    });
+    tracing::info!("Starting server on {server_address}");
+    server.await?;
 
-    // #[derive(Serialize, Deserialize)]
-    // struct TokenRequest {
-    //     token: String
-    // }
-    // app.at("/login_web").get(|req: Request<()>| async move {
-    //     // let cookie = {
-    //     //     let cookie = Cookie::build("jwt", token)
-    //     //     // .http_only(true)
-    //     //     // .secure(true)
-    //     //     .same_site(tide::http::cookies::SameSite::None)
-    //     //     .domain("")
-    //     //     ;
-    //     //     if cfg!(debug_assertions) {
-    //     //         cookie
-    //     //     } else {
-    //     //         cookie
-    //     //         .domain(&*DOMAIN)
-    //     //         .secure(true)
-    //     //         .http_only(true)
-    //     //     }.finish()
-    //     // };
-
-    //     let token: TokenRequest = req.query()?;
-    //     // .map_err(|mut e| {
-    //     //     e.set_status(StatusCode::BadRequest);
-    //     //     e
-    //     // })?;
-    //     let mut res = Response::new(StatusCode::Ok);
-    //     res.set_body(json!(token));
-    //     // res.insert_cookie(cookie);
-    //     Ok(res)
-    // });
-
-    app.at("/accounts").get(|req: Request<()>| async move {
-        let uuid = req
-            .ext::<Claims>()
-            .ok_or(tide::Error::from_str(
-                StatusCode::Unauthorized,
-                "Missing token",
-            ))?
-            .uuid();
-
-        let mut conn = req.sqlx_conn::<Postgres>().await;
-        let res = db::get_accounts_for_user(&mut conn, uuid).await?;
-
-        Ok(json!(res))
-    });
-
-    #[derive(Serialize, Deserialize)]
-    struct NewAccountRequest {
-        nickname: String,
-    }
-    app.at("/accounts").post(|mut req: Request<()>| async move {
-        // dbg!(req.ext::<Claims>());
-        let uuid = req
-            .ext::<Claims>()
-            .ok_or(tide::Error::from_str(
-                StatusCode::Unauthorized,
-                "Missing token",
-            ))?
-            .uuid();
-
-        let NewAccountRequest { nickname } = req.body_json().await?;
-
-        let mut conn = req.sqlx_conn::<Postgres>().await;
-        let res = db::new_account(&mut conn, uuid, nickname).await;
-        let res = res
-            .map_err(|e| tide::Error::from_str(StatusCode::BadRequest, format!("Error: {}", e)))?;
-
-        let res = Response::builder(StatusCode::Created)
-            .body(json!(res))
-            .build();
-
-        Ok(res)
-    });
-
-    #[derive(Serialize, Deserialize)]
-    struct ModifyAccountRequest {
-        old: String,
-        new: String,
-    }
-    app.at("/accounts")
-        .patch(|mut req: Request<()>| async move {
-            let userid = req
-                .ext::<Claims>()
-                .ok_or(tide::Error::from_str(
-                    StatusCode::Unauthorized,
-                    "Missing token",
-                ))?
-                .uuid();
-
-            let ModifyAccountRequest { old, new } = req.body_json().await?;
-
-            let mut conn = req.sqlx_conn::<Postgres>().await;
-            let res = db::change_account_name(&mut conn, userid, &old, &new).await;
-            let res = res.map_err(|e| {
-                tide::Error::from_str(StatusCode::BadRequest, format!("Error: {}", e))
-            })?;
-
-            Ok(json!(res))
-        });
-
-    app.at("/accounts/:id")
-        .delete(|req: Request<()>| async move {
-            let uuid = req
-                .ext::<Claims>()
-                .ok_or(tide::Error::from_str(
-                    StatusCode::Unauthorized,
-                    "Missing token",
-                ))?
-                .uuid();
-
-            let id = req.param("id")?;
-            let id = Uuid::parse_str(&id)?;
-
-            let mut conn = req.sqlx_conn::<Postgres>().await;
-            let res = db::delete_account(&mut conn, id, uuid).await?;
-
-            match res {
-                Some(account) => Ok(json!({ "deleted": account })),
-                None => Err(tide::Error::from_str(
-                    StatusCode::NotFound,
-                    "The account you tried to delete does not exist",
-                )),
-            }
-        });
-
-    let app = {
-        #[cfg(debug_assertions)]
-        {
-            app.listen(&*SERVER_ADDR)
-        }
-
-        #[cfg(not(debug_assertions))]
-        {
-            use tide_acme::rustls_acme::caches::DirCache;
-            use tide_acme::{AcmeConfig, TideRustlsExt};
-            app.listen(
-                tide_rustls::TlsListener::build().addrs(&*SERVER_ADDR).acme(
-                    AcmeConfig::new(vec![&*DOMAIN])
-                        .contact_push("mailto:atb-acme@arun.gg")
-                        .cache(DirCache::new("./acme")),
-                ),
-            )
-        }
-    };
-
-    let auth_server = auth_server().await?;
-
-    try_join!(app, auth_server)?;
     Ok(())
+}
+
+async fn refresh_jwt() -> impl IntoResponse {
+    (
+        StatusCode::NOT_IMPLEMENTED,
+        "maybe I'll implement this later",
+    )
+}
+
+//async fn get_accounts(State(pool): State<PgPool>) -> Result<(StatusCode, Json<Vec<Account>>), ErrorResponse> {
+async fn get_accounts(State(pool): State<PgPool>) -> Result<impl IntoResponse, ErrorResponse> {
+    // todo get uuid from token
+    let uuid = Uuid::from_str("30652840-fcd4-48aa-b52d-306f85c0f93e").unwrap();
+
+    let accounts = db::get_accounts_for_user(&pool, uuid)
+        .await
+        .map_err(|e| (StatusCode::BAD_REQUEST, e.to_string()))?;
+
+    Ok((StatusCode::OK, Json(accounts)))
+}
+
+async fn new_account(State(pool): State<PgPool>, Path(name): Path<String>) -> Result<impl IntoResponse, ErrorResponse> {
+    // todo get uuid from token
+    let uuid = Uuid::from_str("30652840-fcd4-48aa-b52d-306f85c0f93e").unwrap();
+
+    let account = db::new_account(&pool, uuid, name)
+        .await
+        .map_err(|e| (StatusCode::BAD_REQUEST, e.to_string()))?;
+
+    Ok((StatusCode::OK, Json(account)))
+}
+
+#[derive(Deserialize, Serialize)]
+struct UpdateAccountName {
+    old: String,
+    new: String,
+}
+async fn update_account_name(State(pool): State<PgPool>, Json(reqbody): Json<UpdateAccountName>) -> Result<impl IntoResponse, ErrorResponse> {
+    // todo get uuid from token
+    let uuid = Uuid::from_str("30652840-fcd4-48aa-b52d-306f85c0f93e").unwrap();
+
+    let account = db::update_account_name(&pool, uuid, "old", "new")
+        .await
+        .map_err(|e| (StatusCode::BAD_REQUEST, e.to_string()))?;
+
+    Ok((StatusCode::OK, Json(account)))
+
+}
+
+async fn delete_account(State(pool): State<PgPool>, Path(id): Path<Uuid>) -> Result<impl IntoResponse, ErrorResponse> {
+    // todo get uuid from token
+    let uuid = Uuid::from_str("30652840-fcd4-48aa-b52d-306f85c0f93e").unwrap();
+
+    let account = db::delete_account(&pool, id, uuid)
+        .await
+        .map_err(|e| (StatusCode::BAD_REQUEST, e.to_string()))?;
+
+    match account {
+        Some(account) => Ok((StatusCode::OK, Json(account))),
+        None => Err((StatusCode::NOT_FOUND, "Account not found").into()),
+    }
+
 }

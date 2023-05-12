@@ -2,7 +2,7 @@ use atb_types::prelude::*;
 use lazy_static::lazy_static;
 use sqlx::{
     postgres::{PgConnectOptions, PgPoolOptions},
-    query, query_as, PgConnection,
+    query, query_as, query_file_as, PgConnection, PgPool,
 };
 use std::env;
 use uuid::Uuid;
@@ -15,106 +15,106 @@ lazy_static! {
 }
 
 /// Takes in a minecraft UUID
-pub async fn add_user(conn: &mut PgConnection, id: Uuid) -> Result<User, sqlx::Error> {
-    let user = query_as!(User, "INSERT INTO users (id) VALUES ($1) ON CONFLICT (id) DO UPDATE SET id = users.id RETURNING *", id)
-        .fetch_one(conn)
+pub async fn new_user(pool: &PgPool, id: Uuid) -> Result<User, sqlx::Error> {
+    let user = query_file_as!(User, "./src/db/queries/new_user.sql", id)
+        .fetch_one(pool)
         .await?;
 
     Ok(user)
 }
 
 pub async fn new_account(
-    conn: &mut PgConnection,
+    pool: &PgPool,
     userid: Uuid,
     nickname: String,
 ) -> Result<Account, sqlx::Error> {
-    let account = query_as!(
+    let account = query_file_as!(
         Account,
-        "INSERT INTO accounts (userid, nickname) VALUES ($1, $2) RETURNING *",
+        "./src/db/queries/new_account.sql",
         userid,
         nickname,
     )
-    .fetch_one(conn)
+    .fetch_one(pool)
     .await?;
 
     Ok(account)
 }
 
-pub async fn change_account_name(
-    conn: &mut PgConnection,
+pub async fn update_account_name(
+    pool: &PgPool,
     userid: Uuid,
     old_nickname: &str,
     new_nickname: &str,
 ) -> Result<Account, sqlx::Error> {
-    let account = query_as!(
+    let account = query_file_as!(
         Account,
-        "UPDATE accounts SET nickname = $1 WHERE nickname = $2 AND userid = $3 RETURNING *",
+        "./src/db/queries/update_account_name.sql",
         new_nickname,
         old_nickname,
         userid,
     )
-    .fetch_one(conn)
+    .fetch_one(pool)
     .await?;
 
     Ok(account)
 }
 
 pub async fn delete_account(
-    conn: &mut PgConnection,
+    pool: &PgPool,
     accountid: Uuid,
     userid: Uuid,
 ) -> Result<Option<Account>, sqlx::Error> {
-    let account = query_as!(
+    let account = query_file_as!(
         Account,
-        "DELETE FROM accounts WHERE id = $1 and userid = $2 RETURNING *",
+        "./src/db/queries/delete_account.sql",
         accountid,
         userid
     )
-    .fetch_optional(conn)
+    .fetch_optional(pool)
     .await?;
 
     Ok(account)
 }
 
 pub async fn get_accounts_for_user(
-    conn: &mut PgConnection,
+    pool: &PgPool,
     id: Uuid,
 ) -> Result<Vec<Account>, sqlx::Error> {
-    let accounts = query_as!(Account, "SELECT * FROM accounts WHERE userid = $1", id)
-        .fetch_all(conn)
+    let accounts = query_file_as!(Account, "./src/db/queries/get_accounts_for_user.sql", id)
+        .fetch_all(pool)
         .await?;
 
     Ok(accounts)
 }
 
 pub async fn get_transactions_for_account(
-    conn: &mut PgConnection,
+    pool: &PgPool,
     id: Uuid,
 ) -> Result<Vec<Transaction>, sqlx::Error> {
-    let transactions = query_as!(
+    let transactions = query_file_as!(
         Transaction,
-        "SELECT * FROM transactions WHERE fromid = $1 OR toid = $1",
+        "./src/db/queries/get_transactions_for_account.sql",
         id
     )
-    .fetch_all(conn)
+    .fetch_all(pool)
     .await?;
 
     Ok(transactions)
 }
 
 pub async fn get_balances_for_account(
-    conn: &mut PgConnection,
+    pool: &PgPool,
     id: Uuid,
 ) -> Result<Vec<Balance>, sqlx::Error> {
-    let balances = query_as!(Balance, "SELECT * FROM balances WHERE accountid = $1", id)
-        .fetch_all(conn)
+    let balances = query_file_as!(Balance, "./src/db/queries/get_balances_for_account.sql", id)
+        .fetch_all(pool)
         .await?;
 
     Ok(balances)
 }
 
 pub async fn transfer(
-    conn: &mut PgConnection,
+    pool: &PgPool,
     fromid: Uuid,
     toid: Uuid,
     quantity: i64,
@@ -134,7 +134,7 @@ pub async fn transfer(
     // item,
     // price
 
-    let mut transaction = conn.begin().await?;
+    let mut transaction = pool.begin().await?;
     query!(
         "
         UPDATE balances SET quantity = (quantity - $1)
@@ -168,47 +168,38 @@ pub async fn transfer(
 }
 
 pub async fn deposit(
-    conn: &mut PgConnection,
+    pool: &PgPool,
     accountid: Uuid,
     item: &str,
     quantity: i64,
 ) -> Result<Balance, sqlx::Error> {
-    let balance = query_as!(
+    let balance = query_file_as!(
         Balance,
-        "
-    INSERT INTO balances (accountid, item, quantity) VALUES ($1, $2, $3)
-    ON CONFLICT (accountid, item) DO UPDATE SET quantity = (balances.quantity + $3)
-    RETURNING *;
-  
-    ",
+        "./src/db/queries/deposit.sql",
         accountid,
         item,
         quantity
     )
-    .fetch_one(conn)
+    .fetch_one(pool)
     .await?;
 
     Ok(balance)
 }
 
 pub async fn withdraw(
-    conn: &mut PgConnection,
+    pool: &PgPool,
     accountid: Uuid,
     item: &str,
     quantity: i64,
 ) -> Result<Balance, sqlx::Error> {
-    let balance = query_as!(
+    let balance = query_file_as!(
         Balance,
-        "
-    UPDATE balances SET quantity = (quantity - $3) WHERE accountid = $1 AND item = $2
-    RETURNING *;
-  
-    ",
+        "./src/db/queries/withdraw.sql",
         accountid,
         item,
         quantity
     )
-    .fetch_one(conn)
+    .fetch_one(pool)
     .await?;
 
     Ok(balance)
