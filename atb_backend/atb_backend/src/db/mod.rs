@@ -84,8 +84,6 @@ pub async fn get_accounts_for_user(
         .fetch_all(pool)
         .await?;
 
-    dbg!(&accounts);
-
     Ok(accounts)
 }
 

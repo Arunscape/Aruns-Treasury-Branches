@@ -4,7 +4,7 @@ use std::{net::SocketAddr, str::FromStr};
 use atb_types::Account;
 use axum::{
     async_trait,
-    extract::{FromRef, FromRequestParts, State},
+    extract::{FromRef, FromRequestParts, State, MatchedPath, Path},
     http::{
         self,
         header::{HeaderMap, HeaderValue},
@@ -12,7 +12,7 @@ use axum::{
         StatusCode,
     },
     response::{ErrorResponse, IntoResponse},
-    routing::get,
+    routing::{get, delete, post},
     Json, RequestPartsExt, Router,
 };
 use lazy_static::lazy_static;
@@ -75,7 +75,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let app = Router::new()
         .route("/", get(|| async { "Hello, World!" }))
         .route("/refresh", get(refresh_jwt))
-        .route("/accounts", get(get_accounts))
+        .route("/accounts", get(get_accounts).patch(update_account_name))
+        // .route("/accounts/:name", post(new_account))
+        .route("/accounts/:id", delete(delete_account).post(new_account))
         .with_state(app_state);
 
     let server_address = SERVER_ADDR.parse()?;
@@ -94,15 +96,57 @@ async fn refresh_jwt() -> impl IntoResponse {
     )
 }
 
-#[axum::debug_handler]
-async fn get_accounts(State(pool): State<PgPool>) -> Result<(StatusCode, Json<Vec<Account>>), ErrorResponse> {
+//async fn get_accounts(State(pool): State<PgPool>) -> Result<(StatusCode, Json<Vec<Account>>), ErrorResponse> {
+async fn get_accounts(State(pool): State<PgPool>) -> Result<impl IntoResponse, ErrorResponse> {
     // todo get uuid from token
-    //let uuid = Uuid::from_str("30652840-fcd4-48aa-b52d-306f85c0f93e").unwrap();
-    let uuid = Uuid::from_str("f5253be5-8a09-41d3-b0d9-f788b5f55783").unwrap();
+    let uuid = Uuid::from_str("30652840-fcd4-48aa-b52d-306f85c0f93e").unwrap();
 
     let accounts = db::get_accounts_for_user(&pool, uuid)
         .await
         .map_err(|e| (StatusCode::BAD_REQUEST, e.to_string()))?;
 
     Ok((StatusCode::OK, Json(accounts)))
+}
+
+async fn new_account(State(pool): State<PgPool>, Path(name): Path<String>) -> Result<impl IntoResponse, ErrorResponse> {
+    // todo get uuid from token
+    let uuid = Uuid::from_str("30652840-fcd4-48aa-b52d-306f85c0f93e").unwrap();
+
+    let account = db::new_account(&pool, uuid, name)
+        .await
+        .map_err(|e| (StatusCode::BAD_REQUEST, e.to_string()))?;
+
+    Ok((StatusCode::OK, Json(account)))
+}
+
+#[derive(Deserialize, Serialize)]
+struct UpdateAccountName {
+    old: String,
+    new: String,
+}
+async fn update_account_name(State(pool): State<PgPool>, Json(reqbody): Json<UpdateAccountName>) -> Result<impl IntoResponse, ErrorResponse> {
+    // todo get uuid from token
+    let uuid = Uuid::from_str("30652840-fcd4-48aa-b52d-306f85c0f93e").unwrap();
+
+    let account = db::update_account_name(&pool, uuid, "old", "new")
+        .await
+        .map_err(|e| (StatusCode::BAD_REQUEST, e.to_string()))?;
+
+    Ok((StatusCode::OK, Json(account)))
+
+}
+
+async fn delete_account(State(pool): State<PgPool>, Path(id): Path<Uuid>) -> Result<impl IntoResponse, ErrorResponse> {
+    // todo get uuid from token
+    let uuid = Uuid::from_str("30652840-fcd4-48aa-b52d-306f85c0f93e").unwrap();
+
+    let account = db::delete_account(&pool, id, uuid)
+        .await
+        .map_err(|e| (StatusCode::BAD_REQUEST, e.to_string()))?;
+
+    match account {
+        Some(account) => Ok((StatusCode::OK, Json(account))),
+        None => Err((StatusCode::NOT_FOUND, "Account not found").into()),
+    }
+
 }
