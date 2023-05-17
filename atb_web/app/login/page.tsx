@@ -1,12 +1,30 @@
 import { getServerSession } from "next-auth";
 import { useSession, signIn, signOut } from "next-auth/react";
-import { authOptions } from "../api/auth/[...nextauth]/route";
+
 import Btns from "@/components/Btns";
+import { authOptions } from "@/lib/auth";
+
+
+
+// export async function getServerSideProps(context: any) {
+//   return {
+//     props: {
+//       session: await getServerSession(
+//         context.req,
+//         context.res,
+//         authOptions
+//       ),
+//     },
+//   }
+// }
 
 
 
 export default async function Component() {
-  const session = await getServerSession(authOptions as any);
+  // const { data: session } = useSession()
+  const session = await getServerSession(authOptions)
+  
+  console.log("session", session)
 
   return (
     <>
