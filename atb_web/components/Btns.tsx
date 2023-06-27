@@ -1,8 +1,7 @@
 'use client'
 
 import { signIn, signOut } from "next-auth/react";
-
-export default  () => {
+const Buttons = () => {
 
     return (
       <>
@@ -15,3 +14,5 @@ export default  () => {
       </>
     );
   };
+
+  export default Buttons;

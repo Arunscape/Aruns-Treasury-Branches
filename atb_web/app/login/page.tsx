@@ -23,7 +23,7 @@ import { getToken } from "next-auth/jwt";
 
 export default async function Component() {
   // const { data: session } = useSession()
-  const session = await getServerSession(authOptions)
+  const session = await getServerSession(authOptions as any)
   
   console.log("session", session)
 

@@ -1,7 +1,7 @@
 import { getToken } from "next-auth/jwt"
 import { NextResponse } from "next/server"
 
-const handler = async (req, res) => {
+const handler = async (req: any, res: any) => {
 
     const token = await getToken({ req })
     console.log(token)
