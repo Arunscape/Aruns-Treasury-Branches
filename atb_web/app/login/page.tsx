@@ -30,7 +30,7 @@ export default async function Component() {
   return (
     <>
       <h1>Server Session</h1>
-      <pre>{JSON.stringify(session)}</pre>
+      <pre>{JSON.stringify(session, null, 4)}</pre>
       <Btns />
     </>
   );

@@ -14,15 +14,15 @@ export const authOptions = {
     ],
     secret: process.env.NEXTAUTH_SECRET,
     callbacks: {
-        // async session(session, token) {
-        //     return session
-        // }
-        // async jwt({ token, user, account, profile, isNewUser }) {
-        //     if (account?.access_token) {
-        //         // token.accessToken = account.access_token
-        //     }
-        //     // console.log(token)
-        //     return token
-        // },
+        async session(session, token) {
+            return session
+        },
+        async jwt({ token, user, account, profile, isNewUser }) {
+            if (account?.access_token) {
+                token.accessToken = account.access_token
+            }
+            console.log(token)
+            return token
+        },
     },
 }
