@@ -1,5 +1,6 @@
 #![allow(dead_code, unused)]
 use std::{net::SocketAddr, str::FromStr};
+use dotenvy_macro::dotenv;
 
 use atb_types::Account;
 use axum::{
@@ -35,6 +36,7 @@ mod db;
 
 use crate::authentication::{verify_jwt, Claims};
 
+dotenv!();
 lazy_static! {
     static ref SERVER_ADDR: String = std::env::var("SERVER_ADDR").unwrap_or("[::]:8080".into());
     static ref AUTH_SERVER_ADDR: String = std::env::var("AUTH_ADDR").unwrap_or("[::]:8081".into());

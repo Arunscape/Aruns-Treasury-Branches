@@ -17,6 +17,8 @@ tokio = { version = "1.29.0", features = ["macros", "rt-multi-thread", "full", "
 uuid = { version = "1.4.0", features = ["serde", "v4"] }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+dotenvy = "0.15.7"
+dotenvy_macro = "0.15.7"
 
 
 [profile.dev.package.sqlx-macros]
