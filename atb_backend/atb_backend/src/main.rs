@@ -36,7 +36,10 @@ mod db;
 
 use crate::authentication::{verify_jwt, Claims};
 
-dotenv!();
+// use load_dotenv::load_dotenv;
+
+// load_dotenv!();
+
 lazy_static! {
     static ref SERVER_ADDR: String = std::env::var("SERVER_ADDR").unwrap_or("[::]:8080".into());
     static ref AUTH_SERVER_ADDR: String = std::env::var("AUTH_ADDR").unwrap_or("[::]:8081".into());
@@ -53,6 +56,8 @@ struct AppState {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // let x = dotenvy::dotenv().unwrap ();
+    // dbg!(&x.display());
     let fmt_layer = tracing_subscriber::fmt::layer();
 
     tracing_subscriber::registry()
