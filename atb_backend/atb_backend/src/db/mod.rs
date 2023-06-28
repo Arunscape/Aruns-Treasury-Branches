@@ -9,6 +9,11 @@ use uuid::Uuid;
 //use sqlx::{Acquire, Connection};
 use sqlx::Connection;
 
+// use load_dotenv::load_dotenv;
+
+// load_dotenv!();
+
+
 lazy_static! {
     static ref DB_URL: String =
         env::var("DATABASE_URL").unwrap_or("postgres://postgres@localhost/postgres".into());

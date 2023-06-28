@@ -19,7 +19,4 @@ tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 dotenvy = "0.15.7"
 dotenvy_macro = "0.15.7"
-
-
-[profile.dev.package.sqlx-macros]
-opt-level = 3
+load-dotenv = "0.1.2"

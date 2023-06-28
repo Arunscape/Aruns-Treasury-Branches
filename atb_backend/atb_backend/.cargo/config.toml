@@ -1,4 +1,4 @@
 [env]
 # for development
-DATABASE_URL = "postgres://postgres@localhost/postgres"
+#DATABASE_URL = "postgres://postgres@localhost/postgres"
 # when in docker container, the environment variable there should override this

@@ -6,7 +6,7 @@ CREATE TABLE users (
 CREATE TABLE accounts (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     userid UUID NOT NULL REFERENCES users (id),
-    nickname TEXT NOT NULL
+    nickname TEXT NOT NULL,
     -- nickname is unique per user
     CONSTRAINT nickname_unique UNIQUE (userid, nickname)
 );
