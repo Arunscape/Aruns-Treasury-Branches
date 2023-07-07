@@ -6,6 +6,7 @@ import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.command.TabCompleter
+import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
 
 class CommandManager : CommandExecutor, TabCompleter {
@@ -19,6 +20,7 @@ class CommandManager : CommandExecutor, TabCompleter {
     }
 
     fun helpMessage(): String {
+
         return "Available Commands:\n" + subcommands.map { it.value.getSyntax() + "\n" }.reduce { acc, it -> acc + it }
     }
 
@@ -42,8 +44,6 @@ class CommandManager : CommandExecutor, TabCompleter {
 
         subcommands[args[0]]?.perform(sender, args)
 
-
-
         return true
     }
 
@@ -64,8 +64,6 @@ class CommandManager : CommandExecutor, TabCompleter {
         if (!subcommands.containsKey(subcommand)) {
             return null
         }
-
-
 
         return subcommands[subcommand]?.onTabComplete(sender, command, label, args.sliceArray(1 until args.size))
 

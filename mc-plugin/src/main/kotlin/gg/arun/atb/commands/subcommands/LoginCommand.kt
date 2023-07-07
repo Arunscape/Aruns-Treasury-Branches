@@ -1,8 +1,7 @@
 package gg.arun.atb.commands.subcommands
 
 
-import co.aikar.timings.TimingsManager.url
-import gg.arun.atb.Atb
+import gg.arun.atb.Atb.Companion.config
 import gg.arun.atb.commands.SubCommand
 import gg.arun.atb.server.apiclient.getToken
 import io.ktor.client.*
@@ -12,19 +11,19 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
-import net.md_5.bungee.api.chat.ClickEvent
-import net.md_5.bungee.api.chat.ComponentBuilder
-import net.md_5.bungee.api.chat.HoverEvent
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.event.ClickEvent
+import net.kyori.adventure.text.event.HoverEvent
+import net.kyori.adventure.text.event.HoverEvent.hoverEvent
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import java.lang.Exception
 import java.util.*
 
 
-val websiteUrl = Atb.config.getString("website_url")!!
-
 class LoginCommand : SubCommand() {
+
+    private val websiteUrl: String = config["website_url"].toString()
     override fun getName(): String {
         return "login"
     }
@@ -53,15 +52,12 @@ class LoginCommand : SubCommand() {
                     parameters.append("username", username)
                     buildString()
                 }
-            val textComponent = net.md_5.bungee.api.chat.TextComponent(loginUrl)
-            textComponent.setClickEvent(ClickEvent(ClickEvent.Action.OPEN_URL, loginUrl))
-            textComponent.setHoverEvent(
-                HoverEvent(
-                    HoverEvent.Action.SHOW_TEXT,
-                    ComponentBuilder("Click me to login!").create()
-                )
-            )
-            player.sendMessage(textComponent)
+
+            val component = Component.text(loginUrl)
+                .clickEvent(ClickEvent.openUrl(loginUrl))
+                .hoverEvent(HoverEvent.showText(Component.text("Click me to login!")))
+
+            player.sendMessage(component)
         } catch (e: Exception) {
             println("Error: $e")
             player.sendMessage("login error: ask Arun: $e")

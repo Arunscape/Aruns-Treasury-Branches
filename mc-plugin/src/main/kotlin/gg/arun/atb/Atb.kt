@@ -1,23 +1,20 @@
 package gg.arun.atb
 
-import org.bukkit.plugin.java.JavaPlugin
 import gg.arun.atb.commands.CommandManager
-import org.bukkit.configuration.MemoryConfiguration
 import org.bukkit.configuration.file.FileConfiguration
-import java.io.File
+import org.bukkit.plugin.java.JavaPlugin
 
 class Atb : JavaPlugin() {
-
     override fun onEnable() {
         // Plugin startup logic
 
-        config.addDefault("server_url", "http://[::]:8081")
-        config.addDefault("website_url", "https://atb.arun.gg")
         config.options().copyDefaults(true)
-        saveConfig()
+        // Atb.config = config.getValues(true).map { (k, v) -> k!! to v.toString() }.toMap()
+        //     .toMutableMap() as HashMap<String, String>
 
         Atb.config = config
 
+        // todo: don't log the secrets lol
         logger.info("config: " + config.saveToString())
 
 

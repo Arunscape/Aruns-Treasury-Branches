@@ -34,7 +34,7 @@ use uuid::Uuid;
 mod authentication;
 mod db;
 
-use crate::authentication::{verify_jwt, Claims};
+use crate::authentication::{verify_jwt, Claims, make_jwt};
 
 // use load_dotenv::load_dotenv;
 
@@ -47,6 +47,8 @@ lazy_static! {
     static ref API_URL: String = std::env::var("API_URL").unwrap_or("http://[::]:8080".into());
     static ref DB_URL: String =
         std::env::var("DATABASE_URL").unwrap_or("postgres://postgres@localhost/postgres".into());
+    static ref MCAUTH_CLIENT_ID: String = std::env::var("MCAUTH_CLIENT_ID").unwrap_or("3140686772632028258".into());
+    static ref MCAUTH_CLIENT_SECRET: String = std::env::var("MCAUTH_CLIENT_SECRET").expect("MCAUTH_CLIENT_SECRET not provided");
 }
 
 #[derive(Debug, Clone, FromRef)]
@@ -81,6 +83,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let app = Router::new()
         .route("/", get(|| async { "Hello, World!" }))
+        .route("/token/:id", get(get_token))
         .route("/refresh", get(refresh_jwt))
         .route("/accounts", get(get_accounts).patch(update_account_name))
         // .route("/accounts/:name", post(new_account))
@@ -95,6 +98,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     Ok(())
 }
+
 
 async fn refresh_jwt() -> impl IntoResponse {
     (

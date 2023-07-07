@@ -1,6 +1,7 @@
 package gg.arun.atb.commands
 
 import org.bukkit.command.TabCompleter
+import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
 
 abstract class SubCommand : TabCompleter {
