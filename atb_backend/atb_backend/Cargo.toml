@@ -20,3 +20,4 @@ tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 dotenvy = "0.15.7"
 dotenvy_macro = "0.15.7"
 load-dotenv = "0.1.2"
+reqwest = { version = "0.11", features = ["json"] }

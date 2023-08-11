@@ -1,7 +1,7 @@
 #![allow(dead_code, unused)]
 use std::{net::SocketAddr, str::FromStr};
 use dotenvy_macro::dotenv;
-
+use reqwest::Client;
 use atb_types::Account;
 use axum::{
     async_trait,
@@ -83,7 +83,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let app = Router::new()
         .route("/", get(|| async { "Hello, World!" }))
-        .route("/token/:id", get(get_token))
+        .route("/oauth", get(get_oauth))
+        // .route("/token/:id", get(get_token))
         .route("/refresh", get(refresh_jwt))
         .route("/accounts", get(get_accounts).patch(update_account_name))
         // .route("/accounts/:name", post(new_account))
@@ -100,6 +101,25 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 
+async fn get_oauth() -> Result<impl IntoResponse, ErrorResponse> {
+    // todo use a client and add it as part of appstate so you can reuse the connection
+    let client = Client::new();
+    let resp= client.get("https://mc-auth.com/oAuth2/authorize")
+        .query(&[
+            ("response_type", "code"),
+            ("scope", "profile"),
+            ("client_id", &*MCAUTH_CLIENT_ID),
+            ("redirect_uri", &format!("{}/oauth_callback", &*DOMAIN)),
+        ])
+        .send()
+        .await
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
+        .json()
+        .await
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+        
+    Ok((StatusCode::OK, Json(resp)))
+}
 async fn refresh_jwt() -> impl IntoResponse {
     (
         StatusCode::NOT_IMPLEMENTED,

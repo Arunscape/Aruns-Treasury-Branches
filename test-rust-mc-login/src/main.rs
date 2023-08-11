@@ -1,6 +1,7 @@
 // https://github.com/KernelFreeze/minecraft-msa-auth/blob/95687d7636b21b63b888a6e830556ec49693575d/examples/auth_code_flow.rs
 
 use minecraft_msa_auth::MinecraftAuthorizationFlow;
+use minecraft_msa_auth::MinecraftAccessToken;
 use oauth2::basic::BasicClient;
 use oauth2::reqwest::async_http_client;
 use oauth2::{
@@ -98,6 +99,22 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         let mc_flow = MinecraftAuthorizationFlow::new(Client::new());
         let mc_token = mc_flow.exchange_microsoft_token(token.access_token().secret()).await?;
         println!("minecraft token: {:?}", mc_token);
+
+        let x = mc_token.access_token().as_ref();
+        println!("minecraft token: {:?}", x);
+
+
+        let res = Client::new()
+            .get("https://api.minecraftservices.com/minecraft/profile")
+            .header("Authorization", format!("Bearer {}", x))
+            .header("Accept", "application/json")
+            .send()
+            .await?;
+
+        println!("{:?}", res);
+
+        let res = res.text().await?;
+        println!("{:?}", res);
 
         // The server will terminate itself after collecting the first code.
         break;
