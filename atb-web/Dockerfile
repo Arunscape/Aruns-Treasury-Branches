@@ -1,6 +1,6 @@
 FROM docker.io/rustlang/rust:nightly-slim as builder
 WORKDIR /app
-RUN apt-get update && apt-get install -y npm
+RUN apt-get update && apt-get install -y npm pkg-config
 RUN cargo install cargo-leptos
 COPY . .
 RUN cargo leptos build --release
