@@ -13,10 +13,12 @@ pub fn App(cx: Scope) -> impl IntoView {
 
         // injects a stylesheet into the document <head>
         // id=leptos means cargo-leptos will hot-reload this stylesheet
-        <Stylesheet id="leptos" href="/pkg/start-axum.css"/>
+        <Stylesheet id="leptos" href="/pkg/atb-web.css"/>
 
         // sets the document title
-        <Title text="Welcome to Leptos"/>
+        <Title text="Arun's Treasury Branches"/>
+        <Link rel="icon" href="/favicon.svg"/>
+        <Html attributes=AdditionalAttributes::from(vec![("data-theme", "forest")])/>
 
         // content for this welcome page
         <Router fallback=|cx| {
@@ -44,7 +46,7 @@ fn HomePage(cx: Scope) -> impl IntoView {
     let on_click = move |_| set_count.update(|count| *count += 1);
 
     view! { cx,
-        <h1>"Welcome to Leptos!"</h1>
-        <button on:click=on_click>"Click Me: " {count}</button>
+        <h1>"It worky!"</h1>
+        <button class="btn btn-primary" on:click=on_click>"Click Me: " {count}</button>
     }
 }
