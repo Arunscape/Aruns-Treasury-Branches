@@ -16,7 +16,8 @@ RUN npm install
 RUN cargo leptos build --release
 
 #FROM docker.io/rustlang/rust:nightly-slim
-FROM docker.io/debian:stable-slim
+#FROM docker.io/debian:stable-slim
+FROM gcr.io/distroless/cc:latest
 # Copy the server binary to the /app directory
 COPY --from=builder /app/target/server/release/atb-web /app/
 # /target/site contains our JS/WASM/CSS, etc.
