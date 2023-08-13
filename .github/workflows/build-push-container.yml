@@ -1,0 +1,25 @@
+name: Build and Push Container
+
+on:
+  push:
+    paths:
+      - 'atb-web/**'
+      - '.github/workflows/build-push-container.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    
+    - name: Build and push Docker image
+      uses: macbre/push-to-ghcr@master
+      with:
+        file: atb-web/Dockerfile
+        dockerfile: ./atb-web/Dockerfile
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        image_name: ${{ github.repository }}/atb-web
+
+
+    
+      
