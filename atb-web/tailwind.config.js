@@ -2,8 +2,8 @@ module.exports = {
   mode: "jit",
   //darkMode: "class",
   content: [
-    "./src/**/*.{html,rs}",
-    "./**.{html,css,scss}",
+    "**/src/**/*.{html,rs}",
+    "**/style.{css,scss}",
   ],
   theme: {
     extend: {},
