@@ -89,7 +89,8 @@ fn Idk(cx: Scope) -> impl IntoView {
 
 #[component]
 fn Status(cx: Scope) -> impl IntoView {
-    view! { cx, <h1>"Status"</h1>
+    view! { cx,
+        <h1>"Status"</h1>
         <McStatusComponent/>
     }
 }
