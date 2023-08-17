@@ -1,7 +1,6 @@
 #![cfg_attr(debug_assertions, allow(dead_code, unused_imports))]
 
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 use uuid::Uuid;
 
 pub mod prelude;
