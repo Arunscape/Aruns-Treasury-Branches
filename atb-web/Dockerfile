@@ -12,6 +12,7 @@ COPY tailwind.config.js tailwind.config.js
 COPY Cargo.toml Cargo.toml
 COPY package.json package.json
 COPY package-lock.json package-lock.json
+RUN sed -i '/..\/atb_types/c\atb_types = { git = "https://github.com/Arunscape/Aruns-Treasury-Branches.git" }' Cargo.toml
 RUN npm install
 RUN cargo leptos build --release
 

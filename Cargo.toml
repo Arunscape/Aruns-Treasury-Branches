@@ -5,7 +5,7 @@ members = [
     "atb_backend/atb_backend",
     "atb_backend/atb_order_book",
     "atb_backend/atb_order_queue",
-    "atb_backend/atb_types",
+    "atb_types",
     "atb-web",
     "test-rust-mc-login",
 ]
