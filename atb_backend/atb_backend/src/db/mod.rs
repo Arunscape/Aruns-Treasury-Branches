@@ -13,7 +13,6 @@ use sqlx::Connection;
 
 // load_dotenv!();
 
-
 lazy_static! {
     static ref DB_URL: String =
         env::var("DATABASE_URL").unwrap_or("postgres://postgres@localhost/postgres".into());
@@ -81,10 +80,7 @@ pub async fn delete_account(
     Ok(account)
 }
 
-pub async fn get_accounts_for_user(
-    pool: &PgPool,
-    id: Uuid,
-) -> Result<Vec<Account>, sqlx::Error> {
+pub async fn get_accounts_for_user(pool: &PgPool, id: Uuid) -> Result<Vec<Account>, sqlx::Error> {
     let accounts = query_file_as!(Account, "./src/db/queries/get_accounts_for_user.sql", id)
         .fetch_all(pool)
         .await?;

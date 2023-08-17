@@ -49,3 +49,13 @@ pub enum OrderType {
     Market,
     Limit(i64),
 }
+
+#[derive(Default, Debug, Serialize, Deserialize, Clone)]
+pub struct McServerStatus {
+    pub version: String,
+    pub max_players: usize,
+    pub online_players: usize,
+    /// (name, id)
+    pub sample: Vec<(String, String)>,
+    pub favicon: Vec<u8>,
+}

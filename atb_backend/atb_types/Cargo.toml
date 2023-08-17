@@ -7,6 +7,6 @@ edition = "2021"
 
 [dependencies]
 #sqlx = { version = "0.6", features = [ "runtime-async-std-native-tls", "postgres", "macros", "chrono"] }
-uuid = "*"
+uuid = { version = "*", features = ["serde"] }
 chrono = "*"
 serde = { version = "*", features = ["derive"] }

@@ -1,11 +1,14 @@
 #[cfg(feature = "ssr")]
 #[tokio::main]
 async fn main() {
-    use axum::{routing::post, Router};
-    use leptos::*;
-    use leptos_axum::{generate_route_list, LeptosRoutes};
     use atb_web::app::*;
     use atb_web::fileserv::file_and_error_handler;
+    use axum::{
+        routing::{get, post},
+        Router,
+    };
+    use leptos::*;
+    use leptos_axum::{generate_route_list, LeptosRoutes};
 
     simple_logger::init_with_level(log::Level::Debug).expect("couldn't initialize logging");
 
@@ -22,6 +25,7 @@ async fn main() {
     // build our application with a route
     let app = Router::new()
         .route("/api/*fn_name", post(leptos_axum::handle_server_fns))
+        .route("/api/*fn_name", get(leptos_axum::handle_server_fns))
         .leptos_routes(&leptos_options, routes, || view! { <App/> })
         .fallback(file_and_error_handler)
         .with_state(leptos_options);

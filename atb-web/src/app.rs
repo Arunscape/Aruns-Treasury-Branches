@@ -1,17 +1,15 @@
+use crate::components::status::McStatusComponent;
 use crate::error_template::{AppError, ErrorTemplate};
 use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
-use crate::components::status::McStatusComponent;
 
 #[component]
 pub fn App() -> impl IntoView {
     // Provides context that manages stylesheets, titles, meta tags, etc.
     provide_meta_context();
 
-    view! { 
-        // injects a stylesheet into the document <head>
-        // id=leptos means cargo-leptos will hot-reload this stylesheet
+    view! {
         <Stylesheet id="leptos" href="/pkg/atb-web.css"/>
 
         // sets the document title
@@ -55,12 +53,7 @@ fn HomePage() -> impl IntoView {
 
 #[component]
 fn Navbar() -> impl IntoView {
-
-    let paths = move || { vec![
-        ("Home", "/"),
-        ("Server Status", "/status"),
-        ("idk", "/idk"),
-    ]};
+    let paths = move || vec![("Home", "/"), ("Server Status", "/status"), ("idk", "/idk")];
     view! {
         <nav>
             <div class="flex flex-row space-x-4">
@@ -81,7 +74,6 @@ fn Navbar() -> impl IntoView {
     }
 }
 
-
 #[component]
 fn Idk() -> impl IntoView {
     view! { <h1>"Idk"</h1> }
@@ -94,5 +86,3 @@ fn Status() -> impl IntoView {
         <McStatusComponent/>
     }
 }
-
-

@@ -1,11 +1,8 @@
 #![allow(dead_code, unused)]
-use std::{net::SocketAddr, str::FromStr};
-use dotenvy_macro::dotenv;
-use reqwest::Client;
 use atb_types::Account;
 use axum::{
     async_trait,
-    extract::{FromRef, FromRequestParts, State, MatchedPath, Path},
+    extract::{FromRef, FromRequestParts, MatchedPath, Path, State},
     http::{
         self,
         header::{HeaderMap, HeaderValue},
@@ -13,16 +10,19 @@ use axum::{
         StatusCode,
     },
     response::{ErrorResponse, IntoResponse},
-    routing::{get, delete, post},
+    routing::{delete, get, post},
     Json, RequestPartsExt, Router,
 };
+use dotenvy_macro::dotenv;
 use lazy_static::lazy_static;
+use reqwest::Client;
 use serde::{Deserialize, Serialize};
 use sqlx::{
     migrate::Migrator,
     postgres::{PgConnectOptions, PgPool, PgPoolOptions},
     ConnectOptions, Connection, PgConnection, Pool,
 };
+use std::{net::SocketAddr, str::FromStr};
 
 use tracing_subscriber::{
     filter::{filter_fn, LevelFilter},
@@ -34,7 +34,7 @@ use uuid::Uuid;
 mod authentication;
 mod db;
 
-use crate::authentication::{verify_jwt, Claims, make_jwt};
+use crate::authentication::{make_jwt, verify_jwt, Claims};
 
 // use load_dotenv::load_dotenv;
 
@@ -47,8 +47,10 @@ lazy_static! {
     static ref API_URL: String = std::env::var("API_URL").unwrap_or("http://[::]:8080".into());
     static ref DB_URL: String =
         std::env::var("DATABASE_URL").unwrap_or("postgres://postgres@localhost/postgres".into());
-    static ref MCAUTH_CLIENT_ID: String = std::env::var("MCAUTH_CLIENT_ID").unwrap_or("3140686772632028258".into());
-    static ref MCAUTH_CLIENT_SECRET: String = std::env::var("MCAUTH_CLIENT_SECRET").expect("MCAUTH_CLIENT_SECRET not provided");
+    static ref MCAUTH_CLIENT_ID: String =
+        std::env::var("MCAUTH_CLIENT_ID").unwrap_or("3140686772632028258".into());
+    static ref MCAUTH_CLIENT_SECRET: String =
+        std::env::var("MCAUTH_CLIENT_SECRET").expect("MCAUTH_CLIENT_SECRET not provided");
 }
 
 #[derive(Debug, Clone, FromRef)]
@@ -100,11 +102,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-
 async fn get_oauth() -> Result<impl IntoResponse, ErrorResponse> {
     // todo use a client and add it as part of appstate so you can reuse the connection
     let client = Client::new();
-    let resp= client.get("https://mc-auth.com/oAuth2/authorize")
+    let resp = client
+        .get("https://mc-auth.com/oAuth2/authorize")
         .query(&[
             ("response_type", "code"),
             ("scope", "profile"),
@@ -117,7 +119,7 @@ async fn get_oauth() -> Result<impl IntoResponse, ErrorResponse> {
         .json()
         .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
-        
+
     Ok((StatusCode::OK, Json(resp)))
 }
 async fn refresh_jwt() -> impl IntoResponse {
@@ -139,7 +141,10 @@ async fn get_accounts(State(pool): State<PgPool>) -> Result<impl IntoResponse, E
     Ok((StatusCode::OK, Json(accounts)))
 }
 
-async fn new_account(State(pool): State<PgPool>, Path(name): Path<String>) -> Result<impl IntoResponse, ErrorResponse> {
+async fn new_account(
+    State(pool): State<PgPool>,
+    Path(name): Path<String>,
+) -> Result<impl IntoResponse, ErrorResponse> {
     // todo get uuid from token
     let uuid = Uuid::from_str("30652840-fcd4-48aa-b52d-306f85c0f93e").unwrap();
 
@@ -155,7 +160,10 @@ struct UpdateAccountName {
     old: String,
     new: String,
 }
-async fn update_account_name(State(pool): State<PgPool>, Json(reqbody): Json<UpdateAccountName>) -> Result<impl IntoResponse, ErrorResponse> {
+async fn update_account_name(
+    State(pool): State<PgPool>,
+    Json(reqbody): Json<UpdateAccountName>,
+) -> Result<impl IntoResponse, ErrorResponse> {
     // todo get uuid from token
     let uuid = Uuid::from_str("30652840-fcd4-48aa-b52d-306f85c0f93e").unwrap();
 
@@ -164,10 +172,12 @@ async fn update_account_name(State(pool): State<PgPool>, Json(reqbody): Json<Upd
         .map_err(|e| (StatusCode::BAD_REQUEST, e.to_string()))?;
 
     Ok((StatusCode::OK, Json(account)))
-
 }
 
-async fn delete_account(State(pool): State<PgPool>, Path(id): Path<Uuid>) -> Result<impl IntoResponse, ErrorResponse> {
+async fn delete_account(
+    State(pool): State<PgPool>,
+    Path(id): Path<Uuid>,
+) -> Result<impl IntoResponse, ErrorResponse> {
     // todo get uuid from token
     let uuid = Uuid::from_str("30652840-fcd4-48aa-b52d-306f85c0f93e").unwrap();
 
@@ -179,5 +189,4 @@ async fn delete_account(State(pool): State<PgPool>, Path(id): Path<Uuid>) -> Res
         Some(account) => Ok((StatusCode::OK, Json(account))),
         None => Err((StatusCode::NOT_FOUND, "Account not found").into()),
     }
-
 }

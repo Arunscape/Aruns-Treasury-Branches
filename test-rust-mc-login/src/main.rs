@@ -1,12 +1,12 @@
 // https://github.com/KernelFreeze/minecraft-msa-auth/blob/95687d7636b21b63b888a6e830556ec49693575d/examples/auth_code_flow.rs
 
-use minecraft_msa_auth::MinecraftAuthorizationFlow;
 use minecraft_msa_auth::MinecraftAccessToken;
+use minecraft_msa_auth::MinecraftAuthorizationFlow;
 use oauth2::basic::BasicClient;
 use oauth2::reqwest::async_http_client;
 use oauth2::{
-    AuthType, AuthUrl, AuthorizationCode, ClientId, CsrfToken, PkceCodeChallenge, RedirectUrl, Scope, TokenResponse,
-    TokenUrl, ClientSecret
+    AuthType, AuthUrl, AuthorizationCode, ClientId, ClientSecret, CsrfToken, PkceCodeChallenge,
+    RedirectUrl, Scope, TokenResponse, TokenUrl,
 };
 use reqwest::{Client, Url};
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
@@ -17,13 +17,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // let client_id = std::env::args().nth(1).expect("client_id as first argument");
 
     let client_id = std::env::var("AZURE_AD_CLIENT_ID").expect("AZURE_AD_CLIENT_ID not found");
-    let client_secret = std::env::var("AZURE_AD_CLIENT_SECRET").expect("AZURE_AD_CLIENT_SECRET not found");
+    let client_secret =
+        std::env::var("AZURE_AD_CLIENT_SECRET").expect("AZURE_AD_CLIENT_SECRET not found");
 
     let client = BasicClient::new(
         ClientId::new(client_id),
         // Some(ClientSecret::new(String::from("<redacted>>"))),
         Some(ClientSecret::new(client_secret)),
-        AuthUrl::new("https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize".to_string())?,
+        AuthUrl::new(
+            "https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize".to_string(),
+        )?,
         Some(TokenUrl::new(
             "https://login.microsoftonline.com/consumers/oauth2/v2.0/token".to_string(),
         )?),
@@ -47,7 +50,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .add_scope(Scope::new("XboxLive.signin offline_access".to_string()))
         .set_pkce_challenge(pkce_code_challenge)
         .url();
-    println!("Open this URL in your browser:\n{}\n", authorize_url.to_string());
+    println!(
+        "Open this URL in your browser:\n{}\n",
+        authorize_url.to_string()
+    );
 
     // A very naive implementation of the redirect server.
     let listener = TcpListener::bind("127.0.0.1:8114").await?;
@@ -65,10 +71,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             let redirect_url = request_line.split_whitespace().nth(1).unwrap();
             let url = Url::parse(&("http://localhost".to_string() + redirect_url))?;
 
-            let (_key, value) = url.query_pairs().find(|(key, _value)| key == "code").unwrap();
+            let (_key, value) = url
+                .query_pairs()
+                .find(|(key, _value)| key == "code")
+                .unwrap();
             code = AuthorizationCode::new(value.into_owned());
 
-            let (_key, value) = url.query_pairs().find(|(key, _value)| key == "state").unwrap();
+            let (_key, value) = url
+                .query_pairs()
+                .find(|(key, _value)| key == "state")
+                .unwrap();
             state = CsrfToken::new(value.into_owned());
         }
 
@@ -92,17 +104,19 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .exchange_code(code)
             // Send the PKCE code verifier in the token request
             .set_pkce_verifier(pkce_code_verifier)
-            .request_async(async_http_client).await?;
+            .request_async(async_http_client)
+            .await?;
         println!("microsoft token:\n{:?}\n", token);
 
         // Exchange the Microsoft token with a Minecraft token.
         let mc_flow = MinecraftAuthorizationFlow::new(Client::new());
-        let mc_token = mc_flow.exchange_microsoft_token(token.access_token().secret()).await?;
+        let mc_token = mc_flow
+            .exchange_microsoft_token(token.access_token().secret())
+            .await?;
         println!("minecraft token: {:?}", mc_token);
 
         let x = mc_token.access_token().as_ref();
         println!("minecraft token: {:?}", x);
-
 
         let res = Client::new()
             .get("https://api.minecraftservices.com/minecraft/profile")
@@ -121,4 +135,3 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
     Ok(())
 }
-
