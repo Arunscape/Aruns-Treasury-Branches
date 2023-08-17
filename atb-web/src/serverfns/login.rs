@@ -1,5 +1,4 @@
-// https://github.com/KernelFreeze/minecraft-msa-auth/blob/95687d7636b21b63b888a6e830556ec49693575d/examples/auth_code_flow.rs
-
+use leptos::*;
 use minecraft_msa_auth::MinecraftAuthorizationFlow;
 use oauth2::basic::BasicClient;
 use oauth2::reqwest::async_http_client;

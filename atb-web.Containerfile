@@ -1,18 +1,10 @@
 FROM docker.io/rust:latest as builder
 WORKDIR /app
 RUN apt-get update && apt-get install -y npm pkg-config
-#RUN apk add npm musl-dev pkgconf openssl-dev
 RUN cargo install cargo-leptos
 COPY .cargo .cargo
-COPY rust-toolchain.toml rust-toolchain.toml
-COPY src src
-COPY public public
-COPY style style
-COPY tailwind.config.js tailwind.config.js
-COPY Cargo.toml Cargo.toml
-COPY package.json package.json
-COPY package-lock.json package-lock.json
-RUN sed -i '/..\/atb_types/c\atb_types = { git = "https://github.com/Arunscape/Aruns-Treasury-Branches.git" }' Cargo.toml
+COPY . .
+WORKDIR /app/atb-web
 RUN npm install
 RUN cargo leptos build --release
 
