@@ -44,13 +44,13 @@ pub async fn ping_minecraft_server() -> Result<McStatus, ServerFnError> {
 }
 
 #[component]
-fn Status(cx: Scope, status: McStatus) -> impl IntoView {
+fn Status(status: McStatus) -> impl IntoView {
     let version = format!("Version: {}", status.version);
     let players = move || status.sample.clone();
 
-    let imgref = create_node_ref::<html::Img>(cx);
+    let imgref = create_node_ref::<html::Img>();
     //https://github.com/leptos-rs/leptos/discussions/1194#discussioncomment-6196929
-    create_effect(cx, move |_| {
+    create_effect(move |_| {
         use gloo::file::{Blob, ObjectUrl};
 
         if let Some(img) = imgref.get() {
@@ -65,7 +65,7 @@ fn Status(cx: Scope, status: McStatus) -> impl IntoView {
         
     });
 
-    view! { cx,
+    view! {
         <p>{version}</p>
         // <img src=url/>
         <img node_ref=imgref/>
@@ -73,33 +73,31 @@ fn Status(cx: Scope, status: McStatus) -> impl IntoView {
         <For
             each=players
             key=|(_name, id)| id.clone()
-            view=move |cx, (name, _id)| {
-                view! { cx, <p>{name}</p> }
+            view=move |(name, _id)| {
+                view! { <p>{name}</p> }
             }
         />
     }
 }
 #[component]
-pub fn McStatusComponent(cx: Scope) -> impl IntoView {
+pub fn McStatusComponent() -> impl IntoView {
 
 
-    let once = create_resource(cx, move || () , move |_| async move  { 
+    let once = create_resource(move || () , move |_| async move  { 
         let r = ping_minecraft_server().await;
         let r = r.unwrap_or(McStatus::default());
         r
     });
 
 
-    //let x = move || { once.read(cx).map(|v| view! { cx, <p>{format!("{:?}", v)}</p> }) };
-    let x = move || { once.read(cx).map(|v| view! { cx, <Status status=v/> }) };
+    let x = move || { once.read().map(|v| view! { <Status status=v/> }) };
 
-    view! { cx,
+    view! {
         <h1>"Server Status"</h1>
-        <Suspense fallback=move || view! { cx, <p>"Loading..."</p> }>
+        <Suspense fallback=move || view! { <p>"Loading..."</p> }>
             <div>
 
                 {x}
-            // {move || { once.read(cx).map(|v| view! { cx, <p>{v.to_string()}</p> }) }}
 
             </div>
         </Suspense>

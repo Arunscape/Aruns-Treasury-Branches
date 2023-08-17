@@ -5,11 +5,11 @@ use leptos_router::*;
 use crate::components::status::McStatusComponent;
 
 #[component]
-pub fn App(cx: Scope) -> impl IntoView {
+pub fn App() -> impl IntoView {
     // Provides context that manages stylesheets, titles, meta tags, etc.
-    provide_meta_context(cx);
+    provide_meta_context();
 
-    view! { cx,
+    view! { 
         // injects a stylesheet into the document <head>
         // id=leptos means cargo-leptos will hot-reload this stylesheet
         <Stylesheet id="leptos" href="/pkg/atb-web.css"/>
@@ -20,10 +20,10 @@ pub fn App(cx: Scope) -> impl IntoView {
         <Html attributes=AdditionalAttributes::from(vec![("data-theme", "forest")])/>
 
         // content for this welcome page
-        <Router fallback=|cx| {
+        <Router fallback=|| {
             let mut outside_errors = Errors::default();
             outside_errors.insert_with_default_key(AppError::NotFound);
-            view! { cx, <ErrorTemplate outside_errors/> }.into_view(cx)
+            view! { <ErrorTemplate outside_errors/> }.into_view()
         }>
             <Navbar/>
             <main>
@@ -39,12 +39,12 @@ pub fn App(cx: Scope) -> impl IntoView {
 
 /// Renders the home page of your application.
 #[component]
-fn HomePage(cx: Scope) -> impl IntoView {
+fn HomePage() -> impl IntoView {
     // Creates a reactive value to update the button
-    let (count, set_count) = create_signal(cx, 0);
+    let (count, set_count) = create_signal(0);
     let on_click = move |_| set_count.update(|count| *count += 1);
 
-    view! { cx,
+    view! {
         <h1>"It worky!"</h1>
         <button class="btn btn-primary" on:click=on_click>
             "Click Me: "
@@ -54,21 +54,21 @@ fn HomePage(cx: Scope) -> impl IntoView {
 }
 
 #[component]
-fn Navbar(cx: Scope) -> impl IntoView {
+fn Navbar() -> impl IntoView {
 
     let paths = move || { vec![
         ("Home", "/"),
         ("Server Status", "/status"),
         ("idk", "/idk"),
     ]};
-    view! { cx,
+    view! {
         <nav>
             <div class="flex flex-row space-x-4">
                 <For
                     each=paths
                     key=|(_l, p)| *p
-                    view=move |cx, (l, p)| {
-                        view! { cx,
+                    view=move |(l, p)| {
+                        view! {
                             <A href=p class="btn btn-primary btn-outline">
                                 {l}
                             </A>
@@ -83,13 +83,13 @@ fn Navbar(cx: Scope) -> impl IntoView {
 
 
 #[component]
-fn Idk(cx: Scope) -> impl IntoView {
-    view! { cx, <h1>"Idk"</h1> }
+fn Idk() -> impl IntoView {
+    view! { <h1>"Idk"</h1> }
 }
 
 #[component]
-fn Status(cx: Scope) -> impl IntoView {
-    view! { cx,
+fn Status() -> impl IntoView {
+    view! {
         <h1>"Status"</h1>
         <McStatusComponent/>
     }
