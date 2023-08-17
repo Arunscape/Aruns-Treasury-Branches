@@ -15,8 +15,8 @@ jobs:
     - name: Build and push Docker image
       uses: macbre/push-to-ghcr@master
       with:
-        dockerfile: ./atb-web/Dockerfile
-        context: ./atb-web
+        dockerfile: atb-web.Containerfile
+        context: .
         github_token: ${{ secrets.GITHUB_TOKEN }}
         image_name: ${{ github.repository }}/atb-web
 
