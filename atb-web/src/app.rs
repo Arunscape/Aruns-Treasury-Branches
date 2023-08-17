@@ -2,9 +2,7 @@ use crate::error_template::{AppError, ErrorTemplate};
 use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
-//use craftping::sync::ping;
-//use std::net::TcpStream;
-use craftping::tokio::ping;
+use crate::components::status::McStatusComponent;
 
 #[component]
 pub fn App(cx: Scope) -> impl IntoView {
@@ -31,7 +29,7 @@ pub fn App(cx: Scope) -> impl IntoView {
             <main>
                 <Routes>
                     <Route path="" view=HomePage/>
-                    <Route path="/status" view=StatusPage/>
+                    <Route path="/status" view=Status/>
                     <Route path="/idk" view=Idk/>
                 </Routes>
             </main>
@@ -68,10 +66,12 @@ fn Navbar(cx: Scope) -> impl IntoView {
             <div class="flex flex-row space-x-4">
                 <For
                     each=paths
-                    key=|(l, p)| *p
+                    key=|(_l, p)| *p
                     view=move |cx, (l, p)| {
                         view! { cx,
-                                <A href=p class="btn btn-primary btn-outline">{l}</A>
+                            <A href=p class="btn btn-primary btn-outline">
+                                {l}
+                            </A>
                         }
                     }
                 />
@@ -81,54 +81,17 @@ fn Navbar(cx: Scope) -> impl IntoView {
     }
 }
 
-#[server(McPing, "/api")]
-pub async fn res() -> Result<serde_json::Value, ServerFnError> {
-   let hostname = "mc.arun.gg";
-   let port = 25565;
-   use tokio::net::TcpStream;
-   use tokio::io::AsyncWriteExt;
-   let mut stream = TcpStream::connect((hostname, port)).await?;
-
-   let pong = ping(&mut stream, hostname, port).await?;
-   //let pong = format!("{:?}", pong);
-   
-   let pong = serde_json::to_value(pong)?;
-   stream.shutdown().await;
-   Ok(pong)
-}
-
-#[component]
-fn StatusPage(cx: Scope) -> impl IntoView {
-
-    let (value, set_value) = create_signal(cx, serde_json::Value::Null);
-
-    let once = create_resource(cx, move || value, move |_| async move  { 
-        let r = res().await;
-        let r = r.unwrap_or(serde_json::Value::Null);
-        set_value(r.clone());
-        r
-
-    });
-
-
-    view! { cx,
-        <h1>"Server Status"</h1>
-        <Suspense
-        fallback=move || view! { cx, <p>"Loading..."</p> }
-        >
-            <div>
-            {
-                move || {
-                    once.read(cx).map(|v| view! { cx, <p>{v.to_string()}</p> })
-                }
-            }
-            </div>
-        </Suspense>
-    }
-
-}
 
 #[component]
 fn Idk(cx: Scope) -> impl IntoView {
     view! { cx, <h1>"Idk"</h1> }
 }
+
+#[component]
+fn Status(cx: Scope) -> impl IntoView {
+    view! { cx, <h1>"Status"</h1>
+        <McStatusComponent/>
+    }
+}
+
+
