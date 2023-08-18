@@ -1,12 +1,25 @@
 FROM docker.io/rust:latest as builder
+#FROM ghcr.io/rust-lang/rust:nightly as builder
+
+RUN apt-get update && apt-get install -y npm
+#RUN cargo install cargo-leptos
+
+# Install cargo-binstall, which makes it easier to install other
+# cargo extensions like cargo-leptos
+RUN wget https://github.com/cargo-bins/cargo-binstall/releases/latest/download/cargo-binstall-x86_64-unknown-linux-musl.tgz
+RUN tar -xvf cargo-binstall-x86_64-unknown-linux-musl.tgz
+RUN cp cargo-binstall /usr/local/cargo/bin
+
+RUN cargo binstall cargo-leptos -y
+RUN rustup target add wasm32-unknown-unknown
+
 WORKDIR /app
-RUN apt-get update && apt-get install -y npm pkg-config
-RUN cargo install cargo-leptos
 COPY .cargo .cargo
+COPY atb-web/.cargo atb-web/.cargo
 COPY . .
 WORKDIR /app/atb-web
 RUN npm install
-RUN cargo leptos build --release
+RUN cargo leptos build --release -vv
 
 #FROM docker.io/rustlang/rust:nightly-slim
 #FROM docker.io/debian:stable-slim
