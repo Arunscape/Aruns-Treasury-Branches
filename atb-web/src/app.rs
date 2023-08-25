@@ -1,5 +1,7 @@
+use crate::components::navbar::Navbar;
 use crate::components::status::McStatusComponent;
 use crate::error_template::{AppError, ErrorTemplate};
+use crate::pages::status::Status;
 use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
@@ -8,6 +10,11 @@ use leptos_router::*;
 pub fn App() -> impl IntoView {
     // Provides context that manages stylesheets, titles, meta tags, etc.
     provide_meta_context();
+
+    let (oauth_client, set_oauth_client) =
+        create_signal::<Option<oauth2::basic::BasicClient>>(None);
+    provide_context(oauth_client);
+    provide_context(set_oauth_client);
 
     view! {
         <Stylesheet id="leptos" href="/pkg/atb-web.css"/>
@@ -28,7 +35,6 @@ pub fn App() -> impl IntoView {
                 <Routes>
                     <Route path="" view=HomePage/>
                     <Route path="/status" view=Status/>
-                    <Route path="/idk" view=Idk/>
                 </Routes>
             </main>
         </Router>
@@ -48,41 +54,5 @@ fn HomePage() -> impl IntoView {
             "Click Me: "
             {count}
         </button>
-    }
-}
-
-#[component]
-fn Navbar() -> impl IntoView {
-    let paths = move || vec![("Home", "/"), ("Server Status", "/status"), ("idk", "/idk")];
-    view! {
-        <nav>
-            <div class="flex flex-row space-x-4">
-                <For
-                    each=paths
-                    key=|(_l, p)| *p
-                    view=move |(l, p)| {
-                        view! {
-                            <A href=p class="btn btn-primary btn-outline">
-                                {l}
-                            </A>
-                        }
-                    }
-                />
-
-            </div>
-        </nav>
-    }
-}
-
-#[component]
-fn Idk() -> impl IntoView {
-    view! { <h1>"Idk"</h1> }
-}
-
-#[component]
-fn Status() -> impl IntoView {
-    view! {
-        <h1>"Status"</h1>
-        <McStatusComponent/>
     }
 }

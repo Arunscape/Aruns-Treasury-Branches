@@ -3,7 +3,11 @@ pub mod app;
 pub mod components;
 pub mod error_template;
 pub mod fileserv;
+pub mod pages;
 pub mod serverfns;
+
+#[cfg(feature = "ssr")]
+pub mod apiroutes;
 
 cfg_if! { if #[cfg(feature = "hydrate")] {
     use leptos::*;
