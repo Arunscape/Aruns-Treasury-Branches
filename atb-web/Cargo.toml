@@ -11,10 +11,10 @@ axum = { version = "0.6", optional = true }
 console_error_panic_hook = "0.1"
 console_log = "1"
 cfg-if = "1"
-leptos = { version = "0.5.0-beta", features = ["nightly"] }
-leptos_axum = { version = "0.5.0-beta", optional = true }
-leptos_meta = { version = "0.5.0-beta", features = ["nightly"] }
-leptos_router = { version = "0.5.0-beta", features = ["nightly"] }
+leptos = { version = "0.5.0-beta2", features = ["nightly"] }
+leptos_axum = { version = "0.5.0-beta2", optional = true }
+leptos_meta = { version = "0.5.0-beta2", features = ["nightly"] }
+leptos_router = { version = "0.5.0-beta2", features = ["nightly"] }
 log = "0.4"
 simple_logger = "4"
 tower = { version = "0.4", optional = true }
@@ -35,7 +35,9 @@ minecraft-msa-auth = "0.3"
 oauth2 = "4.4"
 once_cell = "1.18.0"
 atb_types = { path = "../atb_types" }
-reqwest = "0.11.20"
+reqwest = {version = "0.11", features = ["json"]}
+sqlx = { version = "0.7", features = [ "runtime-tokio", "tls-rustls" , "postgres", "macros", "time", "uuid"], optional = true }
+uuid = "*"
 
 
 [features]
@@ -50,6 +52,7 @@ ssr = [
     "leptos_meta/ssr",
     "leptos_router/ssr",
     "dep:tracing",
+    "dep:sqlx",
 ]
 
 # Defined in workspace Cargo.toml

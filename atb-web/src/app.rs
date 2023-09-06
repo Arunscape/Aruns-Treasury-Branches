@@ -1,7 +1,8 @@
 use crate::components::navbar::Navbar;
 use crate::components::status::McStatusComponent;
 use crate::error_template::{AppError, ErrorTemplate};
-use crate::pages::status::Status;
+use crate::pages::Status;
+use crate::pages::AuthCallback;
 use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
@@ -23,6 +24,7 @@ pub fn App() -> impl IntoView {
         <Title text="Arun's Treasury Branches"/>
         <Link rel="icon" href="/favicon.svg"/>
         <Html attributes=AdditionalAttributes::from(vec![("data-theme", "forest")])/>
+        <Meta name="view-transition" content="same-origin"/>
 
         // content for this welcome page
         <Router fallback=|| {
@@ -35,6 +37,7 @@ pub fn App() -> impl IntoView {
                 <Routes>
                     <Route path="" view=HomePage/>
                     <Route path="/status" view=Status/>
+                    <Route path="/api/auth/callback/azure-ad" view=AuthCallback/>
                 </Routes>
             </main>
         </Router>

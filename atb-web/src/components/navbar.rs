@@ -1,4 +1,4 @@
-use crate::components::loginbutton::LoginButton;
+use crate::components::{LoginButton, Avatar};
 use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
@@ -7,6 +7,9 @@ use leptos_router::*;
 pub fn Navbar() -> impl IntoView {
     let paths = move || vec![("Home", "/"), ("Server Status", "/status")];
     let (logged_in, set_logged_in) = create_signal(false);
+
+    // todo get it from login
+    let uuid = "c7da90d56a054217b94a7d427cbbcad8";
 
     view! {
         <nav>
@@ -23,6 +26,7 @@ pub fn Navbar() -> impl IntoView {
                     }
                 />
 
+                <Avatar uuid=uuid.into()/>
             </div>
         </nav>
         <LoginButton/>

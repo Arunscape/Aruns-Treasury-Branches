@@ -1,7 +1,6 @@
 #[cfg(feature = "ssr")]
 #[tokio::main]
 async fn main() {
-    use atb_web::apiroutes::handle_auth_callback;
     use atb_web::app::*;
     use atb_web::fileserv::file_and_error_handler;
     use axum::{
@@ -28,7 +27,6 @@ async fn main() {
         .route("/api/*fn_name", post(leptos_axum::handle_server_fns))
         .route("/api/*fn_name", get(leptos_axum::handle_server_fns))
         .leptos_routes(&leptos_options, routes, || view! { <App/> })
-        .route("/api/auth/callback/azure-ad", get(handle_auth_callback))
         .fallback(file_and_error_handler)
         .with_state(leptos_options);
 
