@@ -8,31 +8,34 @@ pub mod prelude;
 #[derive(
     Debug,
     // sqlx::FromRow
+    Clone,
+    Serialize,
+    Deserialize,
 )]
 pub struct User {
     pub id: Uuid,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Account {
     pub id: Uuid,
     pub userid: Uuid,
     pub nickname: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Balance {
     pub accountid: Uuid,
     pub item: String,
     pub quantity: i64,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct McItem {
     pub id: String,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Transaction {
     pub id: Uuid,
     pub time_processed: chrono::DateTime<chrono::Utc>,
@@ -43,7 +46,7 @@ pub struct Transaction {
     pub price: i64,
 }
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub enum OrderType {
     Market,
     Limit(i64),

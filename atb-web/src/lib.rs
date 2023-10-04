@@ -1,3 +1,4 @@
+#![cfg_attr(debug_assertions, allow(dead_code, unused_imports))]
 use cfg_if::cfg_if;
 pub mod app;
 pub mod components;

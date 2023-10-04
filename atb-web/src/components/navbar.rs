@@ -14,17 +14,11 @@ pub fn Navbar() -> impl IntoView {
     view! {
         <nav>
             <div class="flex flex-row space-x-4">
-                <For
-                    each=paths
-                    key=|(_l, p)| *p
-                    view=move |(l, p)| {
-                        view! {
-                            <A href=p class="btn btn-primary btn-outline">
-                                {l}
-                            </A>
-                        }
-                    }
-                />
+                <For each=paths key=|(_l, p)| *p let:x>
+                    <A href=x.1 class="btn btn-primary btn-outline">
+                        {x.0}
+                    </A>
+                </For>
 
                 <Avatar uuid=uuid.into()/>
             </div>

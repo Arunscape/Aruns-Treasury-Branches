@@ -3,7 +3,5 @@ use leptos::*;
 
 #[component]
 pub fn AuthCallback() -> impl IntoView {
-    view! {
-        <h1>"AuthCallback"</h1>
-    }
+    view! { <h1>"AuthCallback"</h1> }
 }

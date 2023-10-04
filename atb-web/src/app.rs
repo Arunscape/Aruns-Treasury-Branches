@@ -23,7 +23,8 @@ pub fn App() -> impl IntoView {
         // sets the document title
         <Title text="Arun's Treasury Branches"/>
         <Link rel="icon" href="/favicon.svg"/>
-        <Html attributes=AdditionalAttributes::from(vec![("data-theme", "forest")])/>
+        // <Html attributes=vec![("data-theme", "forest")]/>
+        <Html attr:data-theme="forest"/>
         <Meta name="view-transition" content="same-origin"/>
 
         // content for this welcome page

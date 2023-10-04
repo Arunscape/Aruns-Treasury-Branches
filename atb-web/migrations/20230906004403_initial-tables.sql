@@ -1,9 +1,9 @@
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY -- minecraft uuid
     -- email STRING UNIQUE NOT NULL -- maybe will be added later
 );
 -- a user can have multiple accounts
-CREATE TABLE accounts (
+CREATE TABLE IF NOT EXISTS accounts (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     userid UUID NOT NULL REFERENCES users (id),
     nickname TEXT NOT NULL,
@@ -15,16 +15,18 @@ CREATE TABLE accounts (
 -- right now it only makes sense to support fungible items
 -- e.g. diamond, or diamond block
 -- no non-stackable items like swords or armour
-CREATE TABLE mc_items (
+CREATE TABLE IF NOT EXISTS mc_items (
     id TEXT PRIMARY KEY -- example: diamond
 );
-CREATE TABLE balances (
+
+CREATE TABLE IF NOT EXISTS balances (
     accountid UUID REFERENCES accounts (id),
     item TEXT NOT NULL REFERENCES mc_items(id),
     quantity BIGINT NOT NULL,
     PRIMARY KEY(accountid, item)
 );
-CREATE TABLE transactions (
+
+CREATE TABLE IF NOT EXISTS transactions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     fromid UUID NOT NULL REFERENCES accounts (id),
     toid UUID NOT NULL REFERENCES accounts (id),
