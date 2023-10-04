@@ -1,4 +1,4 @@
-use crate::components::{LoginButton, Avatar};
+use crate::components::{Avatar, LoginButton};
 use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;

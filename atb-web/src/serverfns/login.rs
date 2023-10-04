@@ -7,7 +7,7 @@ use oauth2::{
     RedirectUrl, Scope, TokenResponse, TokenUrl,
 };
 
-/// 
+///
 /// Here's an example of how to call the endpoint outside of the app
 /// ```bash
 /// curl -XPOST 'http://127.0.0.1:3000/api/validate_minecraft_token' --data-ascii "token=$TOKEN"

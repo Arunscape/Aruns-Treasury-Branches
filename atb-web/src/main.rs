@@ -2,20 +2,24 @@
 #[cfg(feature = "ssr")]
 #[tokio::main]
 async fn main() {
+    use atb_types::User;
+    use atb_web::apiroutes::get_session_cookie;
     use atb_web::app::*;
     use atb_web::fileserv::file_and_error_handler;
     use axum::{
         routing::{get, post},
         Router,
     };
+    use axum_session::{
+        DatabasePool, Session, SessionConfig, SessionLayer, SessionPgPool, SessionStore,
+    };
+    use axum_session_auth::{AuthConfig, AuthSession, AuthSessionLayer, Authentication};
     use leptos::*;
     use leptos_axum::{generate_route_list, LeptosRoutes};
-    use atb_web::apiroutes::get_session_cookie;
-    use sqlx::{PgPool, ConnectOptions, postgres::{PgPoolOptions, PgConnectOptions}};
-    use axum_session::{SessionPgPool, Session, SessionConfig, SessionLayer, DatabasePool, SessionStore};
-    use axum_session_auth::{AuthSession, AuthSessionLayer, Authentication, AuthConfig};
-    use atb_types::User;
-
+    use sqlx::{
+        postgres::{PgConnectOptions, PgPoolOptions},
+        ConnectOptions, PgPool,
+    };
 
     simple_logger::init_with_level(log::Level::Debug).expect("couldn't initialize logging");
 
@@ -29,7 +33,7 @@ async fn main() {
     let addr = leptos_options.site_addr;
     //let routes = generate_route_list(|| view! { <App/> }).await;
     let routes = generate_route_list(App);
-    
+
     // https://github.com/leptos-rs/leptos/blob/main/examples/session_auth_axum/src/auth.rs
 
     let session_config = SessionConfig::default().with_table_name("axum_sessions");

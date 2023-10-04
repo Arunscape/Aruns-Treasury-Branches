@@ -45,7 +45,6 @@ pub fn LoginButton() -> impl IntoView {
 
     let authorize_url = authorize_url.to_string();
 
-
     let v = view! {
         <a href=authorize_url>
             <img src=DARKSVG alt="Sign in with Microsoft"/>

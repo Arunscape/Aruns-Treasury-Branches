@@ -1,8 +1,8 @@
 use crate::components::navbar::Navbar;
 use crate::components::status::McStatusComponent;
 use crate::error_template::{AppError, ErrorTemplate};
-use crate::pages::Status;
 use crate::pages::AuthCallback;
+use crate::pages::Status;
 use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;

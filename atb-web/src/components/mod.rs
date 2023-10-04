@@ -1,9 +1,9 @@
+pub mod avatar;
 pub mod loginbutton;
 pub mod navbar;
 pub mod status;
-pub mod avatar;
 
+pub use avatar::*;
 pub use loginbutton::*;
 pub use navbar::*;
 pub use status::*;
-pub use avatar::*;
