@@ -19,8 +19,6 @@ fn Status(status: Result<McServerStatus, ServerFnError>) -> impl IntoView {
         }
     });
 
-    // todo: use Error Boundary to handle error
-    // https://leptos-rs.github.io/leptos/view/07_errors.html?highlight=error#error-handling
     view! {
         <ErrorBoundary fallback=|errs| {
             view! {
