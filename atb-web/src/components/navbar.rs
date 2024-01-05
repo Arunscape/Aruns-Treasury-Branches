@@ -5,7 +5,7 @@ use leptos_router::*;
 
 #[component]
 pub fn Navbar() -> impl IntoView {
-    let paths = move || vec![("Home", "/"), ("Server Status", "/status")];
+    let paths = move || vec![("Home", "/"), ("Server Status", "/status"), ("Signup", "/signup")];
     let (logged_in, set_logged_in) = create_signal(false);
 
     // todo get it from login
@@ -23,6 +23,6 @@ pub fn Navbar() -> impl IntoView {
                 <Avatar uuid=uuid.into()/>
             </div>
         </nav>
-        <LoginButton/>
+       // <LoginButton/>
     }
 }

@@ -12,9 +12,7 @@ use oauth2::{
 pub fn Login() -> impl IntoView {
     view! {
         <div>
-            <h1>
-                Login
-            </h1>
+            <h1>Login</h1>
         </div>
     }
 }

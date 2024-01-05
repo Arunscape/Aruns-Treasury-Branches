@@ -38,10 +38,7 @@ fn Status(status: Result<McServerStatus, ServerFnError>) -> impl IntoView {
             {
                 let status = status.clone().unwrap();
                 view! {
-                    <p>
-                        Version:
-                        {status.version}
-                    </p>
+                    <p>Version: {status.version}</p>
                     <img node_ref=imgref/>
                     <p>{format!("Players: {}/{}", status.online_players, status.max_players)}</p>
                     <For each=move || status.sample.clone() key=|(_name, id)| id.clone() let:player>

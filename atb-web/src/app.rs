@@ -3,6 +3,7 @@ use crate::components::status::McStatusComponent;
 use crate::error_template::{AppError, ErrorTemplate};
 use crate::pages::AuthCallback;
 use crate::pages::Status;
+use crate::pages::Signup;
 use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
@@ -39,6 +40,7 @@ pub fn App() -> impl IntoView {
                     <Route path="" view=HomePage/>
                     <Route path="/status" view=Status/>
                     <Route path="/api/auth/callback/azure-ad" view=AuthCallback/>
+                    <Route path="/signup" view=Signup/>
                 </Routes>
             </main>
         </Router>
