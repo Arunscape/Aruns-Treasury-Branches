@@ -1,7 +1,5 @@
-
-use leptos::*;
 use crate::components::SignupButton;
-
+use leptos::*;
 
 use webauthn_rs_proto::*;
 

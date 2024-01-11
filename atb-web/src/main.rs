@@ -38,6 +38,9 @@ async fn main() {
 
     let session_config = SessionConfig::default().with_table_name("axum_sessions");
     let auth_config = AuthConfig::<i64>::default();
+
+    // TODO appstate goes here
+    //    https://github.com/leptos-rs/leptos/blob/main/examples/session_auth_axum/src/main.rs#L24C3-L24C3
     //let session_store = SessionStore::<SessionPgPool>::new(Some(pool.clone().into()), session_config);
 
     //session_store.initiate().await.expect("couldn't init session store");

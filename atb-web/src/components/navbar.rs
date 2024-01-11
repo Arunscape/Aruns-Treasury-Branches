@@ -8,7 +8,6 @@ pub fn Navbar() -> impl IntoView {
     let paths = vec![("Home", "/"), ("Server Status", "/status")];
     let (logged_in, set_logged_in) = create_signal(false);
 
-
     let paths = move || {
         let mut paths = paths.clone();
         if !logged_in.get() {

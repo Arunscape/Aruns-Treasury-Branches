@@ -1,4 +1,5 @@
 use leptos::*;
+use leptos_router::*;
 use minecraft_msa_auth::MinecraftAccessToken;
 use minecraft_msa_auth::MinecraftAuthorizationFlow;
 use oauth2::basic::BasicClient;
@@ -7,7 +8,6 @@ use oauth2::{
     AuthType, AuthUrl, AuthorizationCode, ClientId, ClientSecret, CsrfToken, PkceCodeChallenge,
     RedirectUrl, Scope, TokenResponse, TokenUrl,
 };
-use leptos_router::*;
 
 #[component]
 pub fn Login() -> impl IntoView {

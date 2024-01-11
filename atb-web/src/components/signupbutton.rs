@@ -25,7 +25,6 @@ pub fn SignupButton() -> impl IntoView {
         let _ = navigator.unwrap().credentials().create().unwrap();
 
         log::error!("Logged in");
-
     });
 
     view! {
