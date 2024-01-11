@@ -12,7 +12,7 @@ use leptos_use::*;
 use webauthn_rs_proto::*;
 
 #[component]
-pub fn LoginButton() -> impl IntoView {
+pub fn SignupButton() -> impl IntoView {
     let signup = create_action(|_: &()| async {
         let window = use_window();
 
@@ -28,10 +28,9 @@ pub fn LoginButton() -> impl IntoView {
 
     });
 
-    view! { 
-        <>
-        <div>Login</div> 
-        <button class="btn btn-primary" on:click=move |_| signup.dispatch(())>Signup</button>
-        </>
+    view! {
+        <button class="btn btn-primary" on:click=move |_| signup.dispatch(())>
+            Signup
+        </button>
     }
 }
