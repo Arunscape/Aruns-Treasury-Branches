@@ -7,40 +7,40 @@ edition = "2021"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-axum = { version = "0.6", optional = true }
+axum = { version = "0.7", optional = true, features=["http2", "macros", "multipart", "ws"] }
 console_error_panic_hook = "0.1"
 console_log = "1"
 cfg-if = "1"
-leptos = { version = "0.5.2", features = ["nightly"] }
-leptos_axum = { version = "0.5.2", optional = true }
-leptos_meta = { version = "0.5.2", features = ["nightly"] }
-leptos_router = { version = "0.5.2", features = ["nightly"] }
+leptos = { version = "0.6", features = ["nightly"] }
+leptos_axum = { version = "0.6", optional = true }
+leptos_meta = { version = "0.6", features = ["nightly"] }
+leptos_router = { version = "0.6", features = ["nightly"] }
 log = "0.4"
 simple_logger = "4"
 tower = { version = "0.4", optional = true }
-tower-http = { version = "0.4", features = ["fs"], optional = true }
-thiserror = "1.0"
+tower-http = { version = "0.5", features = ["fs"], optional = true }
+thiserror = "1"
 tracing = { version = "0.1", optional = true }
-http = "0.2"
+http = "1"
 craftping = { version = "0.4", default-features=false, features = [
 "async-tokio",
 "sync",
 ] }
-tokio = { version = "1.33", features = ["macros", "rt-multi-thread", "full", "tracing"], optional = true }
-serde = {version = "*", features = ["derive"]}
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "full", "tracing"], optional = true }
+serde = {version = "1", features = ["derive"]}
 serde_json = "1.0"
 gloo = "0.10"
 wasm-bindgen = "0.2"
 minecraft-msa-auth = "0.3"
 oauth2 = "4.4"
-once_cell = "1.18.0"
-atb_types = { path = "../atb_types" }
+once_cell = "1.19"
+atb_types = { path = "../atb_types"}
 reqwest = {version = "0.11", features = ["json"]}
 sqlx = { version = "0.7", features = [ "runtime-tokio", "tls-rustls" , "postgres", "macros", "time", "uuid"], optional = true }
 uuid = "*"
-axum_session = { version = "0.8", features = [ "postgres-rustls"] , optional = true }
-axum_session_auth = { version = "0.8", features = [ "postgres-rustls" ], optional = true }
-leptos-use = "0.9"
+axum_session = { version = "0.12", features = [ "postgres-rustls"] , optional = true }
+axum_session_auth = { version = "0.12", features = [ "postgres-rustls" ], optional = true }
+leptos-use = "0.10"
 webauthn-rs = { version = "0.4.8", optional = true }
 webauthn-rs-proto = { features = ["wasm"] }
 
@@ -52,6 +52,7 @@ features = [
 ]
 
 [features]
+default = ["ssr"]
 hydrate = ["leptos/hydrate", "leptos_meta/hydrate", "leptos_router/hydrate"]
 ssr = [
     "dep:axum",
@@ -68,6 +69,7 @@ ssr = [
     "dep:axum_session_auth",
     "dep:webauthn-rs",
     "leptos-use/ssr",
+    "atb_types/ssr",
 ]
 
 # Defined in workspace Cargo.toml
@@ -85,6 +87,10 @@ panic = "abort"
 [package.metadata.leptos]
 # The name used by wasm-bindgen/cargo-leptos for the JS/WASM bundle. Defaults to the crate name
 #output-name = ""
+
+#[package.metadata.cargo-all-features]
+#denylist = ["axum", "tower", "tower-http", "tokio", "sqlx", "leptos_axum"]
+#skip_feature_sets = [["ssr", "hydrate"]]
 
 # The site root folder is where cargo-leptos generate all output. WARNING: all content of this folder will be erased on a rebuild. Use it in your server setup.
 site-root = "target/site"

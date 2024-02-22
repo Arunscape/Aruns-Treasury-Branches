@@ -79,9 +79,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let app_state = AppState { pool };
 
-    sqlx::migrate!("./src/db/queries/migrations")
-        .run(&app_state.pool)
-        .await?;
 
     let app = Router::new()
         .route("/", get(|| async { "Hello, World!" }))

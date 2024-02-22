@@ -1,26 +1,53 @@
 #![cfg_attr(debug_assertions, allow(dead_code, unused_imports))]
+
+use uuid::Uuid;
 #[cfg(feature = "ssr")]
-#[tokio::main]
-async fn main() {
-    use atb_types::User;
-    use atb_web::apiroutes::get_session_cookie;
-    use atb_web::app::*;
-    use atb_web::fileserv::file_and_error_handler;
-    use axum::{
+use {
+    atb_types::User,
+    atb_web::{apiroutes::get_session_cookie, app::*, fileserv::file_and_error_handler},
+    axum::{
+        body::Body as AxumBody,
+        extract::{FromRef, Path, State},
+        http::Request,
+        response::{IntoResponse, Response},
         routing::{get, post},
         Router,
-    };
-    use axum_session::{
+    },
+    axum_session::{
         DatabasePool, Session, SessionConfig, SessionLayer, SessionPgPool, SessionStore,
-    };
-    use axum_session_auth::{AuthConfig, AuthSession, AuthSessionLayer, Authentication};
-    use leptos::*;
-    use leptos_axum::{generate_route_list, LeptosRoutes};
-    use sqlx::{
+    },
+    axum_session_auth::{AuthConfig, AuthSession, AuthSessionLayer, Authentication, HasPermission},
+    leptos::{LeptosOptions, *},
+    leptos_axum::{generate_route_list, LeptosRoutes},
+    leptos_router::RouteListing,
+    sqlx::{
         postgres::{PgConnectOptions, PgPoolOptions},
         ConnectOptions, PgPool,
-    };
+    },
+    std::net::SocketAddr,
+};
 
+#[cfg(feature = "ssr")]
+async fn leptos_routes_handler(
+    auth_session: AuthSession<User, Uuid, SessionPgPool, PgPool>,
+    State(app_state): State<AppState>,
+    req: Request<AxumBody>,
+) -> Response {
+    let handler = leptos_axum::render_route_with_context(
+        app_state.leptos_options.clone(),
+        app_state.routes.clone(),
+        move || {
+            provide_context(auth_session.clone());
+            provide_context(app_state.pool.clone());
+        },
+        App,
+    );
+    handler(req).await.into_response()
+}
+
+#[cfg(feature = "ssr")]
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     simple_logger::init_with_level(log::Level::Debug).expect("couldn't initialize logging");
 
     // Setting get_configuration(None) means we'll be using cargo-leptos's env values
@@ -34,16 +61,11 @@ async fn main() {
     //let routes = generate_route_list(|| view! { <App/> }).await;
     let routes = generate_route_list(App);
 
-    // https://github.com/leptos-rs/leptos/blob/main/examples/session_auth_axum/src/auth.rs
+    //sqlx::migrate!("./src/db/queries/migrations")
+    //    .run(&pool)
+    //    .await?;
 
-    let session_config = SessionConfig::default().with_table_name("axum_sessions");
-    let auth_config = AuthConfig::<i64>::default();
-
-    // TODO appstate goes here
     //    https://github.com/leptos-rs/leptos/blob/main/examples/session_auth_axum/src/main.rs#L24C3-L24C3
-    //let session_store = SessionStore::<SessionPgPool>::new(Some(pool.clone().into()), session_config);
-
-    //session_store.initiate().await.expect("couldn't init session store");
 
     // build our application with a route
     let app = Router::new()
@@ -58,11 +80,21 @@ async fn main() {
 
     // run our app with hyper
     // `axum::Server` is a re-export of `hyper::Server`
+    let listener = tokio::net::TcpListener::bind(&addr).await.unwrap();
     log::info!("listening on http://{}", &addr);
-    axum::Server::bind(&addr)
-        .serve(app.into_make_service())
-        .await
-        .unwrap();
+    axum::serve(listener, app.into_make_service()).await?;
+
+    Ok(())
+}
+
+#[cfg(feature = "ssr")]
+/// This takes advantage of Axum's SubStates feature by deriving FromRef. This is the only way to have more than one
+/// item in Axum's State. Leptos requires you to have leptosOptions in your State struct for the leptos route handlers
+#[derive(FromRef, Debug, Clone)]
+pub struct AppState {
+    pub leptos_options: LeptosOptions,
+    pub pool: PgPool,
+    pub routes: Vec<RouteListing>,
 }
 
 #[cfg(not(feature = "ssr"))]

@@ -1,28 +1,18 @@
 #![cfg_attr(debug_assertions, allow(dead_code, unused_imports))]
-use cfg_if::cfg_if;
+#[cfg(feature = "ssr")]
+pub mod apiroutes;
 pub mod app;
 pub mod components;
 pub mod error_template;
+#[cfg(feature = "ssr")]
 pub mod fileserv;
 pub mod pages;
 pub mod serverfns;
 
-#[cfg(feature = "ssr")]
-pub mod apiroutes;
-
-cfg_if! { if #[cfg(feature = "hydrate")] {
-    use leptos::*;
-    use wasm_bindgen::prelude::wasm_bindgen;
+#[cfg(feature = "hydrate")]
+#[wasm_bindgen::prelude::wasm_bindgen]
+pub fn hydrate() {
     use crate::app::*;
-
-    #[wasm_bindgen]
-    pub fn hydrate() {
-        // initializes logging using the `log` crate
-        _ = console_log::init_with_level(log::Level::Debug);
-        console_error_panic_hook::set_once();
-
-        leptos::mount_to_body(move || {
-            view! { <App/> }
-        });
-    }
-}}
+    console_error_panic_hook::set_once();
+    leptos::mount_to_body(App);
+}

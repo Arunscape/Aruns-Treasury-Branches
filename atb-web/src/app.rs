@@ -11,11 +11,6 @@ pub fn App() -> impl IntoView {
     // Provides context that manages stylesheets, titles, meta tags, etc.
     provide_meta_context();
 
-    let (oauth_client, set_oauth_client) =
-        create_signal::<Option<oauth2::basic::BasicClient>>(None);
-    provide_context(oauth_client);
-    provide_context(set_oauth_client);
-
     view! {
         <Stylesheet id="leptos" href="/pkg/atb-web.css"/>
 
