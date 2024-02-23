@@ -1,10 +1,13 @@
-use crate::components::navbar::Navbar;
-use crate::components::status::McStatusComponent;
-use crate::error_template::{AppError, ErrorTemplate};
-use crate::pages::*;
-use leptos::*;
-use leptos_meta::*;
-use leptos_router::*;
+use {
+    crate::{
+        components::{navbar::Navbar, status::McStatusComponent},
+        error_template::{AppError, ErrorTemplate},
+        pages::*,
+    },
+    leptos::*,
+    leptos_meta::*,
+    leptos_router::*,
+};
 
 #[component]
 pub fn App() -> impl IntoView {

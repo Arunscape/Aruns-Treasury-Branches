@@ -1,6 +1,6 @@
 #![cfg_attr(debug_assertions, allow(dead_code, unused_imports))]
+#![feature(lazy_cell)]
 
-use uuid::Uuid;
 #[cfg(feature = "ssr")]
 use {
     atb_types::User,
@@ -14,22 +14,31 @@ use {
         Router,
     },
     axum_session::{
-        DatabasePool, Session, SessionConfig, SessionLayer, SessionPgPool, SessionStore,
+        DatabasePool, Session, SessionAnyPool, SessionConfig, SessionLayer, SessionPgPool,
+        SessionStore,
     },
     axum_session_auth::{AuthConfig, AuthSession, AuthSessionLayer, Authentication, HasPermission},
     leptos::{LeptosOptions, *},
     leptos_axum::{generate_route_list, LeptosRoutes},
     leptos_router::RouteListing,
     sqlx::{
+        any::{AnyConnectOptions, AnyPoolOptions},
         postgres::{PgConnectOptions, PgPoolOptions},
-        ConnectOptions, PgPool,
+        AnyPool, ConnectOptions, PgPool,
     },
     std::net::SocketAddr,
+    std::str::FromStr,
+    std::sync::LazyLock,
+    uuid::Uuid,
 };
+
+static DB_URL: LazyLock<String> = LazyLock::new(|| {
+    std::env::var("DATABASE_URL").unwrap_or("postgres://postgres@localhost/postgres".into())
+});
 
 #[cfg(feature = "ssr")]
 async fn leptos_routes_handler(
-    auth_session: AuthSession<User, Uuid, SessionPgPool, PgPool>,
+    auth_session: AuthSession<User, Uuid, SessionAnyPool, AnyPool>,
     State(app_state): State<AppState>,
     req: Request<AxumBody>,
 ) -> Response {
@@ -47,7 +56,7 @@ async fn leptos_routes_handler(
 
 #[cfg(feature = "ssr")]
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
+async fn main() -> Result<(), anyhow::Error> {
     simple_logger::init_with_level(log::Level::Debug).expect("couldn't initialize logging");
 
     // Setting get_configuration(None) means we'll be using cargo-leptos's env values
@@ -61,11 +70,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     //let routes = generate_route_list(|| view! { <App/> }).await;
     let routes = generate_route_list(App);
 
-    //sqlx::migrate!("./src/db/queries/migrations")
-    //    .run(&pool)
-    //    .await?;
+    sqlx::any::install_default_drivers();
+    let mut connect_opts = AnyConnectOptions::from_str(&DB_URL)?;
+    //connect_opts.log_statements(tracing::log::LevelFilter::Debug);
 
-    //    https://github.com/leptos-rs/leptos/blob/main/examples/session_auth_axum/src/main.rs#L24C3-L24C3
+    let pool = AnyPoolOptions::new()
+        .max_connections(50)
+        .connect_with(connect_opts)
+        .await?;
+
+    sqlx::migrate!().run(&pool).await?;
 
     // build our application with a route
     let app = Router::new()

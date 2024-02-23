@@ -177,6 +177,7 @@ dependencies = [
 name = "atb-web"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "atb_types",
  "axum",
  "axum_session",
@@ -195,7 +196,6 @@ dependencies = [
  "log",
  "minecraft-msa-auth",
  "oauth2",
- "once_cell",
  "reqwest",
  "serde",
  "serde_json",
