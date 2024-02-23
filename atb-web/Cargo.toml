@@ -26,22 +26,22 @@ craftping = { version = "0.4", default-features=false, features = [
 "async-tokio",
 "sync",
 ] }
-tokio = { version = "1", features = ["macros", "rt-multi-thread", "full", "tracing"], optional = true }
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "tracing"], optional = true }
 serde = {version = "1", features = ["derive"]}
 serde_json = "1.0"
 gloo = "0.10"
 wasm-bindgen = "0.2"
-minecraft-msa-auth = "0.3"
-oauth2 = "4.4"
+#minecraft-msa-auth = "0.3"
+#oauth2 = {version = "4.4", default-features=false, features = ["rustls-tls"]}
 atb_types = { path = "../atb_types"}
-reqwest = {version = "0.11", features = ["json"]}
+reqwest = {version = "0.11", default-features=false, features = ["json", "rustls"]}
 sqlx = { version = "0.7", features = [ "runtime-tokio", "tls-rustls" , "postgres", "macros", "time", "uuid"], optional = true }
 uuid = "*"
 axum_session = { version = "0.12", features = [ "postgres-rustls"] , optional = true }
 axum_session_auth = { version = "0.12", features = [ "postgres-rustls" ], optional = true }
 leptos-use = "0.10"
-webauthn-rs = { version = "0.4.8", optional = true }
-webauthn-rs-proto = { features = ["wasm"] }
+#webauthn-rs = { version = "0.4.8", optional = true }
+#webauthn-rs-proto = { features = ["wasm"] }
 anyhow = "1"
 
 [dependencies.web-sys]
@@ -67,7 +67,7 @@ ssr = [
     "dep:sqlx",
     "dep:axum_session",
     "dep:axum_session_auth",
-    "dep:webauthn-rs",
+  #    "dep:webauthn-rs",
     "leptos-use/ssr",
     "atb_types/ssr",
 ]

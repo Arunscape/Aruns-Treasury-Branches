@@ -1,16 +1,15 @@
-use crate::components::SignupButton;
-use leptos::*;
-
-use webauthn_rs_proto::*;
+//use webauthn_rs_proto::*;
 
 // Other imports needed to make the SPA (single page application) work.
 use gloo::console;
-use std::error::Error;
-use std::fmt;
-use wasm_bindgen::prelude::*;
-use wasm_bindgen::JsCast;
 //use wasm_bindgen_futures::JsFuture;
 use web_sys::{Document, Request, RequestInit, RequestMode, Response, Window};
+use {
+    crate::components::SignupButton,
+    leptos::*,
+    std::{error::Error, fmt},
+    wasm_bindgen::{prelude::*, JsCast},
+};
 
 // https://github.com/kanidm/webauthn-rs/blob/master/tutorial/wasm/src/lib.rs#L399
 

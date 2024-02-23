@@ -1,11 +1,10 @@
-use crate::serverfns::login::*;
-use leptos::*;
-use oauth2::basic::BasicClient;
-use oauth2::reqwest::async_http_client;
-use oauth2::{
-    AuthType, AuthUrl, AuthorizationCode, ClientId, ClientSecret, CsrfToken, PkceCodeChallenge,
-    RedirectUrl, Scope, TokenResponse, TokenUrl,
-};
+use {crate::serverfns::login::*, leptos::*};
+//use oauth2::basic::BasicClient;
+//use oauth2::reqwest::async_http_client;
+//use oauth2::{
+//    AuthType, AuthUrl, AuthorizationCode, ClientId, ClientSecret, CsrfToken, PkceCodeChallenge,
+//    RedirectUrl, Scope, TokenResponse, TokenUrl,
+//};
 
 const DARKSVG: &'static str = "https://learn.microsoft.com/en-us/azure/active-directory/develop/media/howto-add-branding-in-apps/ms-symbollockup_signin_dark_short.svg";
 
@@ -26,24 +25,25 @@ const REDIRECT_URI: &'static str = if cfg!(debug_assertions) {
 
 #[component]
 pub fn AzureLoginButton() -> impl IntoView {
-    let client = BasicClient::new(
-        ClientId::new(CLIENT_ID.into()),
-        None,
-        AuthUrl::new(AUTH_URL.into())?,
-        Some(TokenUrl::new(TOKEN_URL.into())?),
-    )
-    .set_auth_type(AuthType::RequestBody)
-    .set_redirect_uri(RedirectUrl::new(REDIRECT_URI.into())?);
+    //let client = BasicClient::new(
+    //    ClientId::new(CLIENT_ID.into()),
+    //    None,
+    //    AuthUrl::new(AUTH_URL.into())?,
+    //    Some(TokenUrl::new(TOKEN_URL.into())?),
+    //)
+    //.set_auth_type(AuthType::RequestBody)
+    //.set_redirect_uri(RedirectUrl::new(REDIRECT_URI.into())?);
 
-    let (pkce_code_challenge, pkce_code_verifier) = PkceCodeChallenge::new_random_sha256();
+    //let (pkce_code_challenge, pkce_code_verifier) = PkceCodeChallenge::new_random_sha256();
 
-    let (authorize_url, csrf_state) = client
-        .authorize_url(CsrfToken::new_random)
-        .add_scope(Scope::new("XboxLive.signin offline_access".to_string()))
-        .set_pkce_challenge(pkce_code_challenge)
-        .url();
+    //let (authorize_url, csrf_state) = client
+    //    .authorize_url(CsrfToken::new_random)
+    //    .add_scope(Scope::new("XboxLive.signin offline_access".to_string()))
+    //    .set_pkce_challenge(pkce_code_challenge)
+    //    .url();
 
-    let authorize_url = authorize_url.to_string();
+    //let authorize_url = authorize_url.to_string();
+    let authorize_url = "";
 
     let v = view! {
         <a href=authorize_url>

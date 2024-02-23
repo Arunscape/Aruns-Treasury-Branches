@@ -71,7 +71,7 @@ async fn main() -> Result<(), anyhow::Error> {
     let routes = generate_route_list(App);
 
     sqlx::any::install_default_drivers();
-    let mut connect_opts = AnyConnectOptions::from_str(&DB_URL)?;
+    let connect_opts = AnyConnectOptions::from_str(&DB_URL)?;
     //connect_opts.log_statements(tracing::log::LevelFilter::Debug);
 
     let pool = AnyPoolOptions::new()

@@ -8,7 +8,7 @@ edition = "2021"
 [dependencies]
 sqlx = { version = "0.7", features = [ "runtime-tokio", "tls-rustls" , "postgres", "macros", "time", "uuid"], optional = true }
 uuid = { version = "*", features = ["serde"] }
-chrono = "*"
+chrono = {version = "*", features = ["serde"]}
 serde = { version = "*", features = ["derive"] }
 async-trait = "*"
 axum_session = { version = "*", features = [ "postgres-rustls"] , optional = true }

@@ -1,5 +1,4 @@
-use leptos::*;
-use leptos_use::*;
+use {leptos::*, leptos_use::*};
 // 1. Import our protocol bindings. This provides nothing else than the ability to serialise
 // and deserialise what the server sends us.
 //
@@ -9,7 +8,7 @@ use leptos_use::*;
 // Uint8Array without client side JS assistance.
 //
 // The benefit of this wasm library is it magically does all that for you :)
-use webauthn_rs_proto::*;
+//use webauthn_rs_proto::*;
 
 #[component]
 pub fn SignupButton() -> impl IntoView {
