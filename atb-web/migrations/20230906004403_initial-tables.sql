@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS balances (
 );
 
 CREATE TABLE IF NOT EXISTS transactions (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id BIGSERIAL PRIMARY KEY,
     fromid UUID NOT NULL REFERENCES accounts (id),
     toid UUID NOT NULL REFERENCES accounts (id),
     quantity BIGINT NOT NULL,

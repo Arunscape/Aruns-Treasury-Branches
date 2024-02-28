@@ -15,7 +15,6 @@ pub fn TransactionsPage() -> impl IntoView {
     view! {
         <>
             <h1>Transactions</h1>
-            <p>{"List of everyone's transactions goes here"}</p>
             <table class="table">
                 <thead>
                     <th>id</th>
@@ -34,19 +33,22 @@ pub fn TransactionsPage() -> impl IntoView {
 
                         {(*data)
                             .clone()
-                            .unwrap()
+                            .unwrap_or(Vec::new())
                             .iter()
                             .map(|transaction| {
+                                let tot = transaction.quantity * transaction.price;
+                                let before_decimal = tot / 100;
+                                let after_decimal = tot % 100;
                                 view! {
                                     <tr>
-                                        <td>{transaction.id.to_string()}</td>
+                                        <td>{transaction.id}</td>
                                         <td>{transaction.time_processed.to_string()}</td>
                                         <td>{transaction.fromid.to_string()}</td>
                                         <td>{transaction.toid.to_string()}</td>
                                         <td>{transaction.item.clone()}</td>
                                         <td>{transaction.quantity}</td>
                                         <td>{transaction.price}</td>
-                                        <td>{transaction.quantity * transaction.price / 10}</td>
+                                        <td>{format!("💰{before_decimal}.{after_decimal:02}")}</td>
                                     </tr>
                                 }
                             })
@@ -58,3 +60,5 @@ pub fn TransactionsPage() -> impl IntoView {
         </>
     }
 }
+
+// TODO: Black-Scholes / Merton Equation for efficiently pricing options

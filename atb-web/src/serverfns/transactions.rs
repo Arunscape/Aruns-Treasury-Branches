@@ -11,7 +11,7 @@ pub fn pool() -> Result<PgPool, ServerFnError> {
 pub async fn get_transactions() -> Result<Vec<Transaction>, ServerFnError> {
     let p = pool()?;
 
-    let res = query_as!(Transaction, "SELECT * FROM transactions")
+    let res = query_as!(Transaction, "SELECT * FROM transactions ORDER BY id DESC")
         .fetch_all(&p)
         .await?;
 
