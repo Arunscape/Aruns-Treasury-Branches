@@ -40,7 +40,7 @@ pub fn App() -> impl IntoView {
                     <Route path="/signup" view=Signup/>
                     <Route path="/login" view=Login/>
                     <Route path="/transactions" view=TransactionsPage/>
-                    <Route path="/transaction/:id" view=TransactionsByItemPage/>
+                    <Route path="/transactions/:item" view=TransactionsByItemPage/>
                 </Routes>
             </main>
         </Router>

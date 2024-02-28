@@ -2,16 +2,6 @@ use {crate::serverfns::*, leptos::*, leptos_router::*};
 
 #[component]
 pub fn TransactionsPage() -> impl IntoView {
-    //let transactions = create_resource(
-    //    || (),
-    //    |_| async move { transactions::get_transactions().await },
-    //);
-    //
-    let transaction_action = create_action(|input: &String| {
-        let input = input.clone();
-        async move { todo!() }
-    });
-
     view! {
         <>
             <h1>Transactions</h1>
@@ -58,19 +48,23 @@ pub fn TransactionsPage() -> impl IntoView {
     }
 }
 
-#[derive(Params)]
+#[derive(Params, PartialEq, Debug)]
 struct TransactionsByItemParams {
     item: String,
 }
 
 #[component]
 pub fn TransactionsByItemPage() -> impl IntoView {
-    //let { item }  = use_params::<TransactionsByItemParams>();
-    //
-    //
+    let params = use_params::<TransactionsByItemParams>();
+
+    let item = move || params.with(|p| p.as_ref().map(|p| p.item.clone()).unwrap_or_default());
+
     view! {
         <>
-        <h1></h1>
+        <h1>{format!("💰 {}", item())}</h1>
+        //<Await future=|| transactions::get_transactions_by_item(item().clone()) let:data>
+        //    <div>{format!("{:#?}", (*data).clone())}</div>
+        //</Await>
         </>
     }
 }
