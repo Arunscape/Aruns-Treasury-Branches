@@ -36,9 +36,6 @@ pub fn TransactionsPage() -> impl IntoView {
                             .unwrap_or(Vec::new())
                             .iter()
                             .map(|transaction| {
-                                let tot = transaction.quantity * transaction.price;
-                                let before_decimal = tot / 100;
-                                let after_decimal = tot % 100;
                                 view! {
                                     <tr>
                                         <td>{transaction.id}</td>
@@ -47,8 +44,8 @@ pub fn TransactionsPage() -> impl IntoView {
                                         <td>{transaction.toid.to_string()}</td>
                                         <td>{transaction.item.clone()}</td>
                                         <td>{transaction.quantity}</td>
-                                        <td>{transaction.price}</td>
-                                        <td>{format!("💰{before_decimal}.{after_decimal:02}")}</td>
+                                        <td>{transaction.format_price()}</td>
+                                        <td>{transaction.format_cost_basis()}</td>
                                     </tr>
                                 }
                             })

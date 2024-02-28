@@ -56,13 +56,33 @@ pub struct McItem {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[cfg_attr(feature = "ssr", derive(sqlx::FromRow))]
 pub struct Transaction {
-    pub id: Uuid,
+    pub id: i64,
     pub time_processed: chrono::DateTime<chrono::Utc>,
     pub fromid: Uuid,
     pub toid: Uuid,
     pub item: String,
     pub quantity: i64,
     pub price: i64,
+}
+
+impl Transaction {
+    pub fn format_price(&self) -> String {
+        Self::price_to_str(self.price)
+    }
+
+    pub fn format_cost_basis(&self) -> String {
+        let tot = self.quantity * self.price;
+        Self::price_to_str(tot)
+    }
+
+    fn separate_price(price: i64) -> (i64, i64) {
+        (price / 100, price % 100)
+    }
+
+    fn price_to_str(price: i64) -> String {
+        let (before_decimal, after_decimal) = Self::separate_price(price);
+        format!("💰{before_decimal}.{after_decimal:02}")
+    }
 }
 
 #[derive(Debug, Eq, PartialEq, Clone)]
