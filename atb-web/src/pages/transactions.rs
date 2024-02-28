@@ -1,4 +1,4 @@
-use {crate::serverfns::*, leptos::*};
+use {crate::serverfns::*, leptos::*, leptos_router::*};
 
 #[component]
 pub fn TransactionsPage() -> impl IntoView {
@@ -54,6 +54,23 @@ pub fn TransactionsPage() -> impl IntoView {
                     </Await>
                 </tbody>
             </table>
+        </>
+    }
+}
+
+#[derive(Params)]
+struct TransactionsByItemParams {
+    item: String,
+}
+
+#[component]
+pub fn TransactionsByItemPage() -> impl IntoView {
+    //let { item }  = use_params::<TransactionsByItemParams>();
+    //
+    //
+    view! {
+        <>
+        <h1></h1>
         </>
     }
 }

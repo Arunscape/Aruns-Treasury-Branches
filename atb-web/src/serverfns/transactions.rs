@@ -18,6 +18,21 @@ pub async fn get_transactions() -> Result<Vec<Transaction>, ServerFnError> {
     Ok(res)
 }
 
+#[server(GetTransactionsByTicker, "/api", "GetJson", "transactions/:item")]
+pub async fn get_transactions_by_item(item: String) -> Result<Vec<Transaction>, ServerFnError> {
+    let p = pool()?;
+
+    let res = query_as!(
+        Transaction,
+        "SELECT * FROM transactions WHERE item = $1 ORDER BY id",
+        item
+    )
+    .fetch_all(&p)
+    .await?;
+
+    Ok(res)
+}
+
 //#[server(NewTransaction, "/api", "Url", "new_transaction")]
 //pub async fn new_transaction(tx: Transaction) -> Result<Transaction, ServerFnError> {
 //    let p = pool()?;
