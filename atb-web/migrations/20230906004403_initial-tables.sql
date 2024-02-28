@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS transactions (
     fromid UUID NOT NULL REFERENCES accounts (id),
     toid UUID NOT NULL REFERENCES accounts (id),
     quantity BIGINT NOT NULL,
-    item TEXT NOT NULL,
+    item TEXT NOT NULL REFERENCES mc_items(id),
     price BIGINT NOT NULL,
     -- the 6 means microsecond precision since 2000
     time_processed TIMESTAMPTZ(6) NOT NULL DEFAULT NOW(),

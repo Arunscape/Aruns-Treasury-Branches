@@ -23,6 +23,7 @@ pub fn App() -> impl IntoView {
         // <Html attributes=vec![("data-theme", "forest")]/>
         <Html attr:data-theme="forest"/>
         <Meta name="view-transition" content="same-origin"/>
+        <Script src="https://cdn.plot.ly/plotly-2.14.0.min.js"/>
 
         // content for this welcome page
         <Router fallback=|| {
@@ -38,6 +39,7 @@ pub fn App() -> impl IntoView {
                     <Route path="/api/auth/callback/azure-ad" view=AuthCallback/>
                     <Route path="/signup" view=Signup/>
                     <Route path="/login" view=Login/>
+                    <Route path="/transactions" view=TransactionsPage/>
                 </Routes>
             </main>
         </Router>

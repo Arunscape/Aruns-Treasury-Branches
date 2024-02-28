@@ -1,7 +1,12 @@
-use crate::components::{Avatar, SignupButton};
-use leptos::*;
-use leptos_meta::*;
-use leptos_router::*;
+use {
+    crate::{
+        components::{Avatar, SignupButton},
+        serverfns::*,
+    },
+    leptos::*,
+    leptos_meta::*,
+    leptos_router::*,
+};
 
 #[component]
 pub fn Navbar() -> impl IntoView {
@@ -11,7 +16,11 @@ pub fn Navbar() -> impl IntoView {
     let paths = move || {
         let mut paths = paths.clone();
         if !logged_in.get() {
-            paths.extend(vec![("Signup", "/signup"), ("Login", "/login")]);
+            paths.extend(vec![
+                ("Signup", "/signup"),
+                ("Login", "/login"),
+                ("Transactions", "/transactions"),
+            ]);
         }
         paths
     };

@@ -26,11 +26,13 @@ pub mod prelude;
     Serialize,
     Deserialize,
 )]
+#[cfg_attr(feature = "ssr", derive(sqlx::FromRow))]
 pub struct User {
     pub id: Uuid,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
+#[cfg_attr(feature = "ssr", derive(sqlx::FromRow))]
 pub struct Account {
     pub id: Uuid,
     pub userid: Uuid,
@@ -38,6 +40,7 @@ pub struct Account {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
+#[cfg_attr(feature = "ssr", derive(sqlx::FromRow))]
 pub struct Balance {
     pub accountid: Uuid,
     pub item: String,
@@ -45,11 +48,13 @@ pub struct Balance {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "ssr", derive(sqlx::FromRow))]
 pub struct McItem {
     pub id: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[cfg_attr(feature = "ssr", derive(sqlx::FromRow))]
 pub struct Transaction {
     pub id: Uuid,
     pub time_processed: chrono::DateTime<chrono::Utc>,

@@ -19,6 +19,7 @@ use {
     },
     axum_session_auth::{AuthConfig, AuthSession, AuthSessionLayer, Authentication, HasPermission},
     leptos::{LeptosOptions, *},
+    leptos_axum::handle_server_fns_with_context,
     leptos_axum::{generate_route_list, LeptosRoutes},
     leptos_router::RouteListing,
     sqlx::{
@@ -37,24 +38,6 @@ static DB_URL: LazyLock<String> = LazyLock::new(|| {
 });
 
 #[cfg(feature = "ssr")]
-async fn leptos_routes_handler(
-    auth_session: AuthSession<User, Uuid, SessionAnyPool, AnyPool>,
-    State(app_state): State<AppState>,
-    req: Request<AxumBody>,
-) -> Response {
-    let handler = leptos_axum::render_route_with_context(
-        app_state.leptos_options.clone(),
-        app_state.routes.clone(),
-        move || {
-            provide_context(auth_session.clone());
-            provide_context(app_state.pool.clone());
-        },
-        App,
-    );
-    handler(req).await.into_response()
-}
-
-#[cfg(feature = "ssr")]
 #[tokio::main]
 async fn main() -> Result<(), anyhow::Error> {
     simple_logger::init_with_level(log::Level::Debug).expect("couldn't initialize logging");
@@ -71,26 +54,36 @@ async fn main() -> Result<(), anyhow::Error> {
     let routes = generate_route_list(App);
 
     sqlx::any::install_default_drivers();
-    let connect_opts = AnyConnectOptions::from_str(&DB_URL)?;
+    //let connect_opts = AnyConnectOptions::from_str(&DB_URL)?;
+    let connect_opts = PgConnectOptions::from_str(&DB_URL)?;
     //connect_opts.log_statements(tracing::log::LevelFilter::Debug);
 
-    let pool = AnyPoolOptions::new()
+    //let pool = AnyPoolOptions::new()
+    let pool = PgPoolOptions::new()
         .max_connections(50)
         .connect_with(connect_opts)
         .await?;
 
     sqlx::migrate!().run(&pool).await?;
 
+    let app_state = AppState {
+        leptos_options,
+        pool: pool.clone(),
+        routes: routes.clone(),
+    };
+
     // build our application with a route
     let app = Router::new()
-        .route("/api/*fn_name", post(leptos_axum::handle_server_fns))
-        .route("/api/*fn_name", get(leptos_axum::handle_server_fns))
-        .leptos_routes(&leptos_options, routes, App)
-        .route("/api/get_session_cookie", get(get_session_cookie))
+        .route(
+            "/api/*fn_name",
+            post(server_fn_handler).get(server_fn_handler),
+        )
+        .leptos_routes_with_handler(routes, get(leptos_routes_handler))
+        //        .route("/api/get_session_cookie", get(get_session_cookie))
         //.layer(SessionLayer::new(session_store))
         //.layer(AuthSessionLayer::<User, i64, SessionPgPool, PgPool>::new(Some(pool)).with_config(auth_config))
         .fallback(file_and_error_handler)
-        .with_state(leptos_options);
+        .with_state(app_state);
 
     // run our app with hyper
     // `axum::Server` is a re-export of `hyper::Server`
@@ -104,9 +97,14 @@ async fn main() -> Result<(), anyhow::Error> {
 #[cfg(feature = "ssr")]
 /// This takes advantage of Axum's SubStates feature by deriving FromRef. This is the only way to have more than one
 /// item in Axum's State. Leptos requires you to have leptosOptions in your State struct for the leptos route handlers
+//#[derive(FromRef, Debug, Clone)]
+//pub struct AppState {
+//    pub leptos_options: LeptosOptions,
+//    pub pool: AnyPool,
 #[derive(FromRef, Debug, Clone)]
 pub struct AppState {
     pub leptos_options: LeptosOptions,
+    //pub pool: AnyPool,
     pub pool: PgPool,
     pub routes: Vec<RouteListing>,
 }
@@ -116,4 +114,35 @@ pub fn main() {
     // no client-side main function
     // unless we want this to work with e.g., Trunk for a purely client-side app
     // see lib.rs for hydration function instead
+}
+
+#[cfg(feature = "ssr")]
+async fn server_fn_handler(
+    State(app_state): State<AppState>,
+    path: Path<String>,
+    request: Request<AxumBody>,
+) -> impl IntoResponse {
+    handle_server_fns_with_context(
+        move || {
+            provide_context(app_state.pool.clone());
+        },
+        request,
+    )
+    .await
+}
+
+#[cfg(feature = "ssr")]
+async fn leptos_routes_handler(
+    State(app_state): State<AppState>,
+    req: Request<AxumBody>,
+) -> Response {
+    let handler = leptos_axum::render_route_with_context(
+        app_state.leptos_options.clone(),
+        app_state.routes.clone(),
+        move || {
+            provide_context(app_state.pool.clone());
+        },
+        App,
+    );
+    handler(req).await.into_response()
 }
