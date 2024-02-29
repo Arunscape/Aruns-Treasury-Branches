@@ -1,6 +1,6 @@
-use crate::serverfns::server_status::ping_minecraft_server;
-use atb_types::McServerStatus;
-use leptos::*;
+use {
+    crate::serverfns::server_status::ping_minecraft_server, atb_types::McServerStatus, leptos::*,
+};
 
 #[component]
 fn Status(status: Result<McServerStatus, ServerFnError>) -> impl IntoView {
@@ -68,7 +68,7 @@ pub fn McStatusComponent() -> impl IntoView {
         <Suspense fallback=move || view! { <p>"Loading..."</p> }>
             <div>
 
-                {once.read().map(|v| view! { <Status status=v/> })}
+                {once.get().map(|v| view! { <Status status=v/> })}
 
             </div>
         </Suspense>

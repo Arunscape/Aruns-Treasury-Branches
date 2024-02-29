@@ -11,6 +11,7 @@ pub fn pool() -> Result<PgPool, ServerFnError> {
 pub async fn get_transactions() -> Result<Vec<Transaction>, ServerFnError> {
     let p = pool()?;
 
+    log::debug!("get transactions");
     let res = query_as!(Transaction, "SELECT * FROM transactions ORDER BY id DESC")
         .fetch_all(&p)
         .await?;
@@ -18,10 +19,11 @@ pub async fn get_transactions() -> Result<Vec<Transaction>, ServerFnError> {
     Ok(res)
 }
 
-#[server(GetTransactionsByTicker, "/api", "GetJson", "transactions/:item")]
+#[server(GetTransactionsByTicker, "/api", "GetJson", "transactions_by_item")]
 pub async fn get_transactions_by_item(item: String) -> Result<Vec<Transaction>, ServerFnError> {
     let p = pool()?;
 
+    log::debug!("get transactions by item {}", item);
     let res = query_as!(
         Transaction,
         "SELECT * FROM transactions WHERE item = $1 ORDER BY id",

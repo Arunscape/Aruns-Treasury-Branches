@@ -29,7 +29,7 @@ pub async fn validate_minecraft_token(token: String) -> Result<serde_json::Value
 
 #[server(LoginFn, "/api", "Url", "login")]
 pub async fn login() -> Result<(), ServerFnError> {
-    let client_secret = std::env::var("AZURE_AD_CLIENT_SECRET")?;
+    //let client_secret = std::env::var("AZURE_AD_CLIENT_SECRET")?;
 
     Ok(())
 }

@@ -3,9 +3,6 @@ pub mod azureloginbutton;
 pub mod navbar;
 pub mod signupbutton;
 pub mod status;
+pub mod transactions;
 
-pub use avatar::*;
-pub use azureloginbutton::*;
-pub use navbar::*;
-pub use signupbutton::*;
-pub use status::*;
+pub use {avatar::*, azureloginbutton::*, navbar::*, signupbutton::*, status::*, transactions::*};

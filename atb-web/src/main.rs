@@ -53,7 +53,7 @@ async fn main() -> Result<(), anyhow::Error> {
     //let routes = generate_route_list(|| view! { <App/> }).await;
     let routes = generate_route_list(App);
 
-    sqlx::any::install_default_drivers();
+    //sqlx::any::install_default_drivers();
     //let connect_opts = AnyConnectOptions::from_str(&DB_URL)?;
     let connect_opts = PgConnectOptions::from_str(&DB_URL)?;
     //connect_opts.log_statements(tracing::log::LevelFilter::Debug);
@@ -119,7 +119,7 @@ pub fn main() {
 #[cfg(feature = "ssr")]
 async fn server_fn_handler(
     State(app_state): State<AppState>,
-    path: Path<String>,
+    _path: Path<String>,
     request: Request<AxumBody>,
 ) -> impl IntoResponse {
     handle_server_fns_with_context(

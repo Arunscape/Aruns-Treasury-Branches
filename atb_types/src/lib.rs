@@ -105,7 +105,7 @@ pub struct McServerStatus {
 // This is only used if you want to use Token based Authentication checks
 #[async_trait]
 impl HasPermission<PgPool> for User {
-    async fn has(&self, perm: &str, _pool: &Option<&PgPool>) -> bool {
+    async fn has(&self, _perm: &str, _pool: &Option<&PgPool>) -> bool {
         true
     }
 }
@@ -136,7 +136,7 @@ impl Authentication<User, Uuid, PgPool> for User {
 #[cfg(feature = "ssr")]
 #[async_trait]
 impl HasPermission<AnyPool> for User {
-    async fn has(&self, perm: &str, _pool: &Option<&AnyPool>) -> bool {
+    async fn has(&self, _perm: &str, _pool: &Option<&AnyPool>) -> bool {
         true
     }
 }
