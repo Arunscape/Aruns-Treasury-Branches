@@ -2,4 +2,8 @@
 fn main() {
     // trigger recompilation when a new migration is added
     println!("cargo:rerun-if-changed=migrations");
+
+    if std::env::var_os("DOCS_RS").is_some() {
+        println!("cargo:rustc-env=SQLX_OFFLINE=true");
+    }
 }
