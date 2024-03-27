@@ -1,0 +1,19 @@
+[package]
+name = "atb-client"
+version = "0.1.0"
+edition = "2021"
+description = "A WebAssembly package that will be imported by other client libraries for interacting with the atb server. e.g. python api client"
+
+[dependencies]
+wai-bindgen-rust = "0.2.3"
+
+
+[package.metadata.wapm]
+namespace = "arunscape"
+abi = "none"
+bindings = { wai-version = "0.2.0", exports = "calculator.wai" }
+ 
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[workspace]

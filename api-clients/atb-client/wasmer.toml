@@ -1,0 +1,18 @@
+[package]
+name = 'arunscape/atb-client'
+version = '0.1.0'
+description = 'Description for package atb-client'
+
+# See more keys and definitions at https://docs.wasmer.io/registry/manifest
+
+[[module]]
+name = 'atb-client'
+source = 'target/wasm32-unknown-unknown/release/atb_client.wasm'
+abi = 'wasi'
+
+[module.interfaces]
+wasi = '0.1.0-unstable'
+
+[[command]]
+name = 'atb-client'
+module = 'atb-client'
