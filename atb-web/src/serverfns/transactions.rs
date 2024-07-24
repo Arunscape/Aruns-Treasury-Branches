@@ -36,10 +36,21 @@ pub async fn get_transactions_by_item(item: String) -> Result<Vec<Transaction>, 
 
 #[cfg(debug_assertions)] // not ready for prod yet, need to verify jwt or authenticate somehow
 #[server(NewTransaction, "/api", "Url", "new_transaction")]
-pub async fn new_transaction(tx: Transaction) -> Result<Transaction, ServerFnError> {
+pub async fn new_transaction(
+    from: Uuid,
+    to: Uuid,
+    item: String,
+    quantity: i64,
+    price: i64,
+) -> Result<Transaction, ServerFnError> {
+    let p = pool()?;
     let p = pool()?;
 
+
     todo!()
+    let transaction = query_as!(Transaction, "INSERT INTO transactions (fromid, toid, item, quantity, price) VALUES ($1, $2, $3, $4, $5) RETURNING *", from, to, item, quantity, price).fetch_one(&p).await?;
+
+    Ok(transaction)
 }
 
 #[cfg(feature = "ssr")]
