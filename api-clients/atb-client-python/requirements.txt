@@ -1,3 +1,0 @@
-atb_client @ https://cdn.wasmer.io/bindings/generator-0.7.2/pip/arunscape/atb-client/atb-client-0.1.0.tar.gz#sha256=f31c51b1e1f1ad4cfb3d410abfdb9b9c5abf0aecf5dd7c230b87389f8dce5edf
-wasmer
-wasmer-compiler-cranelift
