@@ -25,7 +25,7 @@ fn Status(status: Result<McServerStatus, ServerFnError>) -> impl IntoView {
                 <p>"Error"</p>
                 <ul>
                     {move || {
-                        errs()
+                        errs.get()
                             .into_iter()
                             .map(|(_, e)| view! { <li>{e.to_string()}</li> })
                             .collect_view()

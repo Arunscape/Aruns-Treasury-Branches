@@ -30,7 +30,7 @@ pub fn TransactionsPage() -> impl IntoView {
 
 #[derive(Params, PartialEq, Debug)]
 struct TransactionsByItemParams {
-    item: String,
+    item: Option<String>,
 }
 
 #[component]
@@ -41,12 +41,12 @@ pub fn TransactionsByItemPage() -> impl IntoView {
 
     let transactions = create_resource(
         || (),
-        move |_| async move { get_transactions_by_item(item()).await },
+        move |_| async move { get_transactions_by_item(item().unwrap_or_default()).await },
     );
 
     view! {
         <>
-            <h1>{format!("💰 {}", item())}</h1>
+            <h1>{format!("💰 {}", item().unwrap_or_default())}</h1>
             <Suspense fallback=move || view! { <p>"Loading..."</p> }>
                 <ErrorBoundary fallback=|errors| {
                     let err = format!("{:?}", errors.get());

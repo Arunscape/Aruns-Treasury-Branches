@@ -1,10 +1,9 @@
-use leptos::*;
-use leptos_router::*;
+use {leptos::*, leptos_router::*};
 
 #[derive(Params, PartialEq, Clone, Debug, Default)]
 struct QueryParams {
-    code: String,
-    state: String,
+    code: Option<String>,
+    state: Option<String>,
 }
 
 #[component]

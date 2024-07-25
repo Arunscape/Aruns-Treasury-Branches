@@ -46,8 +46,6 @@ pub async fn new_transaction(
     let p = pool()?;
     let p = pool()?;
 
-
-    todo!()
     let transaction = query_as!(Transaction, "INSERT INTO transactions (fromid, toid, item, quantity, price) VALUES ($1, $2, $3, $4, $5) RETURNING *", from, to, item, quantity, price).fetch_one(&p).await?;
 
     Ok(transaction)

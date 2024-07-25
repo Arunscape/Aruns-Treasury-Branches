@@ -16,8 +16,7 @@ use {
         Router,
     },
     axum_session::{
-        DatabasePool, Session, SessionAnyPool, SessionConfig, SessionLayer, SessionPgPool,
-        SessionStore,
+        DatabasePool, Session, SessionAnyPool, SessionConfig, SessionLayer, SessionStore,
     },
     axum_session_auth::{AuthConfig, AuthSession, AuthSessionLayer, Authentication, HasPermission},
     leptos::{LeptosOptions, *},
