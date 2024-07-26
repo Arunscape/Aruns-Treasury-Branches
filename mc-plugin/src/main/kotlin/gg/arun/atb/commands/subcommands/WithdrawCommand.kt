@@ -51,7 +51,7 @@ class WithdrawCommand : SubCommand() {
 
             player.sendMessage("Contacting backend...")
 
-            player.sendMessage("$failedAmount/$amount items were not deposssited and returned to your online account")
+            player.sendMessage("$failedAmount/$amount items were not deposited and returned to your online account")
         }
 
 
@@ -77,5 +77,6 @@ class WithdrawCommand : SubCommand() {
 
         return mutableListOf()
     }
+
 
 }

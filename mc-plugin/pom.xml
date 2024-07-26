@@ -13,12 +13,12 @@
 
     <description>Trade diamonds</description>
     <properties>
-        <java.version>19</java.version>
+        <java.version>21</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <kotlin.version>1.8.22</kotlin.version>
+        <kotlin.version>2.0.0</kotlin.version>
         <ktor.version>LATEST</ktor.version>
-        <mavencompilerplugin.version>3.11.0</mavencompilerplugin.version>
-        <mavenshade.version>3.5.0</mavenshade.version>
+        <mavencompilerplugin.version>3.13.0</mavencompilerplugin.version>
+        <mavenshade.version>3.6.0</mavenshade.version>
     </properties>
 
     <build>
@@ -104,7 +104,12 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <minimizeJar>true</minimizeJar>
+                    <!--                    can't minimize because of jjwt-impl runtime dependency-->
+                    <minimizeJar>false</minimizeJar>
+                    <transformers>
+                        <transformer
+                                implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                    </transformers>
                 </configuration>
             </plugin>
             <plugin>
@@ -198,6 +203,23 @@
             <groupId>org.jetbrains.kotlinx</groupId>
             <artifactId>kotlinx-serialization-json</artifactId>
             <version>LATEST</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>0.12.6</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>0.12.6</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId> <!-- or jjwt-gson if Gson is preferred -->
+            <version>0.12.6</version>
+            <scope>runtime</scope>
         </dependency>
     </dependencies>
 </project>
