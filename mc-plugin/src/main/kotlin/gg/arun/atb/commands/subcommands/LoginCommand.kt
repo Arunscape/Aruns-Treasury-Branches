@@ -5,6 +5,8 @@ import gg.arun.atb.Atb.Companion.config
 import gg.arun.atb.commands.SubCommand
 import gg.arun.atb.server.signmessage
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import org.bukkit.entity.Player
 
 
@@ -62,7 +64,7 @@ class LoginCommand : SubCommand() {
 
         val p = Payload(uuid.toString(), username)
 
-        val x = signmessage(p.toString())
+        val x = signmessage(Json.encodeToString(p))
 
         println(x)
         player.sendMessage(x)

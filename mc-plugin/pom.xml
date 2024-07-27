@@ -165,7 +165,8 @@
     <repositories>
         <repository>
             <id>purpur</id>
-            <url>https://repo.purpurmc.org/releases</url>
+            <!--            <url>https://repo.purpurmc.org/releases</url>-->
+            <url>https://repo.purpurmc.org/snapshots</url>
         </repository>
         <repository>
             <id>jitpack.io</id>

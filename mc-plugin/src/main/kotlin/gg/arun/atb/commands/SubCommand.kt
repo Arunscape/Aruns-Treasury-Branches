@@ -24,6 +24,6 @@ abstract class SubCommand : SuspendingTabCompleter {
         alias: String,
         args: Array<out String>
     ): List<String>? {
-        return null
+        return listOf()
     }
 }
