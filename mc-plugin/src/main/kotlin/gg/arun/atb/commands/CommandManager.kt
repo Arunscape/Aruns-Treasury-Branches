@@ -1,16 +1,18 @@
 package gg.arun.atb.commands
 
-import gg.arun.atb.commands.subcommands.*
+import com.github.shynixn.mccoroutine.bukkit.SuspendingCommandExecutor
+import com.github.shynixn.mccoroutine.bukkit.SuspendingTabCompleter
+import gg.arun.atb.commands.subcommands.DepositCommand
+import gg.arun.atb.commands.subcommands.EmailCommand
+import gg.arun.atb.commands.subcommands.LoginCommand
+import gg.arun.atb.commands.subcommands.WithdrawCommand
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
-import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
-import org.bukkit.command.TabCompleter
-import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
 
-class CommandManager : CommandExecutor, TabCompleter {
-    var subcommands: HashMap<String, SubCommand> = HashMap()
+class CommandManager : SuspendingCommandExecutor, SuspendingTabCompleter {
+    private var subcommands: HashMap<String, SubCommand> = HashMap()
 
     init {
         subcommands["deposit"] = DepositCommand()
@@ -19,12 +21,17 @@ class CommandManager : CommandExecutor, TabCompleter {
         subcommands["email"] = EmailCommand()
     }
 
-    fun helpMessage(): String {
+    private fun helpMessage(): String {
 
         return "Available Commands:\n" + subcommands.map { it.value.getSyntax() + "\n" }.reduce { acc, it -> acc + it }
     }
 
-    override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
+    override suspend fun onCommand(
+        sender: CommandSender,
+        command: Command,
+        label: String,
+        args: Array<out String>
+    ): Boolean {
         if (sender !is Player) {
             sender.sendMessage("Error: This command is meant to be run as a player.")
             return false
@@ -47,12 +54,13 @@ class CommandManager : CommandExecutor, TabCompleter {
         return true
     }
 
-    override fun onTabComplete(
-        sender: CommandSender, command: Command, label: String, args: Array<out String>
-    ): MutableList<String>? {
+    override suspend fun onTabComplete(
+        sender: CommandSender, command: Command, alias: String, args: Array<out String>
+    ): List<String>? {
         Bukkit.getLogger().info(args.joinToString())
+        print("trying to tab complete $command - $alias - $args")
         if (args.size == 1) {
-            return subcommands.keys.toMutableList()
+            return subcommands.keys.toList()
         }
 
         if (args.size < 2) {
@@ -65,7 +73,7 @@ class CommandManager : CommandExecutor, TabCompleter {
             return null
         }
 
-        return subcommands[subcommand]?.onTabComplete(sender, command, label, args.sliceArray(1 until args.size))
+        return subcommands[subcommand]?.onTabComplete(sender, command, alias, args.sliceArray(1 until args.size))
 
     }
 }

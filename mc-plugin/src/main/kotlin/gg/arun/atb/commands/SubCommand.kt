@@ -1,10 +1,11 @@
 package gg.arun.atb.commands
 
-import org.bukkit.command.TabCompleter
-import org.bukkit.configuration.file.YamlConfiguration
+import com.github.shynixn.mccoroutine.bukkit.SuspendingTabCompleter
+import org.bukkit.command.Command
+import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-abstract class SubCommand : TabCompleter {
+abstract class SubCommand : SuspendingTabCompleter {
     abstract fun getName(): String
     abstract fun getDescription(): String
     abstract fun getSyntax(): String
@@ -17,4 +18,12 @@ abstract class SubCommand : TabCompleter {
         player.sendMessage("Error: $message\nUsage: ${getSyntax()}")
     }
 
+    override suspend fun onTabComplete(
+        sender: CommandSender,
+        command: Command,
+        alias: String,
+        args: Array<out String>
+    ): List<String>? {
+        return null
+    }
 }

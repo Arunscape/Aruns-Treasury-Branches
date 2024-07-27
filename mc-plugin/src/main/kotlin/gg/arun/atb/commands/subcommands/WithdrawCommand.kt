@@ -62,20 +62,23 @@ class WithdrawCommand : SubCommand() {
 
     }
 
-    override fun onTabComplete(
-        sender: CommandSender, command: Command, label: String, args: Array<out String>
-    ): MutableList<String> {
+    override suspend fun onTabComplete(
+        sender: CommandSender,
+        command: Command,
+        alias: String,
+        args: Array<out String>
+    ): List<String>? {
 
         if (args.size == 1) {
-            return Material.values().map { it.toString().lowercase() }.filter { it.contains(args[0].lowercase()) }
-                .toMutableList()
+            return Material.entries.map { it.toString().lowercase() }.filter { it.contains(args[0].lowercase()) }
+                .toList()
         }
 
         if (args.size == 2) {
-            return mutableListOf("2", "4", "8", "16", "32", "64")
+            return listOf("2", "4", "8", "16", "32", "64")
         }
 
-        return mutableListOf()
+        return null
     }
 
 

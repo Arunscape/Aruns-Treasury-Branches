@@ -4,16 +4,8 @@ package gg.arun.atb.commands.subcommands
 import gg.arun.atb.Atb.Companion.config
 import gg.arun.atb.commands.SubCommand
 import gg.arun.atb.server.signmessage
-import io.ktor.http.*
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.event.ClickEvent
-import net.kyori.adventure.text.event.HoverEvent
-import org.bukkit.command.Command
-import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import java.util.UUID
 
 
 class LoginCommand : SubCommand() {
@@ -66,20 +58,14 @@ class LoginCommand : SubCommand() {
         val username = player.name
 
         @Serializable
-        data class payload(val uuid: String, val username: String)
+        data class Payload(val uuid: String, val username: String)
 
-        val p = payload(uuid.toString(), username)
+        val p = Payload(uuid.toString(), username)
 
         val x = signmessage(p.toString())
 
         println(x)
         player.sendMessage(x)
-    }
-
-    override fun onTabComplete(
-        sender: CommandSender, command: Command, label: String, args: Array<out String>
-    ): MutableList<String> {
-        return mutableListOf()
     }
 
 

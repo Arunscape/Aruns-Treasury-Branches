@@ -1,8 +1,6 @@
 package gg.arun.atb.commands.subcommands
 
 import gg.arun.atb.commands.SubCommand
-import org.bukkit.command.Command
-import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 class EmailCommand : SubCommand() {
@@ -26,13 +24,6 @@ class EmailCommand : SubCommand() {
         // todo
         player.sendMessage(getDescription())
 
-    }
-
-    override fun onTabComplete(
-        sender: CommandSender, command: Command, label: String, args: Array<out String>
-    ): MutableList<String> {
-
-        return mutableListOf()
     }
 
 
