@@ -23,6 +23,7 @@ val client = HttpClient(CIO) {
     }
 }
 
+/// returns JWT
 fun signmessage(payload: String): String {
     println("KEY: $base64_key")
     val key: Key = Keys.hmacShaKeyFor(
@@ -41,5 +42,7 @@ fun signmessage(payload: String): String {
         .signWith(key)
         .compact()
 }
+
+
 
 

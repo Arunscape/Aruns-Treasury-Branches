@@ -3,7 +3,11 @@ package gg.arun.atb.commands.subcommands
 
 import gg.arun.atb.Atb.Companion.config
 import gg.arun.atb.commands.SubCommand
+import gg.arun.atb.server.client
+import gg.arun.atb.server.serverUrl
 import gg.arun.atb.server.signmessage
+import io.ktor.client.request.*
+import io.ktor.http.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -55,7 +59,7 @@ class LoginCommand : SubCommand() {
 //
 //    }
 
-    override fun perform(player: Player, args: Array<out String>) {
+    override suspend fun perform(player: Player, args: Array<out String>) {
         val uuid = player.uniqueId
         val username = player.name
 
@@ -67,6 +71,16 @@ class LoginCommand : SubCommand() {
         val x = signmessage(Json.encodeToString(p))
 
         println(x)
+        println(serverUrl)
+
+        client.post(serverUrl) {
+            url {
+                appendPathSegments("mcplugin", "link_account")
+            }
+            headers {
+                append(HttpHeaders.Authorization, x)
+            }
+        }
         player.sendMessage(x)
     }
 

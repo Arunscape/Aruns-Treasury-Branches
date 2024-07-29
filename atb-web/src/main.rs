@@ -2,7 +2,6 @@
 
 #![cfg_attr(debug_assertions, allow(dead_code, unused_imports))]
 #![feature(lazy_cell)]
-
 #[cfg(feature = "ssr")]
 use {
     atb_types::User,
@@ -19,10 +18,13 @@ use {
         DatabasePool, Session, SessionAnyPool, SessionConfig, SessionLayer, SessionStore,
     },
     axum_session_auth::{AuthConfig, AuthSession, AuthSessionLayer, Authentication, HasPermission},
+    http::HeaderMap,
+    jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, TokenData, Validation},
     leptos::{LeptosOptions, *},
     leptos_axum::handle_server_fns_with_context,
     leptos_axum::{generate_route_list, LeptosRoutes},
     leptos_router::RouteListing,
+    serde::{Deserialize, Serialize},
     sqlx::{
         any::{AnyConnectOptions, AnyPoolOptions},
         postgres::{PgConnectOptions, PgPoolOptions},
@@ -83,6 +85,7 @@ async fn main() -> Result<(), anyhow::Error> {
         //        .route("/api/get_session_cookie", get(get_session_cookie))
         //.layer(SessionLayer::new(session_store))
         //.layer(AuthSessionLayer::<User, i64, SessionPgPool, PgPool>::new(Some(pool)).with_config(auth_config))
+        .route("/mcplugin/link_account", post(link_account))
         .fallback(file_and_error_handler)
         .with_state(app_state);
 
@@ -146,4 +149,31 @@ async fn leptos_routes_handler(
         App,
     );
     handler(req).await.into_response()
+}
+
+#[cfg(feature = "ssr")]
+async fn link_account(headers: HeaderMap) -> impl IntoResponse {
+    dbg!(&headers);
+    #[derive(Debug, Serialize, Deserialize)]
+    struct Claims {
+        uuid: Uuid,
+        username: String,
+    }
+    let token = headers.get("authorization");
+    dbg!(&token);
+    let token = token.unwrap().to_str().unwrap();
+    dbg!(&token);
+    let key = r"-----BEGIN PUBLIC KEY-----
+MCowBQYDK2VwAyEA6tuVddasOcnOWutIMKGhctubzk6iZm6nc4zqi3gtC+g=
+-----END PUBLIC KEY-----";
+    let key = DecodingKey::from_ed_pem(&key.as_bytes()).unwrap();
+    //dbg!(&key);
+
+    let claims = decode::<Claims>(
+        &token,
+        &key,
+        &Validation::new(jsonwebtoken::Algorithm::EdDSA),
+    );
+
+    dbg!(&claims);
 }

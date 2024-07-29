@@ -19,7 +19,7 @@ class EmailCommand : SubCommand() {
     }
 
 
-    override fun perform(player: Player, args: Array<out String>) {
+    override suspend fun perform(player: Player, args: Array<out String>) {
 
         // todo
         player.sendMessage(getDescription())

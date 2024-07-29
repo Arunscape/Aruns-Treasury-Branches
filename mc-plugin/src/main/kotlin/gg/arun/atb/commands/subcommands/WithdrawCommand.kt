@@ -22,7 +22,7 @@ class WithdrawCommand : SubCommand() {
     }
 
 
-    override fun perform(player: Player, args: Array<out String>) {
+    override suspend fun perform(player: Player, args: Array<out String>) {
         if (args.size != 3) {
             sendError(player)
             return
