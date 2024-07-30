@@ -163,17 +163,16 @@ async fn link_account(headers: HeaderMap) -> impl IntoResponse {
     dbg!(&token);
     let token = token.unwrap().to_str().unwrap();
     dbg!(&token);
-    let key = r"-----BEGIN PUBLIC KEY-----
+    let key = "-----BEGIN PUBLIC KEY-----
 MCowBQYDK2VwAyEA6tuVddasOcnOWutIMKGhctubzk6iZm6nc4zqi3gtC+g=
 -----END PUBLIC KEY-----";
-    let key = DecodingKey::from_ed_pem(&key.as_bytes()).unwrap();
-    //dbg!(&key);
+    let key = DecodingKey::from_ed_pem(key.as_ref()).unwrap();
 
-    let claims = decode::<Claims>(
-        &token,
-        &key,
-        &Validation::new(jsonwebtoken::Algorithm::EdDSA),
-    );
+    let mut validation = Validation::new(jsonwebtoken::Algorithm::EdDSA);
+    validation.set_audience(&["atb.arun.gg"]);
+    validation.set_issuer(&["mc.arun.gg"]);
+
+    let claims = decode::<Claims>(&token, &key, &validation);
 
     dbg!(&claims);
 }

@@ -8,6 +8,7 @@ import gg.arun.atb.server.serverUrl
 import gg.arun.atb.server.signmessage
 import io.ktor.client.request.*
 import io.ktor.http.*
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -58,17 +59,23 @@ class LoginCommand : SubCommand() {
 //
 //
 //    }
-
+    
     override suspend fun perform(player: Player, args: Array<out String>) {
         val uuid = player.uniqueId
         val username = player.name
 
-        @Serializable
-        data class Payload(val uuid: String, val username: String)
+//        @Serializable
+//        data class Payload(val uuid: String, val username: String)
+//
+//        val p = Payload(uuid.toString(), username)
 
-        val p = Payload(uuid.toString(), username)
+//        val x = signmessage(Json.encodeToString(p))
 
-        val x = signmessage(Json.encodeToString(p))
+        val claims = mapOf(
+            "uuid" to uuid,
+            "username" to username
+        )
+        val x = signmessage(claims)
 
         println(x)
         println(serverUrl)
