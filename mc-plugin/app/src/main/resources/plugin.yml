@@ -1,5 +1,5 @@
 name: ATB
-version: '${project.version}'
+version: '${version}'
 main: gg.arun.atb.Atb
 api-version: 1.21
 prefix: atb.arun.gg

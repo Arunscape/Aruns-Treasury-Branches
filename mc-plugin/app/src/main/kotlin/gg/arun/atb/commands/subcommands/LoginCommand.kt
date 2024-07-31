@@ -8,10 +8,6 @@ import gg.arun.atb.server.serverUrl
 import gg.arun.atb.server.signmessage
 import io.ktor.client.request.*
 import io.ktor.http.*
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import org.bukkit.entity.Player
 
 
@@ -59,7 +55,7 @@ class LoginCommand : SubCommand() {
 //
 //
 //    }
-    
+
     override suspend fun perform(player: Player, args: Array<out String>) {
         val uuid = player.uniqueId
         val username = player.name

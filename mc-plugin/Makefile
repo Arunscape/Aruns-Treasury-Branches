@@ -6,7 +6,7 @@ clean:
 	mvn clean
 	wait
 
-package:
+package: update
 	mvn package
 
 downloadserverjar:
@@ -17,6 +17,11 @@ run: package downloadserverjar
 	mv target/atb-1.0-SNAPSHOT.jar test/plugins/ATB.jar
 	cd test && java -jar server.jar -nogui
 
+update:
+	#mvn versions:update-parent
+	mvn versions:update-properties
+	mvn versions:use-latest-releases
+	#mvn versions:update-child-modules
 
 
 ifndef MCAUTH_CLIENT_SECRET

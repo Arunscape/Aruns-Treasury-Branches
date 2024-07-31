@@ -1,9 +1,5 @@
 package gg.arun.atb.server
 
-//import io.jsonwebtoken.Jwts
-//import io.jsonwebtoken.SignatureAlgorithm
-//import io.jsonwebtoken.io.Decoders
-//import io.jsonwebtoken.security.Keys
 import gg.arun.atb.Atb.Companion.config
 import io.jsonwebtoken.Jwts
 import io.ktor.client.*
@@ -13,6 +9,8 @@ import io.ktor.serialization.kotlinx.json.*
 import java.security.KeyFactory
 import java.security.spec.PKCS8EncodedKeySpec
 import java.util.*
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 
 
 //@Serializable
@@ -28,16 +26,17 @@ val client = HttpClient(CIO) {
 }
 
 /// returns JWT
+@OptIn(ExperimentalEncodingApi::class)
 fun signmessage(claims: Map<String, Any>): String {
 
-    val pem_private_key = String(Base64.getDecoder().decode(base64_key))
+    val pem_private_key = Base64.decode(base64_key).decodeToString()
 
 
     val stripped_private_key = pem_private_key.replace("\n", "")
         .replace("-----BEGIN PRIVATE KEY-----", "")
         .replace("-----END PRIVATE KEY-----", "")
 
-    val private_key_bytes = Base64.getDecoder().decode(stripped_private_key)
+    val private_key_bytes = Base64.decode(stripped_private_key)
     val factory = KeyFactory.getInstance("EdDSA")
     val key = factory.generatePrivate(PKCS8EncodedKeySpec(private_key_bytes))
 
@@ -52,7 +51,6 @@ fun signmessage(claims: Map<String, Any>): String {
         .claims(claims)
         .signWith(key, Jwts.SIG.EdDSA)
         .compact()
-
 }
 
 
