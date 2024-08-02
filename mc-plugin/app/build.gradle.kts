@@ -1,3 +1,5 @@
+import gg.arun.atb.DownloadServerJar
+
 //val ktor_version: String by project
 //val kotlin_version: String by project\
 
@@ -41,13 +43,6 @@ dependencies {
 
 }
 //
-tasks.shadowJar {
-    // wait for this to merge: https://github.com/GradleUp/shadow/pull/876
-//    minimize {
-//
-//    }
-}
-//
 //idea {
 //
 //    module {
@@ -58,9 +53,6 @@ tasks.shadowJar {
 //
 //}
 //
-tasks.build {
-//    dependsOn("shadowJar")
-}
 
 group = "gg.arun"
 version = "1.0-SNAPSHOT"
@@ -85,10 +77,31 @@ tasks.processResources {
 //    }
 //}
 
-val mcserver_dir = "test"
 
+val server_dir = "build/mcserver"
+group = "gg.arun"
+version = "1.0-SNAPSHOT"
+description = "Arun's Treasury Branches"
 
-//tasks.register<DownloadServerJar>("downloadServerJar") {
-//    description = "Downloads purpur server"
-////    outputs.upToDateWhen { false }
-//}
+tasks.register<DownloadServerJar>("downloadServerJar") {
+    description = "Downloads purpur server"
+    version_txt = file("$server_dir/version.txt")
+    server_jar = file("$server_dir/server.jar")
+    eula_txt = file("$server_dir/eula.txt")
+    doNotTrackState("checks purpur api")
+//    outputs.upToDateWhen { false }
+}
+
+tasks.shadowJar {
+    destinationDirectory.set(file("$server_dir/plugins"))
+//    minimize()
+    // wait for this to merge: https://github.com/GradleUp/shadow/pull/876
+}
+
+tasks.register<JavaExec>("run") {
+    dependsOn("processResources")
+    dependsOn("shadowJar")
+    dependsOn("downloadServerJar")
+    classpath = files("$server_dir/server.jar")
+    workingDir = file(server_dir) // Set the working directory
+}

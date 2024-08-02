@@ -1,6 +1,5 @@
 //val ktor_version: String by project
 //val kotlin_version: String by project
-import gg.arun.atb.DownloadServerJar
 
 val kotlin_version = "2.0.0"
 val ktor_version = "latest.release"
@@ -28,41 +27,35 @@ kotlin {
     jvmToolchain(21)
 }
 
-allprojects {
 
+idea {
+    module {
 
-    dependencies {
-
-//        implementation("io.ktor:ktor-client-core:$ktor_version")
-//        implementation("io.ktor:ktor-client-cio:$ktor_version")
-//        implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
-//        implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
-
-//    implementation(libs.com.github.shynixn.mccoroutine.mccoroutine.bukkit.api)
-//    implementation(libs.com.github.shynixn.mccoroutine.mccoroutine.bukkit.core)
-//
-//
-//    val jjwt_version = "latest.release"
-//    implementation("io.jsonwebtoken:jjwt-api:$jjwt_version")
-//    runtimeOnly("io.jsonwebtoken:jjwt-impl:$jjwt_version")
-//    runtimeOnly("io.jsonwebtoken:jjwt-jackson:$jjwt_version")
-//
-//    compileOnly("org.purpurmc.purpur", "purpur-api", "+")
-
+        isDownloadJavadoc = true
+        isDownloadSources = true
     }
+}
+//allprojects {
+
+dependencies {
+
+    implementation("io.ktor:ktor-client-core")
+    implementation("io.ktor:ktor-client-cio")
+    implementation("io.ktor:ktor-client-content-negotiation")
+    implementation("io.ktor:ktor-serialization-kotlinx-json")
+
+    implementation(libs.com.github.shynixn.mccoroutine.mccoroutine.bukkit.api)
+    implementation(libs.com.github.shynixn.mccoroutine.mccoroutine.bukkit.core)
+
+
+    val jjwt_version = "latest.release"
+    implementation("io.jsonwebtoken:jjwt-api")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson")
+
+    compileOnly("org.purpurmc.purpur", "purpur-api", "+")
 
 }
 
-//val server_dir = "build/mcserver"
-val server_dir = "test"
-group = "gg.arun"
-version = "1.0-SNAPSHOT"
-description = "Arun's Treasury Branches"
+//}
 
-tasks.register<DownloadServerJar>("downloadServerJar") {
-    description = "Downloads purpur server"
-    version_txt = file("$server_dir/version.txt")
-    server_jar = file("$server_dir/server.jar")
-    doNotTrackState("checks purpur api")
-//    outputs.upToDateWhen { false }
-}
