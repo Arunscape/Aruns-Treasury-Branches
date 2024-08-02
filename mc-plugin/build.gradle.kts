@@ -46,9 +46,7 @@ dependencies {
 
     implementation(libs.com.github.shynixn.mccoroutine.mccoroutine.bukkit.api)
     implementation(libs.com.github.shynixn.mccoroutine.mccoroutine.bukkit.core)
-
-
-    val jjwt_version = "latest.release"
+    
     implementation("io.jsonwebtoken:jjwt-api")
     runtimeOnly("io.jsonwebtoken:jjwt-impl")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson")
