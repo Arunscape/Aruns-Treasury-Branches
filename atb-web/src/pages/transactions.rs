@@ -19,7 +19,7 @@ pub fn TransactionsPage() -> impl IntoView {
                     {move || {
                         transactions
                             .get()
-                            .map(|x| x.map(|x| view! { <TransactionsTable transactions=x/> }))
+                            .map(|x| x.map(|x| view! { <TransactionsTable transactions=x /> }))
                     }}
 
                 </ErrorBoundary>
@@ -56,7 +56,7 @@ pub fn TransactionsByItemPage() -> impl IntoView {
                     {move || {
                         transactions
                             .get()
-                            .map(|x| x.map(|x| view! { <TransactionsTable transactions=x/> }))
+                            .map(|x| x.map(|x| view! { <TransactionsTable transactions=x /> }))
                     }}
 
                 </ErrorBoundary>

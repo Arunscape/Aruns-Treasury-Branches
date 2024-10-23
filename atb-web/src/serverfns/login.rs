@@ -1,13 +1,11 @@
+// Other imports needed to make the SPA (single page application) work.
+use leptos::*;
+#[cfg(feature = "ssr")]
 use {
-    leptos::*,
-    //    oauth2::{
-    //        basic::BasicClient, reqwest::async_http_client, AuthType, AuthUrl, AuthorizationCode,
-    //        ClientId, ClientSecret, CsrfToken, PkceCodeChallenge, RedirectUrl, Scope, TokenResponse,
-    //        TokenUrl,
-    //    },
+    crate::serverfns::pool,
+    sqlx::{any::AnyExecutor, query, query_as, query_file_as, AnyPool, PgPool},
 };
 
-///
 /// Here's an example of how to call the endpoint outside of the app
 /// ```bash
 /// curl -XPOST 'http://127.0.0.1:3000/api/validate_minecraft_token' --data-ascii "token=$TOKEN"
@@ -28,9 +26,16 @@ pub async fn validate_minecraft_token(token: String) -> Result<serde_json::Value
 }
 
 #[server(LoginFn, "/api", "Url", "login")]
-pub async fn login() -> Result<(), ServerFnError> {
-    //let client_secret = std::env::var("AZURE_AD_CLIENT_SECRET")?;
+pub async fn login(username: String) -> Result<(), ServerFnError> {
+    let pool = pool()?;
 
+    //    let existing_account = query_as!(User,
+
+    Ok(())
+}
+
+#[server(RegisterPasskey, "/api", "Url", "register_passkey")]
+pub async fn register_passkey() -> Result<(), ServerFnError> {
     Ok(())
 }
 

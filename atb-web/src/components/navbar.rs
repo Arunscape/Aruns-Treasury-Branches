@@ -37,7 +37,7 @@ pub fn Navbar() -> impl IntoView {
                     </A>
                 </For>
 
-                <Avatar uuid=uuid.into()/>
+                <Avatar uuid=uuid.into() />
             </div>
         </nav>
     }

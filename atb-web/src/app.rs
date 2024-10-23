@@ -15,32 +15,32 @@ pub fn App() -> impl IntoView {
     provide_meta_context();
 
     view! {
-        <Stylesheet id="leptos" href="/pkg/atb-web.css"/>
+        <Stylesheet id="leptos" href="/pkg/atb-web.css" />
 
         // sets the document title
-        <Title text="Arun's Treasury Branches"/>
-        <Link rel="icon" href="/favicon.svg"/>
+        <Title text="Arun's Treasury Branches" />
+        <Link rel="icon" href="/favicon.svg" />
         // <Html attributes=vec![("data-theme", "forest")]/>
-        <Html attr:data-theme="forest"/>
-        <Meta name="view-transition" content="same-origin"/>
-        <Script src="https://cdn.plot.ly/plotly-2.14.0.min.js"/>
+        <Html attr:data-theme="forest" />
+        <Meta name="view-transition" content="same-origin" />
+        <Script src="https://cdn.plot.ly/plotly-2.14.0.min.js" />
 
         // content for this welcome page
         <Router fallback=|| {
             let mut outside_errors = Errors::default();
             outside_errors.insert_with_default_key(AppError::NotFound);
-            view! { <ErrorTemplate outside_errors/> }.into_view()
+            view! { <ErrorTemplate outside_errors /> }.into_view()
         }>
-            <Navbar/>
+            <Navbar />
             <main>
                 <Routes>
-                    <Route path="" view=HomePage/>
-                    <Route path="/status" view=Status/>
-                    <Route path="/api/auth/callback/azure-ad" view=AuthCallback/>
-                    <Route path="/signup" view=Signup/>
-                    <Route path="/login" view=Login/>
-                    <Route path="/transactions" view=TransactionsPage/>
-                    <Route path="/transactions/:item" view=TransactionsByItemPage/>
+                    <Route path="" view=HomePage />
+                    <Route path="/status" view=Status />
+                    <Route path="/api/auth/callback/azure-ad" view=AuthCallback />
+                    <Route path="/signup" view=Signup />
+                    <Route path="/login" view=Login />
+                    <Route path="/transactions" view=TransactionsPage />
+                    <Route path="/transactions/:item" view=TransactionsByItemPage />
                 </Routes>
             </main>
         </Router>

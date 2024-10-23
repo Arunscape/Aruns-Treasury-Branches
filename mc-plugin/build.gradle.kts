@@ -15,12 +15,11 @@ plugins {
 
 repositories {
     mavenCentral()
-//    maven {
-//        name = "purpurmc"
-//        url = uri("https://repo.purpurmc.org/snapshots")
-//    }
+    maven {
+        name = "purpurmc"
+        url = uri("https://repo.purpurmc.org/snapshots")
+    }
     maven("https://www.jitpack.io")
-
 }
 
 kotlin {
@@ -36,24 +35,34 @@ idea {
     }
 }
 //allprojects {
-
-dependencies {
-
-    implementation("io.ktor:ktor-client-core")
-    implementation("io.ktor:ktor-client-cio")
-    implementation("io.ktor:ktor-client-content-negotiation")
-    implementation("io.ktor:ktor-serialization-kotlinx-json")
-
-    implementation(libs.com.github.shynixn.mccoroutine.mccoroutine.bukkit.api)
-    implementation(libs.com.github.shynixn.mccoroutine.mccoroutine.bukkit.core)
-    
-    implementation("io.jsonwebtoken:jjwt-api")
-    runtimeOnly("io.jsonwebtoken:jjwt-impl")
-    runtimeOnly("io.jsonwebtoken:jjwt-jackson")
-
-    compileOnly("org.purpurmc.purpur", "purpur-api", "+")
-
-}
-
+//
+//    dependencies {
+//
+//        implementation("io.ktor:ktor-client-core")
+//        implementation("io.ktor:ktor-client-cio")
+//        implementation("io.ktor:ktor-client-content-negotiation")
+//        implementation("io.ktor:ktor-serialization-kotlinx-json")
+//
+////    implementation(libs.io.ktor.ktor.client.core)
+////    implementation(libs.io.ktor.ktor.client.cio)
+////    implementation(libs.io.ktor.ktor.client.content.negotiation)
+////    implementation(libs.io.ktor.ktor.serialization.kotlinx.json)
+//
+//
+//        implementation(libs.com.github.shynixn.mccoroutine.mccoroutine.bukkit.api)
+//        implementation(libs.com.github.shynixn.mccoroutine.mccoroutine.bukkit.core)
+//
+//        implementation("io.jsonwebtoken:jjwt-api")
+//        runtimeOnly("io.jsonwebtoken:jjwt-impl")
+//        runtimeOnly("io.jsonwebtoken:jjwt-jackson")
+//
+////    implementation(libs.io.jsonwebtoken.jjwt.api)
+////    runtimeOnly(libs.io.jsonwebtoken.jjwt.impl)
+////    runtimeOnly(libs.io.jsonwebtoken.jjwt.jackson)
+//
+//        compileOnly("org.purpurmc.purpur", "purpur-api", "+")
+//
+//    }
+//
 //}
 

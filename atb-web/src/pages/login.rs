@@ -1,21 +1,38 @@
 use {
+    crate::serverfns::login::RegisterPasskey,
+    gloo::console,
     leptos::*,
     leptos_router::*,
-    //    oauth2::{
-    //        basic::BasicClient, reqwest::async_http_client, AuthType, AuthUrl, AuthorizationCode,
-    //        ClientId, ClientSecret, CsrfToken, PkceCodeChallenge, RedirectUrl, Scope, TokenResponse,
-    //        TokenUrl,
-    //    },
+    std::{error::Error, fmt},
+    wasm_bindgen::{prelude::*, JsCast},
+    wasm_bindgen_futures::JsFuture,
+    web_sys::{Document, Request, RequestInit, RequestMode, Response, Window},
+    webauthn_rs_proto::*,
 };
 
 #[component]
 pub fn Login() -> impl IntoView {
+    let register_action = create_server_action::<RegisterPasskey>();
+    let login_action = create_server_action::<RegisterPasskey>();
+
     view! {
         <div>
-            <h1>Login</h1>
+            <h1>"Login Page"</h1>
 
-            <p>In the future I hope to have some sort of passkey authentication here.</p>
-            <p>For now, just follow the instructions at <A href="/signup">Signup</A></p>
+            <ActionForm action=register_action>
+
+                <label>
+                    "Sign up: enter your desired username" <input name="new_username" type="text" />
+                </label>
+                <button type="submit">{"Sign up"}</button>
+            </ActionForm>
+
+            <ActionForm action=login_action>
+                <label>
+                    "Login: Enter your already existing username here"
+                    <input name="existing_username" type="text" />
+                </label>
+            </ActionForm>
         </div>
     }
 }

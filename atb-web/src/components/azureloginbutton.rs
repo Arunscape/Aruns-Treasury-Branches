@@ -47,7 +47,7 @@ pub fn AzureLoginButton() -> impl IntoView {
 
     let v = view! {
         <a href=authorize_url>
-            <img src=DARKSVG alt="Sign in with Microsoft"/>
+            <img src=DARKSVG alt="Sign in with Microsoft" />
         </a>
     };
 

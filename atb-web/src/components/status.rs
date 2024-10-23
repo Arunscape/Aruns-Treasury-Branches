@@ -39,7 +39,7 @@ fn Status(status: Result<McServerStatus, ServerFnError>) -> impl IntoView {
                 let status = status.clone().unwrap();
                 view! {
                     <p>Version: {status.version}</p>
-                    <img node_ref=imgref/>
+                    <img node_ref=imgref />
                     <p>{format!("Players: {}/{}", status.online_players, status.max_players)}</p>
                     <For each=move || status.sample.clone() key=|(_name, id)| id.clone() let:player>
 
@@ -68,7 +68,7 @@ pub fn McStatusComponent() -> impl IntoView {
         <Suspense fallback=move || view! { <p>"Loading..."</p> }>
             <div>
 
-                {once.get().map(|v| view! { <Status status=v/> })}
+                {once.get().map(|v| view! { <Status status=v /> })}
 
             </div>
         </Suspense>

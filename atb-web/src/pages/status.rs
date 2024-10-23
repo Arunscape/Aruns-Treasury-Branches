@@ -5,6 +5,6 @@ use leptos::*;
 pub fn Status() -> impl IntoView {
     view! {
         <h1>"Status"</h1>
-        <McStatusComponent/>
+        <McStatusComponent />
     }
 }

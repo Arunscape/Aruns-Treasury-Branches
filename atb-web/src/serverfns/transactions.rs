@@ -1,11 +1,9 @@
 #[cfg(feature = "ssr")]
-use sqlx::{any::AnyExecutor, query, query_as, query_file_as, AnyPool, PgPool};
+use {
+    crate::serverfns::pool,
+    sqlx::{any::AnyExecutor, query, query_as, query_file_as, AnyPool, PgPool},
+};
 use {atb_types::*, leptos::*, leptos_meta::*, uuid::Uuid};
-
-#[cfg(feature = "ssr")]
-pub fn pool() -> Result<PgPool, ServerFnError> {
-    use_context::<PgPool>().ok_or_else(|| ServerFnError::ServerError("No pool found".to_string()))
-}
 
 #[server(GetTransactions, "/api", "GetJson", "transactions")]
 pub async fn get_transactions() -> Result<Vec<Transaction>, ServerFnError> {
