@@ -8,6 +8,9 @@ plugins {
     kotlin("plugin.serialization") version "2.0.21"
 }
 
+repositories {
+    mavenCentral()
+}
 
 
 version = project.property("mod_version") as String
@@ -33,6 +36,12 @@ dependencies {
     modImplementation("net.fabricmc:fabric-loader:${project.property("loader_version")}")
     modImplementation("net.fabricmc:fabric-language-kotlin:${project.property("kotlin_loader_version")}")
     modImplementation("net.fabricmc.fabric-api:fabric-api:${project.property("fabric_version")}")
+
+
+    val jjwt_version = "latest.release"
+    implementation("io.jsonwebtoken:jjwt-api:$jjwt_version")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:$jjwt_version")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:$jjwt_version")
 
 }
 
