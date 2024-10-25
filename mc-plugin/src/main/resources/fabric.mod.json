@@ -4,18 +4,22 @@
   "version": "${version}",
   "name": "ATB minecraft plugin",
   "description": "Minecraft Server plugin for Arun's Treasury Branches",
-  "authors": ["Arun Woosaree"],
+  "authors": [
+    "Arun Woosaree"
+  ],
   "contact": {},
   "license": "All-Rights-Reserved",
   "icon": "assets/untitled1/icon.png",
   "environment": "server",
   "entrypoints": {
     "main": [
-      "gg.arun.atb.ATB"
+      {
+        "adapter": "kotlin",
+        "value": "gg.arun.atb.ATBKt::init"
+      }
     ]
   },
   "mixins": [
-
   ],
   "depends": {
     "fabricloader": ">=${loader_version}",

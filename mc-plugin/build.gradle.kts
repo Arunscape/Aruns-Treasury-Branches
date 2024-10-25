@@ -17,14 +17,14 @@ group = project.property("maven_group") as String
 val silk_version = "1.10.7"
 dependencies {
     testImplementation(kotlin("test"))
+    modImplementation("net.silkmc:silk-commands:$silk_version")
     modImplementation("net.silkmc:silk-core:$silk_version")
-//    modImplementation("net.silkmc:silk-compose:+")
-    modImplementation("net.silkmc:silk-network:$silk_version")
     modImplementation("net.silkmc:silk-game:$silk_version")
     modImplementation("net.silkmc:silk-igui:$silk_version")
     modImplementation("net.silkmc:silk-nbt:$silk_version")
+    modImplementation("net.silkmc:silk-network:$silk_version")
     modImplementation("net.silkmc:silk-persistence:$silk_version")
-    modImplementation("net.silkmc:silk-commands:$silk_version")
+//    modImplementation("net.silkmc:silk-compose:+")
 
 
     // To change the versions see the gradle.properties file
