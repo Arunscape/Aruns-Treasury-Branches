@@ -1,14 +1,15 @@
-use crate::app::App;
-use axum::response::Response as AxumResponse;
-use axum::{
-    body::Body,
-    extract::State,
-    http::{Request, Response, StatusCode, Uri},
-    response::IntoResponse,
+use {
+    crate::app::App,
+    axum::{
+        body::Body,
+        extract::State,
+        http::{Request, Response, StatusCode, Uri},
+        response::{IntoResponse, Response as AxumResponse},
+    },
+    leptos::*,
+    tower::ServiceExt,
+    tower_http::services::ServeDir,
 };
-use leptos::*;
-use tower::ServiceExt;
-use tower_http::services::ServeDir;
 
 pub async fn file_and_error_handler(
     uri: Uri,
@@ -16,6 +17,9 @@ pub async fn file_and_error_handler(
     req: Request<Body>,
 ) -> AxumResponse {
     let root = options.site_root.clone();
+
+    tracing::debug!("APP 2");
+
     let res = get_static_file(uri.clone(), &root).await.unwrap();
 
     if res.status() == StatusCode::OK {

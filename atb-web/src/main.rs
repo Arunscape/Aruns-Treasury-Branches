@@ -14,10 +14,10 @@ use {
         routing::{get, post},
         Router,
     },
-    axum_session::{
-        DatabasePool, Session, SessionAnyPool, SessionConfig, SessionLayer, SessionStore,
-    },
-    axum_session_auth::{AuthConfig, AuthSession, AuthSessionLayer, Authentication, HasPermission},
+    //axum_session::{
+    //    DatabasePool, Session, SessionAnyPool, SessionConfig, SessionLayer, SessionStore,
+    //},
+    //axum_session_auth::{AuthConfig, AuthSession, AuthSessionLayer, Authentication, HasPermission},
     http::HeaderMap,
     jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, TokenData, Validation},
     leptos::{LeptosOptions, *},
