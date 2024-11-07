@@ -1,14 +1,15 @@
 #![cfg_attr(debug_assertions, allow(dead_code, unused_imports))]
 use {
     anyhow::Error,
+    chrono::{prelude::*, DateTime, FixedOffset, Local, Utc},
     serde::{Deserialize, Serialize},
     uuid::Uuid,
 };
 #[cfg(feature = "ssr")]
 use {
     async_trait::async_trait,
-    axum_session::{DatabasePool, Session, SessionConfig, SessionLayer, SessionPgPool},
-    axum_session_auth::{AuthConfig, AuthSession, AuthSessionLayer, Authentication, HasPermission},
+    //    axum_session::{DatabasePool, Session, SessionConfig, SessionLayer, SessionPgPool},
+    //    axum_session_auth::{AuthConfig, AuthSession, AuthSessionLayer, Authentication, HasPermission},
     sqlx::{
         any::{AnyConnectOptions, AnyPoolOptions},
         postgres::{PgConnectOptions, PgPoolOptions},
@@ -57,7 +58,7 @@ pub struct McItem {
 #[cfg_attr(feature = "ssr", derive(sqlx::FromRow))]
 pub struct Transaction {
     pub id: i64,
-    pub time_processed: chrono::DateTime<chrono::Utc>,
+    pub time_processed: chrono::DateTime<Utc>,
     pub fromid: Uuid,
     pub toid: Uuid,
     pub item: String,
@@ -101,65 +102,65 @@ pub struct McServerStatus {
     pub favicon: Vec<u8>,
 }
 
-#[cfg(feature = "ssr")]
-// This is only used if you want to use Token based Authentication checks
-#[async_trait]
-impl HasPermission<PgPool> for User {
-    async fn has(&self, _perm: &str, _pool: &Option<&PgPool>) -> bool {
-        true
-    }
-}
-
-#[cfg(feature = "ssr")]
-#[async_trait]
-impl Authentication<User, Uuid, PgPool> for User {
-    // This is ran when the user has logged in and has not yet been Cached in the system.
-    // Once ran it will load and cache the user.
-    async fn load_user(id: Uuid, _pool: Option<&PgPool>) -> Result<User, anyhow::Error> {
-        Ok(User { id })
-    }
-
-    // This function is used internally to deturmine if they are logged in or not.
-    fn is_authenticated(&self) -> bool {
-        true
-    }
-
-    fn is_active(&self) -> bool {
-        true
-    }
-
-    fn is_anonymous(&self) -> bool {
-        true
-    }
-}
-
-#[cfg(feature = "ssr")]
-#[async_trait]
-impl HasPermission<AnyPool> for User {
-    async fn has(&self, _perm: &str, _pool: &Option<&AnyPool>) -> bool {
-        true
-    }
-}
-
-#[cfg(feature = "ssr")]
-#[async_trait]
-impl Authentication<User, Uuid, AnyPool> for User {
-    // This is ran when the user has logged in and has not yet been Cached in the system.
-    // Once ran it will load and cache the user.
-    async fn load_user(id: Uuid, _pool: Option<&AnyPool>) -> Result<User, anyhow::Error> {
-        Ok(User { id })
-    }
-
-    // This function is used internally to deturmine if they are logged in or not.
-    fn is_authenticated(&self) -> bool {
-        true
-    }
-
-    fn is_active(&self) -> bool {
-        true
-    }
-
-    fn is_anonymous(&self) -> bool {
-        true
-    }
-}
+//#[cfg(feature = "ssr")]
+//// This is only used if you want to use Token based Authentication checks
+//#[async_trait]
+//impl HasPermission<PgPool> for User {
+//    async fn has(&self, _perm: &str, _pool: &Option<&PgPool>) -> bool {
+//        true
+//    }
+//}
+//
+//#[cfg(feature = "ssr")]
+//#[async_trait]
+//impl Authentication<User, Uuid, PgPool> for User {
+//    // This is ran when the user has logged in and has not yet been Cached in the system.
+//    // Once ran it will load and cache the user.
+//    async fn load_user(id: Uuid, _pool: Option<&PgPool>) -> Result<User, anyhow::Error> {
+//        Ok(User { id })
+//    }
+//
+//    // This function is used internally to deturmine if they are logged in or not.
+//    fn is_authenticated(&self) -> bool {
+//        true
+//    }
+//
+//    fn is_active(&self) -> bool {
+//        true
+//    }
+//
+//    fn is_anonymous(&self) -> bool {
+//        true
+//    }
+//}
+//
+//#[cfg(feature = "ssr")]
+//#[async_trait]
+//impl HasPermission<AnyPool> for User {
+//    async fn has(&self, _perm: &str, _pool: &Option<&AnyPool>) -> bool {
+//        true
+//    }
+//}
+//
+//#[cfg(feature = "ssr")]
+//#[async_trait]
+//impl Authentication<User, Uuid, AnyPool> for User {
+//    // This is ran when the user has logged in and has not yet been Cached in the system.
+//    // Once ran it will load and cache the user.
+//    async fn load_user(id: Uuid, _pool: Option<&AnyPool>) -> Result<User, anyhow::Error> {
+//        Ok(User { id })
+//    }
+//
+//    // This function is used internally to deturmine if they are logged in or not.
+//    fn is_authenticated(&self) -> bool {
+//        true
+//    }
+//
+//    fn is_active(&self) -> bool {
+//        true
+//    }
+//
+//    fn is_anonymous(&self) -> bool {
+//        true
+//    }
+//}

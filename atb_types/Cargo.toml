@@ -6,18 +6,14 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-sqlx = { version = "*", features = [ "runtime-tokio", "tls-rustls" , "postgres", "macros", "time", "uuid"], optional = true }
+sqlx = { version = "*", features = [ "runtime-tokio", "tls-rustls" , "postgres", "macros", "chrono", "uuid"], optional = true }
 uuid = { version = "*", features = ["serde"] }
 chrono = {version = "*", features = ["serde"]}
 serde = { version = "*", features = ["derive"] }
 async-trait = "*"
-axum_session = { version = "*", features = [ "postgres-rustls"] , optional = true }
-axum_session_auth = { version = "*", features = [ "postgres-rustls" ], optional = true }
 anyhow = "*"
 
 [features]
 ssr = [
   "dep:sqlx",
-  "dep:axum_session",
-  "dep:axum_session_auth",
 ]

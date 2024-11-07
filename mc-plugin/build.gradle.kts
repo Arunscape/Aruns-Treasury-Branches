@@ -43,6 +43,12 @@ dependencies {
     runtimeOnly("io.jsonwebtoken:jjwt-impl:$jjwt_version")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:$jjwt_version")
 
+    val ktor_version = "latest.release"
+    implementation("io.ktor:ktor-client-core:$ktor_version")
+    implementation("io.ktor:ktor-client-cio:$ktor_version")
+    implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
+
 }
 
 base {
